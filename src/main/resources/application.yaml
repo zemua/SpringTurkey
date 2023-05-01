@@ -1,5 +1,8 @@
-couchdb:
-  client:
-    url: http://localhost:5984/
-    username: admin
-    password: mysecretpassword
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      username: turkeyuser
+      password: turkeypassword
+      database: turkeydb
