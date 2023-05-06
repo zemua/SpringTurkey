@@ -1,6 +1,5 @@
 package devs.mrp.springturkey.database.controller;
 
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
@@ -46,13 +45,11 @@ class DeviceControllerTest {
 	@Test
 	@WithMockUser(username = "basic@user.me", password = "password", roles = "USER")
 	void testExceptionOnDeviceServiceError() {
-		DeviceIdDto expectedResult = DeviceIdDto.builder().id("someDeviceId").build();
-		when(deviceService.addDevice(ArgumentMatchers.any())).thenReturn(Mono.error(() -> new Exception())); // TODO set a more specific exception
+		when(deviceService.addDevice(ArgumentMatchers.any())).thenReturn(Mono.error(() -> new Exception()));
 
 		webClient.post().uri("/device/add")
 		.exchange()
 		.expectStatus().is5xxServerError();
-		fail("not yet implemented");
 	}
 
 }

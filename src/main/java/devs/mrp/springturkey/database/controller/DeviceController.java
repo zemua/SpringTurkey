@@ -26,9 +26,12 @@ public class DeviceController {
 
 	@PostMapping("/add")
 	public Mono<ResponseEntity<DeviceIdDto>> addDevice(@AuthenticationPrincipal Mono<UserDetails> userDetailsMono) {
-		Mono<String> username = userDetailsMono.map(UserDetails::getUsername);
+		Mono<String> username = userDetailsMono.map(UserDetails::getUsername)
+				.doOnNext(name -> log.debug("Adding device for user: {}", name))
+				.switchIfEmpty(Mono.error(new Exception()));
 		return deviceService.addDevice(username)
 				.map(deviceId -> DeviceIdDto.builder().id(deviceId).build())
+				.doOnNext(idDto -> log.debug("Added device id: {}", idDto.getId()))
 				.map(dto -> new ResponseEntity<DeviceIdDto>(dto, HttpStatusCode.valueOf(201)));
 	}
 
