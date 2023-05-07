@@ -27,14 +27,12 @@ public class UserDeviceFacadeImpl implements UserDeviceFacade {
 
 	@Override
 	public Flux<Device> getUserDevices() {
-		// TODO Auto-generated method stub
-		return null;
+		return deviceService.getUserDevices();
 	}
 
 	@Override
 	public Mono<Device> getUserDeviceById(Mono<String> deviceId) {
-		// TODO Auto-generated method stub
-		return null;
+		return deviceService.getDeviceById(deviceId);
 	}
 
 }
