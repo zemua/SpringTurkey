@@ -22,6 +22,7 @@ turkey:
     changepass: /client/password
 jwk:
   endpoint: ${turkey.authscheme}://${turkey.authhost}:${turkey.authport}/auth/realms/${turkey.realm}/protocol/openid-connect/certs
+spring:
   application:
     name: Turkey-Keycloak Bridge
   security:
