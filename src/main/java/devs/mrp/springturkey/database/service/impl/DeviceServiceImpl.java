@@ -3,6 +3,7 @@ package devs.mrp.springturkey.database.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.Device;
 import devs.mrp.springturkey.database.entity.User;
@@ -31,14 +32,24 @@ public class DeviceServiceImpl implements DeviceService {
 
 	@Override
 	public Flux<Device> getUserDevices(User user) {
-		// TODO Auto-generated method stub
-		return null;
+		return deviceRepository.findAllByUser(user);
 	}
 
 	@Override
-	public Mono<Device> getDeviceById(Mono<String> deviceId) {
-		// TODO Auto-generated method stub
-		return null;
+	public Flux<Device> getUserOtherDevices(User user, Device device) {
+		return getUserDevices(user)
+				.filter(d -> !d.getId().equals(device.getId()));
+	}
+
+	@Override
+	public Mono<Device> getDeviceById(String deviceId) {
+		return deviceRepository.findById(deviceId)
+				.filter(this::belongsToUser)
+				.switchIfEmpty(Mono.error(new DoesNotBelongToUserException()));
+	}
+
+	private boolean belongsToUser(Device device) {
+		return device.getUser().getEmail().equals(loginDetailsReader.getUsername());
 	}
 
 }

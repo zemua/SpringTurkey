@@ -31,7 +31,7 @@ public class UserDeviceFacadeImpl implements UserDeviceFacade {
 
 	@Override
 	public Mono<Device> getUserDeviceById(Mono<String> deviceId) {
-		return deviceService.getDeviceById(deviceId);
+		return deviceId.flatMap(id -> deviceService.getDeviceById(id));
 	}
 
 	private Mono<User> currentUser() {

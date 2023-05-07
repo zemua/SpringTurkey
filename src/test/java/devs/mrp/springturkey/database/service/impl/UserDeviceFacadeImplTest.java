@@ -121,9 +121,9 @@ class UserDeviceFacadeImplTest {
 		.expectComplete()
 		.verify();
 
-		ArgumentCaptor<Mono> deviceCaptor = ArgumentCaptor.forClass(Mono.class);
+		ArgumentCaptor<String> deviceCaptor = ArgumentCaptor.forClass(String.class);
 		verify(deviceService, times(1)).getDeviceById(deviceCaptor.capture());
-		assertEquals("firstId", deviceCaptor.getValue().block());
+		assertEquals("firstId", deviceCaptor.getValue());
 	}
 
 }

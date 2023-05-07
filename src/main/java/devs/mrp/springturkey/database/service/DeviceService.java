@@ -11,6 +11,8 @@ public interface DeviceService {
 
 	public Flux<Device> getUserDevices(User user);
 
-	public Mono<Device> getDeviceById(Mono<String> deviceId);
+	public Flux<Device> getUserOtherDevices(User user, Device device);
+
+	public Mono<Device> getDeviceById(String deviceId);
 
 }
