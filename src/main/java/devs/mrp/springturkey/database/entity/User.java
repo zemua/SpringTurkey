@@ -23,7 +23,7 @@ public class User {
 	private String id;
 
 	@NotBlank
-	@Indexed
+	@Indexed(unique = true)
 	private String email;
 
 }

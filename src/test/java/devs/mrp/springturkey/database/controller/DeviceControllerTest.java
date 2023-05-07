@@ -16,7 +16,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import devs.mrp.springturkey.configuration.SecurityConfig;
 import devs.mrp.springturkey.database.controller.dto.DeviceIdDto;
 import devs.mrp.springturkey.database.entity.Device;
-import devs.mrp.springturkey.database.service.DeviceService;
+import devs.mrp.springturkey.database.service.UserDeviceFacade;
 import reactor.core.publisher.Mono;
 
 @WebFluxTest(controllers = DeviceController.class)
@@ -25,7 +25,7 @@ import reactor.core.publisher.Mono;
 class DeviceControllerTest {
 
 	@MockBean
-	private DeviceService deviceService;
+	private UserDeviceFacade deviceService;
 	@MockBean
 	private ReactiveJwtDecoder jwtDecoder;
 
