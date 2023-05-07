@@ -20,11 +20,11 @@ import reactor.core.publisher.Mono;
 public class DeviceController {
 
 	@Autowired
-	private UserDeviceFacade userDeviceService;
+	private UserDeviceFacade userDeviceFacade;
 
 	@PostMapping("/add")
 	public Mono<ResponseEntity<DeviceIdDto>> addDevice() {
-		return userDeviceService.addDevice()
+		return userDeviceFacade.addDevice()
 				.map(device -> DeviceIdDto.builder().id(device.getId()).build())
 				.doOnNext(idDto -> log.debug("Added device id: {}", idDto.getId()))
 				.map(dto -> new ResponseEntity<DeviceIdDto>(dto, HttpStatusCode.valueOf(201)));
