@@ -1,4 +1,4 @@
-package devs.mrp.springturkey.database.controller.dto;
+package devs.mrp.springturkey.controller.dto;
 
 import jakarta.validation.constraints.Email;
 import lombok.Builder;

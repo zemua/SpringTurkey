@@ -1,4 +1,4 @@
-package devs.mrp.springturkey.database.controller.dto;
+package devs.mrp.springturkey.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

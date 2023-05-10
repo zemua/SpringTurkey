@@ -1,4 +1,4 @@
-package devs.mrp.springturkey.database.controller;
+package devs.mrp.springturkey.controller;
 
 import static org.mockito.Mockito.when;
 
@@ -14,7 +14,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import devs.mrp.springturkey.configuration.SecurityConfig;
-import devs.mrp.springturkey.database.controller.dto.DeviceIdDto;
+import devs.mrp.springturkey.controller.DeviceController;
+import devs.mrp.springturkey.controller.dto.DeviceIdDto;
 import devs.mrp.springturkey.database.entity.Device;
 import devs.mrp.springturkey.database.service.UserDeviceFacade;
 import reactor.core.publisher.Mono;

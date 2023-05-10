@@ -1,9 +1,10 @@
-package devs.mrp.springturkey.database.controller;
+package devs.mrp.springturkey.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
+import devs.mrp.springturkey.controller.TurkeyExceptionHandler;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 

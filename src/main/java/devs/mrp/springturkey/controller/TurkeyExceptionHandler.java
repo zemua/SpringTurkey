@@ -1,4 +1,4 @@
-package devs.mrp.springturkey.database.controller;
+package devs.mrp.springturkey.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
