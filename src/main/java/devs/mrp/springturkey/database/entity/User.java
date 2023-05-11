@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import devs.mrp.springturkey.database.entity.intf.UuidIdentifiedEntity;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class User {
+public class User implements UuidIdentifiedEntity {
 
 	@Id
 	private UUID id;
@@ -28,6 +29,7 @@ public class User {
 	@Indexed(unique = true)
 	private String email;
 
+	@Override
 	public void setId(UUID id) {
 		if (this.id != null) {
 			throw new UnsupportedOperationException("ID is already defined");

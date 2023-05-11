@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import devs.mrp.springturkey.database.entity.enm.DeviceTypeEnum;
+import devs.mrp.springturkey.database.entity.intf.UuidIdentifiedEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Device {
+public class Device implements UuidIdentifiedEntity {
 
 	@Id
 	private UUID id;
@@ -44,6 +45,7 @@ public class Device {
 	@LastModifiedDate
 	private Date edited;
 
+	@Override
 	public void setId(UUID id) {
 		if (this.id != null) {
 			throw new UnsupportedOperationException("ID is already defined");
