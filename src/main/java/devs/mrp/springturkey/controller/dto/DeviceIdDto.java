@@ -1,5 +1,7 @@
 package devs.mrp.springturkey.controller.dto;
 
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -13,6 +15,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DeviceIdDto {
 
-	private String id;
+	private UUID id;
 
 }

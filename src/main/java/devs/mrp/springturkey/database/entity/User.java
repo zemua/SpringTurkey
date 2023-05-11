@@ -1,5 +1,7 @@
 package devs.mrp.springturkey.database.entity;
 
+import java.util.UUID;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,10 +22,17 @@ import lombok.NoArgsConstructor;
 public class User {
 
 	@Id
-	private String id;
+	private UUID id;
 
 	@NotBlank
 	@Indexed(unique = true)
 	private String email;
+
+	public void setId(UUID id) {
+		if (this.id != null) {
+			throw new UnsupportedOperationException("ID is already defined");
+		}
+		this.id = id;
+	}
 
 }

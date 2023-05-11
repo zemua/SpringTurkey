@@ -2,6 +2,8 @@ package devs.mrp.springturkey.database.service.impl;
 
 import static org.mockito.Mockito.when;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -30,12 +32,16 @@ class DeviceServiceImplTest {
 	@Autowired
 	private DeviceServiceImpl deviceServiceImpl;
 
+	UUID idOne = UUID.randomUUID();
+	UUID idTwo = UUID.randomUUID();
+	UUID idThree = UUID.randomUUID();
+
 	@Test
 	@WithMockUser("some@user.me")
 	void testAddDevice() {
 		User user = User.builder().email("some@mail.com").build();
 		Device deviceIn = Device.builder().user(user).usageTime(0L).build();
-		Device deviceOut = Device.builder().user(user).usageTime(0L).id("devideId").build();
+		Device deviceOut = Device.builder().user(user).usageTime(0L).id(idOne).build();
 
 		when(deviceRepository.save(ArgumentMatchers.refEq(deviceIn))).thenReturn(Mono.just(deviceOut));
 
@@ -50,9 +56,9 @@ class DeviceServiceImplTest {
 	@Test
 	void testGetUserDevices() {
 		User user = User.builder().email("some@mail.com").build();
-		Device deviceOne = Device.builder().user(user).usageTime(1234L).id("deviceOne").build();
-		Device deviceTwo = Device.builder().user(user).usageTime(2234L).id("deviceTwo").build();
-		Device deviceThree = Device.builder().user(user).usageTime(3234L).id("deviceThree").build();
+		Device deviceOne = Device.builder().user(user).usageTime(1234L).id(idOne).build();
+		Device deviceTwo = Device.builder().user(user).usageTime(2234L).id(idTwo).build();
+		Device deviceThree = Device.builder().user(user).usageTime(3234L).id(idThree).build();
 
 		when(deviceRepository.findAllByUser(user)).thenReturn(Flux.just(deviceOne, deviceTwo, deviceThree));
 
@@ -69,9 +75,9 @@ class DeviceServiceImplTest {
 	@Test
 	void testGetOtherDevices() {
 		User user = User.builder().email("some@mail.com").build();
-		Device deviceOne = Device.builder().user(user).usageTime(1234L).id("deviceOne").build();
-		Device deviceTwo = Device.builder().user(user).usageTime(2234L).id("deviceTwo").build();
-		Device deviceThree = Device.builder().user(user).usageTime(3234L).id("deviceThree").build();
+		Device deviceOne = Device.builder().user(user).usageTime(1234L).id(idOne).build();
+		Device deviceTwo = Device.builder().user(user).usageTime(2234L).id(idTwo).build();
+		Device deviceThree = Device.builder().user(user).usageTime(3234L).id(idThree).build();
 
 		when(deviceRepository.findAllByUser(user)).thenReturn(Flux.just(deviceOne, deviceTwo, deviceThree));
 
@@ -88,11 +94,11 @@ class DeviceServiceImplTest {
 	@WithMockUser("some@mail.com")
 	void testGetDeviceById() {
 		User user = User.builder().email("some@mail.com").build();
-		Device device = Device.builder().user(user).usageTime(1234L).id("deviceId").build();
+		Device device = Device.builder().user(user).usageTime(1234L).id(idOne).build();
 
 		when(deviceRepository.findById(device.getId())).thenReturn(Mono.just(device));
 
-		Mono<Device> monoDevice = deviceServiceImpl.getDeviceById("deviceId");
+		Mono<Device> monoDevice = deviceServiceImpl.getDeviceById(idOne);
 
 		StepVerifier.create(monoDevice)
 		.expectNext(device)
@@ -104,11 +110,11 @@ class DeviceServiceImplTest {
 	@WithMockUser("another@user.me")
 	void testGetDeviceByIdThatDoesNotBelongToCurrentUser() {
 		User user = User.builder().email("some@mail.com").build();
-		Device device = Device.builder().user(user).usageTime(1234L).id("deviceId").build();
+		Device device = Device.builder().user(user).usageTime(1234L).id(idOne).build();
 
 		when(deviceRepository.findById(device.getId())).thenReturn(Mono.just(device));
 
-		Mono<Device> monoDevice = deviceServiceImpl.getDeviceById("deviceId");
+		Mono<Device> monoDevice = deviceServiceImpl.getDeviceById(idOne);
 
 		StepVerifier.create(monoDevice)
 		.expectError(DoesNotBelongToUserException.class)

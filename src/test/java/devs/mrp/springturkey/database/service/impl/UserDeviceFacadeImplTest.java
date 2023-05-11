@@ -5,6 +5,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -36,13 +38,16 @@ class UserDeviceFacadeImplTest {
 	@Autowired
 	private UserDeviceFacadeImpl userDeviceFacadeImpl;
 
+	private UUID userId = UUID.randomUUID();
+	private UUID generatedId = UUID.randomUUID();
+
 	@Test
 	@DirtiesContext
 	@WithMockUser("some@user.me")
 	void testAddDeviceSuccess() {
-		User user = User.builder().email("some@user.me").id("userId").build();
+		User user = User.builder().email("some@user.me").id(userId).build();
 		Device device = Device.builder()
-				.id("generatedId")
+				.id(generatedId)
 				.user(user)
 				.usageTime(123456L)
 				.build();
@@ -54,7 +59,7 @@ class UserDeviceFacadeImplTest {
 		Mono<Device> monoResult = userDeviceFacadeImpl.addDevice();
 		Device deviceResult = monoResult.block();
 
-		assertEquals("generatedId", deviceResult.getId());
+		assertEquals(generatedId, deviceResult.getId());
 		assertEquals(user, deviceResult.getUser());
 		assertEquals(123456L, deviceResult.getUsageTime());
 
@@ -65,9 +70,9 @@ class UserDeviceFacadeImplTest {
 	@DirtiesContext
 	@WithMockUser("some@user.me")
 	void testAddDeviceToNotSavedUserCreatesTheUser() {
-		User user = User.builder().email("some@user.me").id("userId").build();
+		User user = User.builder().email("some@user.me").id(userId).build();
 		Device device = Device.builder()
-				.id("generatedId")
+				.id(generatedId)
 				.user(user)
 				.usageTime(123456L)
 				.build();
@@ -79,7 +84,7 @@ class UserDeviceFacadeImplTest {
 		Mono<Device> monoResult = userDeviceFacadeImpl.addDevice();
 		Device deviceResult = monoResult.block();
 
-		assertEquals("generatedId", deviceResult.getId());
+		assertEquals(generatedId, deviceResult.getId());
 		assertEquals(user, deviceResult.getUser());
 		assertEquals(123456L, deviceResult.getUsageTime());
 
@@ -90,9 +95,11 @@ class UserDeviceFacadeImplTest {
 	@DirtiesContext
 	@WithMockUser("some@user.me")
 	void testGetUserDevices() {
-		User user = User.builder().id("userId").email("user@mail.me").build();
-		Device first = Device.builder().id("firstId").user(user).usageTime(1234L).build();
-		Device second = Device.builder().id("secondId").user(user).usageTime(4321L).build();;
+		UUID firstId = UUID.randomUUID();
+		UUID secondId = UUID.randomUUID();
+		User user = User.builder().id(userId).email("user@mail.me").build();
+		Device first = Device.builder().id(firstId).user(user).usageTime(1234L).build();
+		Device second = Device.builder().id(secondId).user(user).usageTime(4321L).build();;
 
 		when(deviceService.getUserDevices(ArgumentMatchers.refEq(user))).thenReturn(Flux.just(first, second));
 
@@ -109,21 +116,22 @@ class UserDeviceFacadeImplTest {
 	@DirtiesContext
 	@WithMockUser("some@user.me")
 	void testGetUserDeviceById() {
-		User user = User.builder().id("userId").email("user@mail.me").build();
-		Device first = Device.builder().id("firstId").user(user).usageTime(1234L).build();
+		UUID firstId = UUID.randomUUID();
+		User user = User.builder().id(userId).email("user@mail.me").build();
+		Device first = Device.builder().id(firstId).user(user).usageTime(1234L).build();
 
 		when(deviceService.getDeviceById(ArgumentMatchers.any())).thenReturn(Mono.just(first));
 
-		Mono<Device> deviceMono = userDeviceFacadeImpl.getUserDeviceById(Mono.just("firstId"));
+		Mono<Device> deviceMono = userDeviceFacadeImpl.getUserDeviceById(Mono.just(firstId));
 
 		StepVerifier.create(deviceMono)
 		.expectNext(first)
 		.expectComplete()
 		.verify();
 
-		ArgumentCaptor<String> deviceCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<UUID> deviceCaptor = ArgumentCaptor.forClass(UUID.class);
 		verify(deviceService, times(1)).getDeviceById(deviceCaptor.capture());
-		assertEquals("firstId", deviceCaptor.getValue());
+		assertEquals(firstId, deviceCaptor.getValue());
 	}
 
 }

@@ -53,6 +53,7 @@ spring:
       username: turkeyuser
       password: turkeypassword
       database: turkeydb
+      uuid-representation: standard
 
 ---
 spring:

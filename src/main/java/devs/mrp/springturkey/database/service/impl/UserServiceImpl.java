@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Mono<User> getUser() {
-		return userRepository.findById(loginDetailsReader.getUsername());
+		return userRepository.findByEmail(loginDetailsReader.getUsername());
 	}
 
 }

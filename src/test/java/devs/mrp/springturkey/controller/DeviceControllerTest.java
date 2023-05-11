@@ -2,6 +2,8 @@ package devs.mrp.springturkey.controller;
 
 import static org.mockito.Mockito.when;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
@@ -14,7 +16,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import devs.mrp.springturkey.configuration.SecurityConfig;
-import devs.mrp.springturkey.controller.DeviceController;
 import devs.mrp.springturkey.controller.dto.DeviceIdDto;
 import devs.mrp.springturkey.database.entity.Device;
 import devs.mrp.springturkey.database.service.UserDeviceFacade;
@@ -36,8 +37,9 @@ class DeviceControllerTest {
 	@Test
 	@WithMockUser(username = "basic@user.me", password = "password", roles = "USER")
 	void testAddDeviceSuccess() {
-		DeviceIdDto expectedResult = DeviceIdDto.builder().id("someDeviceId").build();
-		when(deviceService.addDevice()).thenReturn(Mono.just(Device.builder().id("someDeviceId").build()));
+		UUID uuid = UUID.randomUUID();
+		DeviceIdDto expectedResult = DeviceIdDto.builder().id(uuid).build();
+		when(deviceService.addDevice()).thenReturn(Mono.just(Device.builder().id(uuid).build()));
 
 		webClient.post().uri("/device/add")
 		.exchange()

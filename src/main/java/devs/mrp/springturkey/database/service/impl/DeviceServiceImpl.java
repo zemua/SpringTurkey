@@ -1,5 +1,7 @@
 package devs.mrp.springturkey.database.service.impl;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +44,7 @@ public class DeviceServiceImpl implements DeviceService {
 	}
 
 	@Override
-	public Mono<Device> getDeviceById(String deviceId) {
+	public Mono<Device> getDeviceById(UUID deviceId) {
 		return deviceRepository.findById(deviceId)
 				.filter(this::belongsToUser)
 				.switchIfEmpty(Mono.error(new DoesNotBelongToUserException()));

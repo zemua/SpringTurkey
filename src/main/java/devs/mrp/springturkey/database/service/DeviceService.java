@@ -1,5 +1,7 @@
 package devs.mrp.springturkey.database.service;
 
+import java.util.UUID;
+
 import devs.mrp.springturkey.database.entity.Device;
 import devs.mrp.springturkey.database.entity.User;
 import reactor.core.publisher.Flux;
@@ -13,6 +15,6 @@ public interface DeviceService {
 
 	public Flux<Device> getUserOtherDevices(User user, Device device);
 
-	public Mono<Device> getDeviceById(String deviceId);
+	public Mono<Device> getDeviceById(UUID deviceId);
 
 }

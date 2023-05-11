@@ -2,6 +2,8 @@ package devs.mrp.springturkey.database.service.impl;
 
 import static org.mockito.Mockito.when;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -30,8 +32,9 @@ class UserServiceImplTest {
 	@Test
 	@WithMockUser("user@mail.me")
 	void testAddCurrentUser() {
+		UUID userId = UUID.randomUUID();
 		User userIn = User.builder().email("user@mail.me").build();
-		User userOut = User.builder().id("userId").email("user@mail.me").build();
+		User userOut = User.builder().id(userId).email("user@mail.me").build();
 
 		when(userRepository.save(ArgumentMatchers.refEq(userIn))).thenReturn(Mono.just(userOut));
 
@@ -46,9 +49,10 @@ class UserServiceImplTest {
 	@Test
 	@WithMockUser("user@mail.me")
 	void testGetUser() {
-		User userOut = User.builder().id("userId").email("user@mail.me").build();
+		UUID userId = UUID.randomUUID();
+		User userOut = User.builder().id(userId).email("user@mail.me").build();
 
-		when(userRepository.findById("user@mail.me")).thenReturn(Mono.just(userOut));
+		when(userRepository.findByEmail("user@mail.me")).thenReturn(Mono.just(userOut));
 
 		Mono<User> monoUser = userServiceImpl.getUser();
 

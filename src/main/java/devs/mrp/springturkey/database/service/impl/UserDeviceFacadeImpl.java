@@ -1,5 +1,7 @@
 package devs.mrp.springturkey.database.service.impl;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +32,7 @@ public class UserDeviceFacadeImpl implements UserDeviceFacade {
 	}
 
 	@Override
-	public Mono<Device> getUserDeviceById(Mono<String> deviceId) {
+	public Mono<Device> getUserDeviceById(Mono<UUID> deviceId) {
 		return deviceId.flatMap(id -> deviceService.getDeviceById(id));
 	}
 
