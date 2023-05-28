@@ -54,6 +54,7 @@ class DeviceServiceImplTest {
 	}
 
 	@Test
+	@WithMockUser("some@mail.com")
 	void testGetUserDevices() {
 		User user = User.builder().email("some@mail.com").build();
 		Device deviceOne = Device.builder().user(user).usageTime(1234L).id(idOne).build();
@@ -73,6 +74,24 @@ class DeviceServiceImplTest {
 	}
 
 	@Test
+	@WithMockUser("wronguser@mail.com")
+	void testGetUserDevicesWithWrongUser() {
+		User user = User.builder().email("some@mail.com").build();
+		Device deviceOne = Device.builder().user(user).usageTime(1234L).id(idOne).build();
+		Device deviceTwo = Device.builder().user(user).usageTime(2234L).id(idTwo).build();
+		Device deviceThree = Device.builder().user(user).usageTime(3234L).id(idThree).build();
+
+		when(deviceRepository.findAllByUser(user)).thenReturn(Flux.just(deviceOne, deviceTwo, deviceThree));
+
+		Flux<Device> fluxDevice = deviceServiceImpl.getUserDevices(user);
+
+		StepVerifier.create(fluxDevice)
+		.expectError(DoesNotBelongToUserException.class)
+		.verify();
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
 	void testGetOtherDevices() {
 		User user = User.builder().email("some@mail.com").build();
 		Device deviceOne = Device.builder().user(user).usageTime(1234L).id(idOne).build();
@@ -87,6 +106,23 @@ class DeviceServiceImplTest {
 		.expectNext(deviceOne)
 		.expectNext(deviceThree)
 		.expectComplete()
+		.verify();
+	}
+
+	@Test
+	@WithMockUser("wronguser@mail.com")
+	void testGetOtherDevicesWithWrongUser() {
+		User user = User.builder().email("some@mail.com").build();
+		Device deviceOne = Device.builder().user(user).usageTime(1234L).id(idOne).build();
+		Device deviceTwo = Device.builder().user(user).usageTime(2234L).id(idTwo).build();
+		Device deviceThree = Device.builder().user(user).usageTime(3234L).id(idThree).build();
+
+		when(deviceRepository.findAllByUser(user)).thenReturn(Flux.just(deviceOne, deviceTwo, deviceThree));
+
+		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(user, deviceTwo);
+
+		StepVerifier.create(fluxDevice)
+		.expectError(DoesNotBelongToUserException.class)
 		.verify();
 	}
 

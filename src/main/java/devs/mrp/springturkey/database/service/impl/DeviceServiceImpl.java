@@ -34,13 +34,16 @@ public class DeviceServiceImpl implements DeviceService {
 
 	@Override
 	public Flux<Device> getUserDevices(User user) {
-		return deviceRepository.findAllByUser(user);
+		return deviceRepository.findAllByUser(user)
+				.filter(this::belongsToUser)
+				.switchIfEmpty(Mono.error(new DoesNotBelongToUserException()));
 	}
 
 	@Override
 	public Flux<Device> getUserOtherDevices(User user, Device device) {
 		return getUserDevices(user)
-				.filter(d -> !d.getId().equals(device.getId()));
+				.filter(d -> !d.getId().equals(device.getId()))
+				.switchIfEmpty(Mono.error(new DoesNotBelongToUserException()));
 	}
 
 	@Override

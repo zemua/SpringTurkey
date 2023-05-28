@@ -1,5 +1,6 @@
 package devs.mrp.springturkey.controller;
 
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
@@ -56,6 +57,17 @@ class DeviceControllerTest {
 		webClient.post().uri("/device/add")
 		.exchange()
 		.expectStatus().is5xxServerError();
+	}
+
+	@Test
+	@WithMockUser(username = "basic@user.me", password = "password", roles = "USER")
+	void testGetAllDevices() {
+		Device device1 = Device.builder()
+				.id(UUID.randomUUID())
+				.build();
+
+		when(deviceService.getUserDevices()).thenReturn(null);
+		fail("not yet implemented");
 	}
 
 }
