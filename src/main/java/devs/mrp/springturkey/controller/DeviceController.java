@@ -33,8 +33,9 @@ public class DeviceController {
 	}
 
 	@GetMapping("/all")
-	public Flux<ResponseEntity<DeviceIdDto>> allDevices() {
-		return null;
+	public Flux<DeviceIdDto> allDevices() {
+		return userDeviceFacade.getUserDevices()
+				.map(device -> DeviceIdDto.builder().id(device.getId()).build());
 	}
 
 }

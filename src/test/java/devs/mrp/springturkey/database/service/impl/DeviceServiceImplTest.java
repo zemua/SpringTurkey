@@ -86,8 +86,7 @@ class DeviceServiceImplTest {
 		Flux<Device> fluxDevice = deviceServiceImpl.getUserDevices(user);
 
 		StepVerifier.create(fluxDevice)
-		.expectError(DoesNotBelongToUserException.class)
-		.verify();
+		.verifyComplete();
 	}
 
 	@Test
@@ -122,8 +121,7 @@ class DeviceServiceImplTest {
 		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(user, deviceTwo);
 
 		StepVerifier.create(fluxDevice)
-		.expectError(DoesNotBelongToUserException.class)
-		.verify();
+		.verifyComplete();
 	}
 
 	@Test

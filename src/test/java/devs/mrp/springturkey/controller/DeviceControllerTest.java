@@ -1,8 +1,8 @@
 package devs.mrp.springturkey.controller;
 
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -20,6 +20,7 @@ import devs.mrp.springturkey.configuration.SecurityConfig;
 import devs.mrp.springturkey.controller.dto.DeviceIdDto;
 import devs.mrp.springturkey.database.entity.Device;
 import devs.mrp.springturkey.database.service.UserDeviceFacade;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @WebFluxTest(controllers = DeviceController.class)
@@ -65,9 +66,19 @@ class DeviceControllerTest {
 		Device device1 = Device.builder()
 				.id(UUID.randomUUID())
 				.build();
+		Device device2 = Device.builder()
+				.id(UUID.randomUUID())
+				.build();
+		List<Device> devices = List.of(device1, device2);
+		List<DeviceIdDto> dtos = devices.stream().map(d -> DeviceIdDto.builder().id(d.getId()).build()).toList();
 
-		when(deviceService.getUserDevices()).thenReturn(null);
-		fail("not yet implemented");
+		when(deviceService.getUserDevices()).thenReturn(Flux.fromIterable(devices));
+
+		webClient.get().uri("/device/all")
+		.exchange()
+		.expectStatus().isOk()
+		.expectBodyList(DeviceIdDto.class)
+		.isEqualTo(dtos);
 	}
 
 }
