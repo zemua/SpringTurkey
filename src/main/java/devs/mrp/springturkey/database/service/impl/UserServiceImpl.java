@@ -23,12 +23,12 @@ public class UserServiceImpl implements UserService {
 		User user = User.builder()
 				.email(loginDetailsReader.getUsername())
 				.build();
-		return userRepository.save(user);
+		return Mono.just(userRepository.save(user));
 	}
 
 	@Override
 	public Mono<User> getUser() {
-		return userRepository.findByEmail(loginDetailsReader.getUsername());
+		return Mono.just(userRepository.findByEmail(loginDetailsReader.getUsername()));
 	}
 
 }

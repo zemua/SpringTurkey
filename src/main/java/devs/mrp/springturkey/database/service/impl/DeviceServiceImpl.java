@@ -1,5 +1,6 @@
 package devs.mrp.springturkey.database.service.impl;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +30,12 @@ public class DeviceServiceImpl implements DeviceService {
 				.user(user)
 				.usageTime(0L)
 				.build();
-		return deviceRepository.save(device);
+		return Mono.just(deviceRepository.save(device));
 	}
 
 	@Override
 	public Flux<Device> getUserDevices(User user) {
-		return deviceRepository.findAllByUser(user)
+		return Flux.fromIterable(deviceRepository.findAllByUser(user))
 				.filter(this::belongsToUser);
 	}
 
@@ -46,7 +47,9 @@ public class DeviceServiceImpl implements DeviceService {
 
 	@Override
 	public Mono<Device> getDeviceById(UUID deviceId) {
-		return deviceRepository.findById(deviceId)
+		return Mono.just(deviceRepository.findById(deviceId))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
 				.filter(this::belongsToUser)
 				.switchIfEmpty(Mono.error(new DoesNotBelongToUserException()));
 	}

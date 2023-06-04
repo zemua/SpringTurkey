@@ -2,6 +2,8 @@ package devs.mrp.springturkey.database.service.impl;
 
 import static org.mockito.Mockito.when;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -43,7 +45,7 @@ class DeviceServiceImplTest {
 		Device deviceIn = Device.builder().user(user).usageTime(0L).build();
 		Device deviceOut = Device.builder().user(user).usageTime(0L).id(idOne).build();
 
-		when(deviceRepository.save(ArgumentMatchers.refEq(deviceIn))).thenReturn(Mono.just(deviceOut));
+		when(deviceRepository.save(ArgumentMatchers.refEq(deviceIn))).thenReturn(deviceOut);
 
 		Mono<Device> monoDevice = deviceServiceImpl.addDevice(user);
 
@@ -61,7 +63,7 @@ class DeviceServiceImplTest {
 		Device deviceTwo = Device.builder().user(user).usageTime(2234L).id(idTwo).build();
 		Device deviceThree = Device.builder().user(user).usageTime(3234L).id(idThree).build();
 
-		when(deviceRepository.findAllByUser(user)).thenReturn(Flux.just(deviceOne, deviceTwo, deviceThree));
+		when(deviceRepository.findAllByUser(user)).thenReturn(List.of(deviceOne, deviceTwo, deviceThree));
 
 		Flux<Device> fluxDevice = deviceServiceImpl.getUserDevices(user);
 
@@ -81,7 +83,7 @@ class DeviceServiceImplTest {
 		Device deviceTwo = Device.builder().user(user).usageTime(2234L).id(idTwo).build();
 		Device deviceThree = Device.builder().user(user).usageTime(3234L).id(idThree).build();
 
-		when(deviceRepository.findAllByUser(user)).thenReturn(Flux.just(deviceOne, deviceTwo, deviceThree));
+		when(deviceRepository.findAllByUser(user)).thenReturn(List.of(deviceOne, deviceTwo, deviceThree));
 
 		Flux<Device> fluxDevice = deviceServiceImpl.getUserDevices(user);
 
@@ -97,7 +99,7 @@ class DeviceServiceImplTest {
 		Device deviceTwo = Device.builder().user(user).usageTime(2234L).id(idTwo).build();
 		Device deviceThree = Device.builder().user(user).usageTime(3234L).id(idThree).build();
 
-		when(deviceRepository.findAllByUser(user)).thenReturn(Flux.just(deviceOne, deviceTwo, deviceThree));
+		when(deviceRepository.findAllByUser(user)).thenReturn(List.of(deviceOne, deviceTwo, deviceThree));
 
 		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(user, deviceTwo);
 
@@ -116,7 +118,7 @@ class DeviceServiceImplTest {
 		Device deviceTwo = Device.builder().user(user).usageTime(2234L).id(idTwo).build();
 		Device deviceThree = Device.builder().user(user).usageTime(3234L).id(idThree).build();
 
-		when(deviceRepository.findAllByUser(user)).thenReturn(Flux.just(deviceOne, deviceTwo, deviceThree));
+		when(deviceRepository.findAllByUser(user)).thenReturn(List.of(deviceOne, deviceTwo, deviceThree));
 
 		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(user, deviceTwo);
 
@@ -130,7 +132,7 @@ class DeviceServiceImplTest {
 		User user = User.builder().email("some@mail.com").build();
 		Device device = Device.builder().user(user).usageTime(1234L).id(idOne).build();
 
-		when(deviceRepository.findById(device.getId())).thenReturn(Mono.just(device));
+		when(deviceRepository.findById(device.getId())).thenReturn(Optional.of(device));
 
 		Mono<Device> monoDevice = deviceServiceImpl.getDeviceById(idOne);
 
@@ -146,7 +148,7 @@ class DeviceServiceImplTest {
 		User user = User.builder().email("some@mail.com").build();
 		Device device = Device.builder().user(user).usageTime(1234L).id(idOne).build();
 
-		when(deviceRepository.findById(device.getId())).thenReturn(Mono.just(device));
+		when(deviceRepository.findById(device.getId())).thenReturn(Optional.of(device));
 
 		Mono<Device> monoDevice = deviceServiceImpl.getDeviceById(idOne);
 

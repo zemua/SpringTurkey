@@ -46,14 +46,20 @@ spring:
             user-info-uri: ${turkey.authscheme}://${turkey.authhost}:${turkey.authport}/auth/realms/${turkey.realm}/protocol/openid-connect/userinfo
             user-name-attribute: preferred_username
             jwk-set-uri: ${turkey.authscheme}://${turkey.authhost}:${turkey.authport}/auth/realms/${turkey.realm}/protocol/openid-connect/certs
-  data:
-    mongodb:
-      host: localhost
-      port: 27017
-      username: turkeyuser
-      password: turkeypassword
-      database: turkeydb
-      uuid-representation: standard
+  datasource:
+    url: jdbc:mysql://localhost:4407/turkeydb?createDatabaseIfNotExist=true
+    username: testuser
+    password: pwd_123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    #generate-ddl: false
+    #show-sql: true
+    #database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate:
+      ddl-auto: create # create for setting up the db from scratch, none to pick up where it was, update if you want to do that
+    properties:
+      hibernate:
+        dialtect: org.hibernate.dialect.MySQL5InnoDBDialect
 
 ---
 spring:

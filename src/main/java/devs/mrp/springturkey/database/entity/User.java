@@ -1,12 +1,16 @@
 package devs.mrp.springturkey.database.entity;
 
+import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import devs.mrp.springturkey.database.entity.intf.UuidIdentifiedEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,27 +18,24 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Document(collection = "user")
+@Entity
+@Table(name = "user", uniqueConstraints = @UniqueConstraint(name = "uk__user__email", columnNames = "email"))
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class User implements UuidIdentifiedEntity {
+public class User {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private UUID id;
 
 	@NotBlank
-	@Indexed(unique = true)
+	@Column(name = "email")
 	private String email;
 
-	@Override
-	public void setId(UUID id) {
-		if (this.id != null) {
-			throw new UnsupportedOperationException("ID is already defined");
-		}
-		this.id = id;
-	}
+	@OneToMany
+	private List<Device> devices;
 
 }

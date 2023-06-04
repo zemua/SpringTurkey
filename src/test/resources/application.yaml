@@ -46,14 +46,6 @@ spring:
             user-info-uri: ${turkey.authscheme}://${turkey.authhost}:${turkey.authport}/auth/realms/${turkey.realm}/protocol/openid-connect/userinfo
             user-name-attribute: preferred_username
             jwk-set-uri: ${turkey.authscheme}://${turkey.authhost}:${turkey.authport}/auth/realms/${turkey.realm}/protocol/openid-connect/certs
-  data:
-    mongodb:
-      host: localhost
-      port: 27017
-      username: turkeyuser
-      password: turkeypassword
-      database: turkeydb
-      uuid-representation: standard
 
 ---
 spring:

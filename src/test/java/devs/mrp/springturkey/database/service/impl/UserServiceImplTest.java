@@ -36,7 +36,7 @@ class UserServiceImplTest {
 		User userIn = User.builder().email("user@mail.me").build();
 		User userOut = User.builder().id(userId).email("user@mail.me").build();
 
-		when(userRepository.save(ArgumentMatchers.refEq(userIn))).thenReturn(Mono.just(userOut));
+		when(userRepository.save(ArgumentMatchers.refEq(userIn))).thenReturn(userOut);
 
 		Mono<User> monoUser = userServiceImpl.addCurrentUser();
 
@@ -52,7 +52,7 @@ class UserServiceImplTest {
 		UUID userId = UUID.randomUUID();
 		User userOut = User.builder().id(userId).email("user@mail.me").build();
 
-		when(userRepository.findByEmail("user@mail.me")).thenReturn(Mono.just(userOut));
+		when(userRepository.findByEmail("user@mail.me")).thenReturn(userOut);
 
 		Mono<User> monoUser = userServiceImpl.getUser();
 

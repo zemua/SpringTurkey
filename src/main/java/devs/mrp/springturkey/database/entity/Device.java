@@ -4,14 +4,15 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import devs.mrp.springturkey.database.entity.enm.DeviceTypeEnum;
-import devs.mrp.springturkey.database.entity.intf.UuidIdentifiedEntity;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -19,18 +20,20 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Document(collection = "device")
+@Entity
+@Table(name = "device")
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Device implements UuidIdentifiedEntity {
+public class Device {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private UUID id;
 
-	@DBRef
-	@Indexed
+	@OneToOne
+	@NotNull
 	private User user;
 
 	@NotNull
@@ -44,13 +47,5 @@ public class Device implements UuidIdentifiedEntity {
 
 	@LastModifiedDate
 	private Date edited;
-
-	@Override
-	public void setId(UUID id) {
-		if (this.id != null) {
-			throw new UnsupportedOperationException("ID is already defined");
-		}
-		this.id = id;
-	}
 
 }
