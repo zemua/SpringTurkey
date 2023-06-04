@@ -52,14 +52,13 @@ spring:
     password: pwd_123
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
-    #generate-ddl: false
-    #show-sql: true
-    #database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-    hibernate:
-      ddl-auto: create # create for setting up the db from scratch, none to pick up where it was, update if you want to do that
+    generate-ddl: true # for creating db schema, change to false
+    show-sql: true # disable in prod
     properties:
       hibernate:
-        dialtect: org.hibernate.dialect.MySQL5InnoDBDialect
+        dialtect: org.hibernate.dialect.MySQL8Dialect
+        ddl-auto: create # change to validate
+        formate_sql: true
 
 ---
 spring:

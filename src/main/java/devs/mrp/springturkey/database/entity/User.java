@@ -18,7 +18,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "user")
 @Table(name = "user", uniqueConstraints = @UniqueConstraint(name = "uk__user__email", columnNames = "email"))
 @Builder
 @AllArgsConstructor
@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 public class User {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 
 	@NotBlank

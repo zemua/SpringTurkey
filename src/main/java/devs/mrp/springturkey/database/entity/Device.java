@@ -20,7 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "device")
 @Table(name = "device")
 @Getter
 @Builder
@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 public class Device {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 
 	@OneToOne
