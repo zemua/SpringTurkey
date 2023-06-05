@@ -58,7 +58,7 @@ spring:
       hibernate:
         dialtect: org.hibernate.dialect.MySQL8Dialect
         ddl-auto: create # change to validate
-        formate_sql: true
+        format_sql: true
 
 ---
 spring:
