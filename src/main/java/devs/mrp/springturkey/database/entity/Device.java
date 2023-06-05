@@ -13,19 +13,20 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "device")
-@Table(name = "device")
+@Table(name = "TURKEY_DEVICE")
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class Device {
 
 	@Id
@@ -39,7 +40,7 @@ public class Device {
 	@NotNull
 	private DeviceTypeEnum deviceType;
 
-	@NotBlank
+	@NotNull
 	private Long usageTime;
 
 	@CreatedDate

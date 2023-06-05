@@ -1,35 +1,36 @@
 package devs.mrp.springturkey.database.service.impl;
 
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
 import devs.mrp.springturkey.database.entity.Device;
 import devs.mrp.springturkey.database.entity.User;
+import devs.mrp.springturkey.database.entity.enm.DeviceTypeEnum;
 import devs.mrp.springturkey.database.repository.DeviceRepository;
+import devs.mrp.springturkey.database.repository.UserRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {LoginDetailsReaderImpl.class, DeviceServiceImpl.class})
+@EnableJpaRepositories(basePackages = "devs.mrp.springturkey.database.repository")
+@EntityScan("devs.mrp.springturkey.database.*")
+@DataJpaTest
 class DeviceServiceImplTest {
 
-	@MockBean
+	@Autowired
 	private DeviceRepository deviceRepository;
+	@Autowired
+	private UserRepository userRepository;
 
 	@Autowired
 	private DeviceServiceImpl deviceServiceImpl;
@@ -42,15 +43,13 @@ class DeviceServiceImplTest {
 	@WithMockUser("some@user.me")
 	void testAddDevice() {
 		User user = User.builder().email("some@mail.com").build();
-		Device deviceIn = Device.builder().user(user).usageTime(0L).build();
-		Device deviceOut = Device.builder().user(user).usageTime(0L).id(idOne).build();
-
-		when(deviceRepository.save(ArgumentMatchers.refEq(deviceIn))).thenReturn(deviceOut);
+		User userResult = userRepository.save(user);
+		Device expectedDevice = Device.builder().user(user).usageTime(0L).build();
 
 		Mono<Device> monoDevice = deviceServiceImpl.addDevice(user);
 
 		StepVerifier.create(monoDevice)
-		.expectNext(deviceOut)
+		.expectNextMatches(device -> device.getUser().getId().equals(userResult.getId()))
 		.expectComplete()
 		.verify();
 	}
@@ -59,18 +58,20 @@ class DeviceServiceImplTest {
 	@WithMockUser("some@mail.com")
 	void testGetUserDevices() {
 		User user = User.builder().email("some@mail.com").build();
-		Device deviceOne = Device.builder().user(user).usageTime(1234L).id(idOne).build();
-		Device deviceTwo = Device.builder().user(user).usageTime(2234L).id(idTwo).build();
-		Device deviceThree = Device.builder().user(user).usageTime(3234L).id(idThree).build();
-
-		when(deviceRepository.findAllByUser(user)).thenReturn(List.of(deviceOne, deviceTwo, deviceThree));
+		User userResult = userRepository.save(user);
+		Device deviceOne = Device.builder().user(user).usageTime(1234L).deviceType(DeviceTypeEnum.ANDROID).build();
+		Device deviceTwo = Device.builder().user(user).usageTime(2234L).deviceType(DeviceTypeEnum.IOS).build();
+		Device deviceThree = Device.builder().user(user).usageTime(3234L).deviceType(DeviceTypeEnum.LINUX).build();
+		deviceRepository.save(deviceOne);
+		deviceRepository.save(deviceTwo);
+		deviceRepository.save(deviceThree);
 
 		Flux<Device> fluxDevice = deviceServiceImpl.getUserDevices(user);
 
 		StepVerifier.create(fluxDevice)
-		.expectNext(deviceOne)
-		.expectNext(deviceTwo)
-		.expectNext(deviceThree)
+		.expectNextMatches(device -> device.getUser().getId().equals(userResult.getId()) && device.getUsageTime().equals(1234L))
+		.expectNextMatches(device -> device.getUser().getId().equals(userResult.getId()) && device.getUsageTime().equals(2234L))
+		.expectNextMatches(device -> device.getUser().getId().equals(userResult.getId()) && device.getUsageTime().equals(3234L))
 		.expectComplete()
 		.verify();
 	}
@@ -79,11 +80,13 @@ class DeviceServiceImplTest {
 	@WithMockUser("wronguser@mail.com")
 	void testGetUserDevicesWithWrongUser() {
 		User user = User.builder().email("some@mail.com").build();
-		Device deviceOne = Device.builder().user(user).usageTime(1234L).id(idOne).build();
-		Device deviceTwo = Device.builder().user(user).usageTime(2234L).id(idTwo).build();
-		Device deviceThree = Device.builder().user(user).usageTime(3234L).id(idThree).build();
-
-		when(deviceRepository.findAllByUser(user)).thenReturn(List.of(deviceOne, deviceTwo, deviceThree));
+		User userResult = userRepository.save(user);
+		Device deviceOne = Device.builder().user(user).usageTime(1234L).deviceType(DeviceTypeEnum.ANDROID).build();
+		Device deviceTwo = Device.builder().user(user).usageTime(2234L).deviceType(DeviceTypeEnum.IOS).build();
+		Device deviceThree = Device.builder().user(user).usageTime(3234L).deviceType(DeviceTypeEnum.LINUX).build();
+		deviceRepository.save(deviceOne);
+		deviceRepository.save(deviceTwo);
+		deviceRepository.save(deviceThree);
 
 		Flux<Device> fluxDevice = deviceServiceImpl.getUserDevices(user);
 
@@ -95,17 +98,21 @@ class DeviceServiceImplTest {
 	@WithMockUser("some@mail.com")
 	void testGetOtherDevices() {
 		User user = User.builder().email("some@mail.com").build();
-		Device deviceOne = Device.builder().user(user).usageTime(1234L).id(idOne).build();
-		Device deviceTwo = Device.builder().user(user).usageTime(2234L).id(idTwo).build();
-		Device deviceThree = Device.builder().user(user).usageTime(3234L).id(idThree).build();
+		User userResult = userRepository.save(user);
+		Device deviceOne = Device.builder().user(user).usageTime(1234L).deviceType(DeviceTypeEnum.ANDROID).build();
+		Device deviceTwo = Device.builder().user(user).usageTime(2234L).deviceType(DeviceTypeEnum.IOS).build();
+		Device deviceThree = Device.builder().user(user).usageTime(3234L).deviceType(DeviceTypeEnum.LINUX).build();
+		deviceRepository.save(deviceOne);
+		UUID idTwo = deviceRepository.save(deviceTwo).getId();
+		deviceRepository.save(deviceThree);
 
-		when(deviceRepository.findAllByUser(user)).thenReturn(List.of(deviceOne, deviceTwo, deviceThree));
+		Device filteringDevice = Device.builder().user(user).usageTime(2234L).deviceType(DeviceTypeEnum.IOS).id(idTwo).build();
 
-		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(user, deviceTwo);
+		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(user, filteringDevice);
 
 		StepVerifier.create(fluxDevice)
-		.expectNext(deviceOne)
-		.expectNext(deviceThree)
+		.expectNextMatches(device -> device.getUser().getId().equals(userResult.getId()) && device.getUsageTime().equals(1234L))
+		.expectNextMatches(device -> device.getUser().getId().equals(userResult.getId()) && device.getUsageTime().equals(3234L))
 		.expectComplete()
 		.verify();
 	}
@@ -114,13 +121,17 @@ class DeviceServiceImplTest {
 	@WithMockUser("wronguser@mail.com")
 	void testGetOtherDevicesWithWrongUser() {
 		User user = User.builder().email("some@mail.com").build();
-		Device deviceOne = Device.builder().user(user).usageTime(1234L).id(idOne).build();
-		Device deviceTwo = Device.builder().user(user).usageTime(2234L).id(idTwo).build();
-		Device deviceThree = Device.builder().user(user).usageTime(3234L).id(idThree).build();
+		User userResult = userRepository.save(user);
+		Device deviceOne = Device.builder().user(user).usageTime(1234L).deviceType(DeviceTypeEnum.ANDROID).build();
+		Device deviceTwo = Device.builder().user(user).usageTime(2234L).deviceType(DeviceTypeEnum.IOS).build();
+		Device deviceThree = Device.builder().user(user).usageTime(3234L).deviceType(DeviceTypeEnum.LINUX).build();
+		deviceRepository.save(deviceOne);
+		UUID idTwo = deviceRepository.save(deviceTwo).getId();
+		deviceRepository.save(deviceThree);
 
-		when(deviceRepository.findAllByUser(user)).thenReturn(List.of(deviceOne, deviceTwo, deviceThree));
+		Device filteringDevice = Device.builder().user(user).usageTime(2234L).deviceType(DeviceTypeEnum.IOS).id(idTwo).build();
 
-		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(user, deviceTwo);
+		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(user, filteringDevice);
 
 		StepVerifier.create(fluxDevice)
 		.verifyComplete();
@@ -132,7 +143,7 @@ class DeviceServiceImplTest {
 		User user = User.builder().email("some@mail.com").build();
 		Device device = Device.builder().user(user).usageTime(1234L).id(idOne).build();
 
-		when(deviceRepository.findById(device.getId())).thenReturn(Optional.of(device));
+		//when(deviceRepository.findById(device.getId())).thenReturn(Optional.of(device));
 
 		Mono<Device> monoDevice = deviceServiceImpl.getDeviceById(idOne);
 
@@ -148,7 +159,7 @@ class DeviceServiceImplTest {
 		User user = User.builder().email("some@mail.com").build();
 		Device device = Device.builder().user(user).usageTime(1234L).id(idOne).build();
 
-		when(deviceRepository.findById(device.getId())).thenReturn(Optional.of(device));
+		//when(deviceRepository.findById(device.getId())).thenReturn(Optional.of(device));
 
 		Mono<Device> monoDevice = deviceServiceImpl.getDeviceById(idOne);
 

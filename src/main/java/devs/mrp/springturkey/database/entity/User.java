@@ -19,7 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "user")
-@Table(name = "user", uniqueConstraints = @UniqueConstraint(name = "uk__user__email", columnNames = "email"))
+@Table(name = "TURKEY_USER", uniqueConstraints = @UniqueConstraint(name = "uk__user__email", columnNames = "email"))
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
