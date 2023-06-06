@@ -141,14 +141,14 @@ class DeviceServiceImplTest {
 	@WithMockUser("some@mail.com")
 	void testGetDeviceById() {
 		User user = User.builder().email("some@mail.com").build();
-		Device device = Device.builder().user(user).usageTime(1234L).id(idOne).build();
+		User userResult = userRepository.save(user);
+		Device device = Device.builder().user(user).usageTime(1234L).deviceType(DeviceTypeEnum.ANDROID).build();
+		Device savedDevice = deviceRepository.save(device);
 
-		//when(deviceRepository.findById(device.getId())).thenReturn(Optional.of(device));
-
-		Mono<Device> monoDevice = deviceServiceImpl.getDeviceById(idOne);
+		Mono<Device> monoDevice = deviceServiceImpl.getDeviceById(savedDevice.getId());
 
 		StepVerifier.create(monoDevice)
-		.expectNext(device)
+		.expectNextMatches(d -> d.getUser().getId().equals(userResult.getId()))
 		.expectComplete()
 		.verify();
 	}
@@ -157,11 +157,11 @@ class DeviceServiceImplTest {
 	@WithMockUser("another@user.me")
 	void testGetDeviceByIdThatDoesNotBelongToCurrentUser() {
 		User user = User.builder().email("some@mail.com").build();
-		Device device = Device.builder().user(user).usageTime(1234L).id(idOne).build();
+		User userResult = userRepository.save(user);
+		Device device = Device.builder().user(user).usageTime(1234L).deviceType(DeviceTypeEnum.ANDROID).build();
+		Device savedDevice = deviceRepository.save(device);
 
-		//when(deviceRepository.findById(device.getId())).thenReturn(Optional.of(device));
-
-		Mono<Device> monoDevice = deviceServiceImpl.getDeviceById(idOne);
+		Mono<Device> monoDevice = deviceServiceImpl.getDeviceById(savedDevice.getId());
 
 		StepVerifier.create(monoDevice)
 		.expectError(DoesNotBelongToUserException.class)
