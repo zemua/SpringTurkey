@@ -35,10 +35,6 @@ class DeviceServiceImplTest {
 	@Autowired
 	private DeviceServiceImpl deviceServiceImpl;
 
-	UUID idOne = UUID.randomUUID();
-	UUID idTwo = UUID.randomUUID();
-	UUID idThree = UUID.randomUUID();
-
 	@Test
 	@WithMockUser("some@user.me")
 	void testAddDevice() {
