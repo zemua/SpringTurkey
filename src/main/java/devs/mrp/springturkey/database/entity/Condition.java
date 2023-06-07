@@ -1,12 +1,7 @@
 package devs.mrp.springturkey.database.entity;
 
-import java.util.Date;
 import java.util.UUID;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import devs.mrp.springturkey.database.entity.enumerable.DeviceType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,35 +17,37 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "device")
-@Table(name = "TURKEY_DEVICE",
-indexes = @Index(name = "device_to_user_index", columnList = "user"))
-@Getter
+@Entity(name = "condition")
+@Table(name = "TURKEY_CONDITION",
+indexes = {
+		@Index(name = "condition_to_conditionalgroup_index", columnList = "conditionalGroup"),
+		@Index(name = "condition_to_targetgroup_index", columnList = "targetGroup")
+})
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 @EqualsAndHashCode
-public class Device {
+public class Condition {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
 
 	@ManyToOne
-	@JoinColumn(name = "id", nullable=false)
+	@JoinColumn(name = "id", nullable = false)
 	@NotNull
-	private User user;
+	private Group conditionalGroup;
+
+	@ManyToOne
+	@JoinColumn(name = "id", nullable = false)
+	@NotNull
+	private Group targetGroup;
 
 	@NotNull
-	private DeviceType deviceType;
+	private Long requiredUsageMs;
 
 	@NotNull
-	private Long usageTime;
-
-	@CreatedDate
-	private Date created;
-
-	@LastModifiedDate
-	private Date edited;
+	private Integer lastDaysToConsider;
 
 }

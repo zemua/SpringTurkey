@@ -1,41 +1,40 @@
 package devs.mrp.springturkey.database.entity;
 
-import java.util.List;
 import java.util.UUID;
 
-import jakarta.persistence.Column;
+import devs.mrp.springturkey.database.entity.enumerable.GroupType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "user")
-@Table(name = "TURKEY_USER", uniqueConstraints = @UniqueConstraint(name = "uk__user__email", columnNames = "email"))
+@Entity(name = "group")
+@Table(name = "TURKEY_GROUP")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class User {
+public class Group {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
 
 	@NotBlank
-	@Column(name = "email")
-	private String email;
+	private String name;
 
-	@OneToMany(mappedBy = "user")
-	private List<Device> devices;
+	@NotNull
+	private GroupType type;
+
+	private Boolean preventClose;
 
 }

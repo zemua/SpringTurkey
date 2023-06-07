@@ -8,6 +8,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
@@ -19,7 +22,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "categorizable")
-@Table(name = "TURKEY_ACTIVITIES", uniqueConstraints = { @UniqueConstraint(name = "uk__activity__name_and_type", columnNames = { "activityName", "activityType" }) })
+@Table(name = "TURKEY_ACTIVITIES",
+uniqueConstraints = { @UniqueConstraint(name = "uk__activity__name_and_type", columnNames = { "activityName", "activityType" }) },
+indexes = @Index(name = "activity_to_group_index", columnList = "group"))
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,7 +33,7 @@ import lombok.NoArgsConstructor;
 public class Activity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
 
 	@NotBlank
@@ -39,5 +44,9 @@ public class Activity {
 
 	@NotNull
 	private CategoryType categoryType;
+
+	@ManyToOne
+	@JoinColumn(name = "id", nullable = true)
+	private Group group;
 
 }
