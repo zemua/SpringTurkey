@@ -14,7 +14,7 @@ import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
 import devs.mrp.springturkey.database.entity.Device;
 import devs.mrp.springturkey.database.entity.User;
-import devs.mrp.springturkey.database.entity.enm.DeviceTypeEnum;
+import devs.mrp.springturkey.database.entity.enumerable.DeviceType;
 import devs.mrp.springturkey.database.repository.DeviceRepository;
 import devs.mrp.springturkey.database.repository.UserRepository;
 import reactor.core.publisher.Flux;
@@ -55,9 +55,9 @@ class DeviceServiceImplTest {
 	void testGetUserDevices() {
 		User user = User.builder().email("some@mail.com").build();
 		User userResult = userRepository.save(user);
-		Device deviceOne = Device.builder().user(user).usageTime(1234L).deviceType(DeviceTypeEnum.ANDROID).build();
-		Device deviceTwo = Device.builder().user(user).usageTime(2234L).deviceType(DeviceTypeEnum.IOS).build();
-		Device deviceThree = Device.builder().user(user).usageTime(3234L).deviceType(DeviceTypeEnum.LINUX).build();
+		Device deviceOne = Device.builder().user(user).usageTime(1234L).deviceType(DeviceType.ANDROID).build();
+		Device deviceTwo = Device.builder().user(user).usageTime(2234L).deviceType(DeviceType.IOS).build();
+		Device deviceThree = Device.builder().user(user).usageTime(3234L).deviceType(DeviceType.LINUX).build();
 		deviceRepository.save(deviceOne);
 		deviceRepository.save(deviceTwo);
 		deviceRepository.save(deviceThree);
@@ -77,9 +77,9 @@ class DeviceServiceImplTest {
 	void testGetUserDevicesWithWrongUser() {
 		User user = User.builder().email("some@mail.com").build();
 		User userResult = userRepository.save(user);
-		Device deviceOne = Device.builder().user(user).usageTime(1234L).deviceType(DeviceTypeEnum.ANDROID).build();
-		Device deviceTwo = Device.builder().user(user).usageTime(2234L).deviceType(DeviceTypeEnum.IOS).build();
-		Device deviceThree = Device.builder().user(user).usageTime(3234L).deviceType(DeviceTypeEnum.LINUX).build();
+		Device deviceOne = Device.builder().user(user).usageTime(1234L).deviceType(DeviceType.ANDROID).build();
+		Device deviceTwo = Device.builder().user(user).usageTime(2234L).deviceType(DeviceType.IOS).build();
+		Device deviceThree = Device.builder().user(user).usageTime(3234L).deviceType(DeviceType.LINUX).build();
 		deviceRepository.save(deviceOne);
 		deviceRepository.save(deviceTwo);
 		deviceRepository.save(deviceThree);
@@ -95,14 +95,14 @@ class DeviceServiceImplTest {
 	void testGetOtherDevices() {
 		User user = User.builder().email("some@mail.com").build();
 		User userResult = userRepository.save(user);
-		Device deviceOne = Device.builder().user(user).usageTime(1234L).deviceType(DeviceTypeEnum.ANDROID).build();
-		Device deviceTwo = Device.builder().user(user).usageTime(2234L).deviceType(DeviceTypeEnum.IOS).build();
-		Device deviceThree = Device.builder().user(user).usageTime(3234L).deviceType(DeviceTypeEnum.LINUX).build();
+		Device deviceOne = Device.builder().user(user).usageTime(1234L).deviceType(DeviceType.ANDROID).build();
+		Device deviceTwo = Device.builder().user(user).usageTime(2234L).deviceType(DeviceType.IOS).build();
+		Device deviceThree = Device.builder().user(user).usageTime(3234L).deviceType(DeviceType.LINUX).build();
 		deviceRepository.save(deviceOne);
 		UUID idTwo = deviceRepository.save(deviceTwo).getId();
 		deviceRepository.save(deviceThree);
 
-		Device filteringDevice = Device.builder().user(user).usageTime(2234L).deviceType(DeviceTypeEnum.IOS).id(idTwo).build();
+		Device filteringDevice = Device.builder().user(user).usageTime(2234L).deviceType(DeviceType.IOS).id(idTwo).build();
 
 		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(user, filteringDevice);
 
@@ -118,14 +118,14 @@ class DeviceServiceImplTest {
 	void testGetOtherDevicesWithWrongUser() {
 		User user = User.builder().email("some@mail.com").build();
 		User userResult = userRepository.save(user);
-		Device deviceOne = Device.builder().user(user).usageTime(1234L).deviceType(DeviceTypeEnum.ANDROID).build();
-		Device deviceTwo = Device.builder().user(user).usageTime(2234L).deviceType(DeviceTypeEnum.IOS).build();
-		Device deviceThree = Device.builder().user(user).usageTime(3234L).deviceType(DeviceTypeEnum.LINUX).build();
+		Device deviceOne = Device.builder().user(user).usageTime(1234L).deviceType(DeviceType.ANDROID).build();
+		Device deviceTwo = Device.builder().user(user).usageTime(2234L).deviceType(DeviceType.IOS).build();
+		Device deviceThree = Device.builder().user(user).usageTime(3234L).deviceType(DeviceType.LINUX).build();
 		deviceRepository.save(deviceOne);
 		UUID idTwo = deviceRepository.save(deviceTwo).getId();
 		deviceRepository.save(deviceThree);
 
-		Device filteringDevice = Device.builder().user(user).usageTime(2234L).deviceType(DeviceTypeEnum.IOS).id(idTwo).build();
+		Device filteringDevice = Device.builder().user(user).usageTime(2234L).deviceType(DeviceType.IOS).id(idTwo).build();
 
 		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(user, filteringDevice);
 
@@ -138,7 +138,7 @@ class DeviceServiceImplTest {
 	void testGetDeviceById() {
 		User user = User.builder().email("some@mail.com").build();
 		User userResult = userRepository.save(user);
-		Device device = Device.builder().user(user).usageTime(1234L).deviceType(DeviceTypeEnum.ANDROID).build();
+		Device device = Device.builder().user(user).usageTime(1234L).deviceType(DeviceType.ANDROID).build();
 		Device savedDevice = deviceRepository.save(device);
 
 		Mono<Device> monoDevice = deviceServiceImpl.getDeviceById(savedDevice.getId());
@@ -154,7 +154,7 @@ class DeviceServiceImplTest {
 	void testGetDeviceByIdThatDoesNotBelongToCurrentUser() {
 		User user = User.builder().email("some@mail.com").build();
 		User userResult = userRepository.save(user);
-		Device device = Device.builder().user(user).usageTime(1234L).deviceType(DeviceTypeEnum.ANDROID).build();
+		Device device = Device.builder().user(user).usageTime(1234L).deviceType(DeviceType.ANDROID).build();
 		Device savedDevice = deviceRepository.save(device);
 
 		Mono<Device> monoDevice = deviceServiceImpl.getDeviceById(savedDevice.getId());
