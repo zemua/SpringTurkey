@@ -18,6 +18,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
@@ -62,6 +63,7 @@ public class Activity {
 	private Group group;
 
 	@OneToOne(mappedBy = "activity", cascade = CascadeType.ALL)
+	@PrimaryKeyJoinColumn
 	private Uncloseable uncloseable;
 
 	@CreatedDate
