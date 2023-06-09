@@ -1,12 +1,13 @@
 package devs.mrp.springturkey.database.entity;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import devs.mrp.springturkey.database.entity.enumerable.DeviceType;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -37,7 +38,7 @@ public class Device {
 	private UUID id;
 
 	@ManyToOne
-	@JoinColumn(name = "id", nullable=false)
+	@JoinColumn(referencedColumnName = "id", nullable=false)
 	@NotNull
 	private User user;
 
@@ -48,9 +49,12 @@ public class Device {
 	private Long usageTime;
 
 	@CreatedDate
-	private Date created;
+	private LocalDateTime created;
 
 	@LastModifiedDate
-	private Date edited;
+	private LocalDateTime edited;
+
+	@Nullable
+	private LocalDateTime deleted;
 
 }

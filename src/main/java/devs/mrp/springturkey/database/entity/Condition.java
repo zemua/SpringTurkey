@@ -1,7 +1,12 @@
 package devs.mrp.springturkey.database.entity;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,10 +24,7 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "condition")
 @Table(name = "TURKEY_CONDITION",
-indexes = {
-		@Index(name = "condition_to_conditionalgroup_index", columnList = "conditionalGroup"),
-		@Index(name = "condition_to_targetgroup_index", columnList = "targetGroup")
-})
+indexes = @Index(name = "condition_to_user_index", columnList = "user"))
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,12 +37,17 @@ public class Condition {
 	private UUID id;
 
 	@ManyToOne
-	@JoinColumn(name = "id", nullable = false)
+	@JoinColumn(referencedColumnName = "id", nullable=false)
+	@NotNull
+	private User user;
+
+	@ManyToOne
+	@JoinColumn(referencedColumnName = "id", nullable = false)
 	@NotNull
 	private Group conditionalGroup;
 
 	@ManyToOne
-	@JoinColumn(name = "id", nullable = false)
+	@JoinColumn(referencedColumnName = "id", nullable = false)
 	@NotNull
 	private Group targetGroup;
 
@@ -49,5 +56,14 @@ public class Condition {
 
 	@NotNull
 	private Integer lastDaysToConsider;
+
+	@CreatedDate
+	private LocalDateTime created;
+
+	@LastModifiedDate
+	private LocalDateTime edited;
+
+	@Nullable
+	private LocalDateTime deleted;
 
 }
