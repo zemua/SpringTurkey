@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import devs.mrp.springturkey.database.entity.enumerable.GroupType;
 import jakarta.annotation.Nullable;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,7 +27,9 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "group")
 @Table(name = "TURKEY_GROUP",
-indexes = @Index(name = "group_to_user_index", columnList = "user"))
+indexes = {
+		@Index(name = "group_to_user_index", columnList = "user"),
+		@Index(name = "group_and_user_index", columnList = "id, user") })
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -36,10 +39,11 @@ public class Group {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "id")
 	private UUID id;
 
 	@ManyToOne
-	@JoinColumn(referencedColumnName = "id", nullable=false)
+	@JoinColumn(name = "user", referencedColumnName = "id", nullable=false)
 	@NotNull
 	private User user;
 

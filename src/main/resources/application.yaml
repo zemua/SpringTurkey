@@ -54,11 +54,15 @@ spring:
   jpa:
     generate-ddl: true # for creating db schema, change to false
     show-sql: true # disable in prod
+    defer-datasource-initialization: true # disable in prod
     properties:
       hibernate:
         dialtect: org.hibernate.dialect.MySQL8Dialect
         ddl-auto: create # change to validate
         format_sql: true
+  sql:
+    init:
+      mode: always # disable in prod
 
 ---
 spring:

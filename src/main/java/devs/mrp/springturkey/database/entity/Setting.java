@@ -41,7 +41,7 @@ public class Setting {
 	private UUID id;
 
 	@ManyToOne
-	@JoinColumn(referencedColumnName = "id", nullable=false)
+	@JoinColumn(name = "user", referencedColumnName = "id", nullable=false)
 	@NotNull
 	private User user;
 

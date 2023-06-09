@@ -45,7 +45,7 @@ public class Activity {
 	private UUID id;
 
 	@ManyToOne
-	@JoinColumn(referencedColumnName = "id", nullable=false)
+	@JoinColumn(name = "user", referencedColumnName = "id", nullable=false)
 	@NotNull
 	private User user;
 
@@ -59,7 +59,7 @@ public class Activity {
 	private CategoryType categoryType;
 
 	@ManyToOne
-	@JoinColumn(referencedColumnName = "id", nullable = true)
+	@JoinColumn(name = "turkey_group", referencedColumnName = "id", nullable = true)
 	private Group group;
 
 	@OneToOne(mappedBy = "activity", cascade = CascadeType.ALL)

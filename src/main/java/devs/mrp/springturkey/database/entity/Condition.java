@@ -37,17 +37,17 @@ public class Condition {
 	private UUID id;
 
 	@ManyToOne
-	@JoinColumn(referencedColumnName = "id", nullable=false)
+	@JoinColumn(name = "user", referencedColumnName = "id", nullable=false)
 	@NotNull
 	private User user;
 
 	@ManyToOne
-	@JoinColumn(referencedColumnName = "id", nullable = false)
+	@JoinColumn(name = "conditional_group", referencedColumnName = "id", nullable = false)
 	@NotNull
 	private Group conditionalGroup;
 
 	@ManyToOne
-	@JoinColumn(referencedColumnName = "id", nullable = false)
+	@JoinColumn(name = "target_group", referencedColumnName = "id", nullable = false)
 	@NotNull
 	private Group targetGroup;
 

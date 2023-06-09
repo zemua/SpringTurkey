@@ -10,12 +10,10 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -23,9 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "uncloseable")
-@Table(name = "TURKEY_UNCLOSEABLE",
-indexes = @Index(name = "uncloseable_to_user_index", columnList = "user"),
-uniqueConstraints = { @UniqueConstraint(name = "uk__device_process", columnNames = { "user", "activity" }) })
+@Table(name = "TURKEY_UNCLOSEABLE")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -39,7 +35,7 @@ public class Uncloseable {
 
 	@OneToOne
 	@MapsId
-	@JoinColumn(name = "activity_id")
+	@JoinColumn(name = "activity",referencedColumnName = "id")
 	private Activity activity;
 
 	@Nullable
