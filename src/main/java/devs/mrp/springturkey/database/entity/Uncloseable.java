@@ -35,7 +35,7 @@ public class Uncloseable {
 
 	@OneToOne
 	@MapsId
-	@JoinColumn(name = "activity",referencedColumnName = "id")
+	@JoinColumn(name = "activity_id",referencedColumnName = "id")
 	private Activity activity;
 
 	@Nullable

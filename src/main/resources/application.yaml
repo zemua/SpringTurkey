@@ -52,17 +52,17 @@ spring:
     password: pwd_123
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
-    generate-ddl: true # for creating db schema, change to false
-    show-sql: true # disable in prod
-    defer-datasource-initialization: true # disable in prod
+    generate-ddl: false # for creating db schema, change to false
+    show-sql: false # false instead of true in prod
+    #defer-datasource-initialization: true # comment out in prod
     properties:
       hibernate:
         dialtect: org.hibernate.dialect.MySQL8Dialect
-        ddl-auto: create # change to validate
+        ddl-auto: validate # change to validate instead of create for prod
         format_sql: true
   sql:
     init:
-      mode: always # disable in prod
+      mode: never # never instead of always in prod
 
 ---
 spring:

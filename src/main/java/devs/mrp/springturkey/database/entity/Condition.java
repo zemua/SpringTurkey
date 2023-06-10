@@ -39,7 +39,7 @@ public class Condition {
 	@ManyToOne
 	@JoinColumn(name = "user", referencedColumnName = "id", nullable=false)
 	@NotNull
-	private User user;
+	private User user; // sql script sets double foreign-key restriction to conditional group and target group
 
 	@ManyToOne
 	@JoinColumn(name = "conditional_group", referencedColumnName = "id", nullable = false)
