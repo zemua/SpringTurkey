@@ -193,3 +193,15 @@ CREATE TABLE `turkey_user` (
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2023-06-10 11:15:15
+
+
+
+ALTER TABLE turkey_condition
+    ADD CONSTRAINT conditional_group_same_user FOREIGN KEY
+    (conditional_group, user)
+    REFERENCES turkey_group (id, user);
+    
+ALTER TABLE turkey_condition
+    ADD CONSTRAINT target_group_same_user FOREIGN KEY
+    (target_group, user)
+    REFERENCES turkey_group (id, user);
