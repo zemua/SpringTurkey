@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -24,6 +25,7 @@ import reactor.test.StepVerifier;
 @ContextConfiguration(classes = {LoginDetailsReaderImpl.class, DeviceServiceImpl.class})
 @EnableJpaRepositories(basePackages = "devs.mrp.springturkey.database.repository")
 @EntityScan("devs.mrp.springturkey.database.*")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
 class DeviceServiceImplTest {
 

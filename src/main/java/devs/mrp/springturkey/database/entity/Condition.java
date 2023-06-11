@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "condition")
-@Table(name = "TURKEY_CONDITION",
+@Table(name = "turkey_condition",
 indexes = @Index(name = "condition_to_user_index", columnList = "user"))
 @Builder
 @AllArgsConstructor

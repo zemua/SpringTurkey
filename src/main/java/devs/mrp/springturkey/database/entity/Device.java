@@ -24,7 +24,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "device")
-@Table(name = "TURKEY_DEVICE",
+@Table(name = "turkey_device",
 indexes = @Index(name = "device_to_user_index", columnList = "user"))
 @Getter
 @Builder

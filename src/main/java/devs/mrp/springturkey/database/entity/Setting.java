@@ -26,7 +26,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "setting")
-@Table(name = "TURKEY_SETTING",
+@Table(name = "turkey_setting",
 indexes = @Index(name = "setting_to_user_index", columnList = "user"),
 uniqueConstraints = { @UniqueConstraint(name = "uk__platform__setting", columnNames = { "user", "settingKey", "platform" }) })
 @Builder

@@ -30,7 +30,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "categorizable")
-@Table(name = "TURKEY_ACTIVITIES",
+@Table(name = "turkey_activities",
 indexes = @Index(name = "device_to_user_index", columnList = "user"),
 uniqueConstraints = { @UniqueConstraint(name = "uk__activity__name_and_type", columnNames = { "user", "activityName", "activityType" }) })
 @Builder

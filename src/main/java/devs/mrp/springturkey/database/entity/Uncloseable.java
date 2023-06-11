@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "uncloseable")
-@Table(name = "TURKEY_UNCLOSEABLE")
+@Table(name = "turkey_uncloseable")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

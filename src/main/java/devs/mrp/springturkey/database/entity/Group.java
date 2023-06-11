@@ -26,7 +26,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "group")
-@Table(name = "TURKEY_GROUP",
+@Table(name = "turkey_group",
 indexes = {
 		@Index(name = "group_to_user_index", columnList = "user"),
 		@Index(name = "group_and_user_index", columnList = "id, user") })
