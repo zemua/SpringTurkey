@@ -11,7 +11,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 
 import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
-import devs.mrp.springturkey.database.entity.User;
+import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.UserRepository;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -31,7 +31,7 @@ class UserServiceImplTest {
 	@Test
 	@WithMockUser("user@mail.me")
 	void testAddCurrentUser() {
-		Mono<User> monoUser = userServiceImpl.addCurrentUser();
+		Mono<TurkeyUser> monoUser = userServiceImpl.addCurrentUser();
 
 		StepVerifier.create(monoUser)
 		.expectNextMatches(user -> user.getEmail().equals("user@mail.me"))
@@ -42,10 +42,10 @@ class UserServiceImplTest {
 	@Test
 	@WithMockUser("user@mail.me")
 	void testGetUser() {
-		User user = User.builder().email("user@mail.me").build();
+		TurkeyUser user = TurkeyUser.builder().email("user@mail.me").build();
 		UUID id = userRepository.save(user).getId();
 
-		Mono<User> monoUser = userServiceImpl.getUser();
+		Mono<TurkeyUser> monoUser = userServiceImpl.getUser();
 
 		StepVerifier.create(monoUser)
 		.expectNextMatches(u -> u.getId().equals(id) && u.getEmail().equals("user@mail.me"))

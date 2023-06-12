@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import devs.mrp.springturkey.database.entity.Device;
-import devs.mrp.springturkey.database.entity.User;
+import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.service.DeviceService;
 import devs.mrp.springturkey.database.service.UserDeviceFacade;
 import devs.mrp.springturkey.database.service.UserService;
@@ -36,7 +36,7 @@ public class UserDeviceFacadeImpl implements UserDeviceFacade {
 		return deviceId.flatMap(id -> deviceService.getDeviceById(id));
 	}
 
-	private Mono<User> currentUser() {
+	private Mono<TurkeyUser> currentUser() {
 		return userService.getUser()
 				.switchIfEmpty(Mono.defer(() -> userService.addCurrentUser()));
 	}

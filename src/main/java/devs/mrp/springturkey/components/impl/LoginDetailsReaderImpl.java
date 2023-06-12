@@ -4,7 +4,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import devs.mrp.springturkey.components.LoginDetailsReader;
-import devs.mrp.springturkey.database.entity.User;
+import devs.mrp.springturkey.database.entity.TurkeyUser;
 
 @Component
 public class LoginDetailsReaderImpl implements LoginDetailsReader {
@@ -15,7 +15,7 @@ public class LoginDetailsReaderImpl implements LoginDetailsReader {
 	}
 
 	@Override
-	public boolean isCurrentUser(User user) {
+	public boolean isCurrentUser(TurkeyUser user) {
 		return user.getEmail().equals(getUsername());
 	}
 

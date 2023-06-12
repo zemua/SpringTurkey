@@ -23,7 +23,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "user")
+@Entity(name = "turkey_user")
 @Table(name = "turkey_user",
 indexes = @Index(name = "user_email_index", columnList = "email", unique = true))
 @Builder
@@ -31,7 +31,7 @@ indexes = @Index(name = "user_email_index", columnList = "email", unique = true)
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class User {
+public class TurkeyUser {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)

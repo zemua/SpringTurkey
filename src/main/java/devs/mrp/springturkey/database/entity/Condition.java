@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "condition")
 @Table(name = "turkey_condition",
-indexes = @Index(name = "condition_to_user_index", columnList = "user"))
+indexes = @Index(name = "condition_to_user_index", columnList = "turkey_user"))
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,9 +37,9 @@ public class Condition {
 	private UUID id;
 
 	@ManyToOne
-	@JoinColumn(name = "user", referencedColumnName = "id", nullable=false)
+	@JoinColumn(name = "turkey_user", referencedColumnName = "id", nullable=false)
 	@NotNull
-	private User user; // sql script sets double foreign-key restriction to conditional group and target group
+	private TurkeyUser user; // sql script sets double foreign-key restriction to conditional group and target group
 
 	@ManyToOne
 	@JoinColumn(name = "conditional_group", referencedColumnName = "id", nullable = false)

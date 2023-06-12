@@ -1,11 +1,11 @@
 package devs.mrp.springturkey.components;
 
-import devs.mrp.springturkey.database.entity.User;
+import devs.mrp.springturkey.database.entity.TurkeyUser;
 
 public interface LoginDetailsReader {
 
 	public String getUsername();
 
-	public boolean isCurrentUser(User user);
+	public boolean isCurrentUser(TurkeyUser user);
 
 }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.Device;
-import devs.mrp.springturkey.database.entity.User;
+import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.DeviceRepository;
 import devs.mrp.springturkey.database.service.DeviceService;
 import reactor.core.publisher.Flux;
@@ -25,7 +25,7 @@ public class DeviceServiceImpl implements DeviceService {
 	private DeviceRepository deviceRepository;
 
 	@Override
-	public Mono<Device> addDevice(User user) {
+	public Mono<Device> addDevice(TurkeyUser user) {
 		Device device = Device.builder()
 				.user(user)
 				.usageTime(0L)
@@ -34,13 +34,13 @@ public class DeviceServiceImpl implements DeviceService {
 	}
 
 	@Override
-	public Flux<Device> getUserDevices(User user) {
+	public Flux<Device> getUserDevices(TurkeyUser user) {
 		return Flux.fromIterable(deviceRepository.findAllByUser(user))
 				.filter(this::belongsToUser);
 	}
 
 	@Override
-	public Flux<Device> getUserOtherDevices(User user, Device device) {
+	public Flux<Device> getUserOtherDevices(TurkeyUser user, Device device) {
 		return getUserDevices(user)
 				.filter(d -> {
 					return !d.getId().equals(device.getId());

@@ -28,8 +28,8 @@ import lombok.NoArgsConstructor;
 @Entity(name = "group")
 @Table(name = "turkey_group",
 indexes = {
-		@Index(name = "group_to_user_index", columnList = "user"),
-		@Index(name = "group_and_user_index", columnList = "id, user") })
+		@Index(name = "group_to_user_index", columnList = "turkey_user"),
+		@Index(name = "group_and_user_index", columnList = "id, turkey_user") })
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -43,9 +43,9 @@ public class Group {
 	private UUID id;
 
 	@ManyToOne
-	@JoinColumn(name = "user", referencedColumnName = "id", nullable=false)
+	@JoinColumn(name = "turkey_user", referencedColumnName = "id", nullable=false)
 	@NotNull
-	private User user;
+	private TurkeyUser user;
 
 	@NotBlank
 	private String name;

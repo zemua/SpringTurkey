@@ -4,10 +4,10 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import devs.mrp.springturkey.database.entity.User;
+import devs.mrp.springturkey.database.entity.TurkeyUser;
 
-public interface UserRepository extends JpaRepository<User, UUID> {
+public interface UserRepository extends JpaRepository<TurkeyUser, UUID> {
 
-	public User findByEmail(String email);
+	public TurkeyUser findByEmail(String email);
 
 }

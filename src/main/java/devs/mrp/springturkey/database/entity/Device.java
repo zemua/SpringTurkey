@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "device")
 @Table(name = "turkey_device",
-indexes = @Index(name = "device_to_user_index", columnList = "user"))
+indexes = @Index(name = "device_to_user_index", columnList = "turkey_user"))
 @Getter
 @Builder
 @AllArgsConstructor
@@ -38,9 +38,9 @@ public class Device {
 	private UUID id;
 
 	@ManyToOne
-	@JoinColumn(name = "user", referencedColumnName = "id", nullable=false)
+	@JoinColumn(name = "turkey_user", referencedColumnName = "id", nullable=false)
 	@NotNull
-	private User user;
+	private TurkeyUser user;
 
 	@NotNull
 	private DeviceType deviceType;

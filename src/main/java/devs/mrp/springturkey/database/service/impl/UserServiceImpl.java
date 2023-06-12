@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import devs.mrp.springturkey.components.LoginDetailsReader;
-import devs.mrp.springturkey.database.entity.User;
+import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.UserRepository;
 import devs.mrp.springturkey.database.service.UserService;
 import reactor.core.publisher.Mono;
@@ -19,15 +19,15 @@ public class UserServiceImpl implements UserService {
 	private UserRepository userRepository;
 
 	@Override
-	public Mono<User> addCurrentUser() {
-		User user = User.builder()
+	public Mono<TurkeyUser> addCurrentUser() {
+		TurkeyUser user = TurkeyUser.builder()
 				.email(loginDetailsReader.getUsername())
 				.build();
 		return Mono.just(userRepository.save(user));
 	}
 
 	@Override
-	public Mono<User> getUser() {
+	public Mono<TurkeyUser> getUser() {
 		return Mono.just(userRepository.findByEmail(loginDetailsReader.getUsername()));
 	}
 

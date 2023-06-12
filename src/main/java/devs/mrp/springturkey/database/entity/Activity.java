@@ -31,8 +31,8 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "categorizable")
 @Table(name = "turkey_activities",
-indexes = @Index(name = "device_to_user_index", columnList = "user"),
-uniqueConstraints = { @UniqueConstraint(name = "uk__activity__name_and_type", columnNames = { "user", "activityName", "activityType" }) })
+indexes = @Index(name = "device_to_user_index", columnList = "turkey_user"),
+uniqueConstraints = { @UniqueConstraint(name = "uk__activity__name_and_type", columnNames = { "turkey_user", "activityName", "activityType" }) })
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -45,9 +45,9 @@ public class Activity {
 	private UUID id;
 
 	@ManyToOne
-	@JoinColumn(name = "user", referencedColumnName = "id", nullable=false)
+	@JoinColumn(name = "turkey_user", referencedColumnName = "id", nullable=false)
 	@NotNull
-	private User user;
+	private TurkeyUser user;
 
 	@NotBlank
 	private String activityName;

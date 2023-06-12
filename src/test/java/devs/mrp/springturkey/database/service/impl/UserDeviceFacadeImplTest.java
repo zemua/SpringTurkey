@@ -19,7 +19,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import devs.mrp.springturkey.database.entity.Device;
-import devs.mrp.springturkey.database.entity.User;
+import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.service.DeviceService;
 import devs.mrp.springturkey.database.service.UserService;
 import reactor.core.publisher.Flux;
@@ -45,7 +45,7 @@ class UserDeviceFacadeImplTest {
 	@DirtiesContext
 	@WithMockUser("some@user.me")
 	void testAddDeviceSuccess() {
-		User user = User.builder().email("some@user.me").id(userId).build();
+		TurkeyUser user = TurkeyUser.builder().email("some@user.me").id(userId).build();
 		Device device = Device.builder()
 				.id(generatedId)
 				.user(user)
@@ -70,7 +70,7 @@ class UserDeviceFacadeImplTest {
 	@DirtiesContext
 	@WithMockUser("some@user.me")
 	void testAddDeviceToNotSavedUserCreatesTheUser() {
-		User user = User.builder().email("some@user.me").id(userId).build();
+		TurkeyUser user = TurkeyUser.builder().email("some@user.me").id(userId).build();
 		Device device = Device.builder()
 				.id(generatedId)
 				.user(user)
@@ -97,7 +97,7 @@ class UserDeviceFacadeImplTest {
 	void testGetUserDevices() {
 		UUID firstId = UUID.randomUUID();
 		UUID secondId = UUID.randomUUID();
-		User user = User.builder().id(userId).email("user@mail.me").build();
+		TurkeyUser user = TurkeyUser.builder().id(userId).email("user@mail.me").build();
 		Device first = Device.builder().id(firstId).user(user).usageTime(1234L).build();
 		Device second = Device.builder().id(secondId).user(user).usageTime(4321L).build();;
 
@@ -117,7 +117,7 @@ class UserDeviceFacadeImplTest {
 	@WithMockUser("some@user.me")
 	void testGetUserDeviceById() {
 		UUID firstId = UUID.randomUUID();
-		User user = User.builder().id(userId).email("user@mail.me").build();
+		TurkeyUser user = TurkeyUser.builder().id(userId).email("user@mail.me").build();
 		Device first = Device.builder().id(firstId).user(user).usageTime(1234L).build();
 
 		when(deviceService.getDeviceById(ArgumentMatchers.any())).thenReturn(Mono.just(first));

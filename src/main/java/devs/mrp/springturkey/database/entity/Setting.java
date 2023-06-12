@@ -27,8 +27,8 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "setting")
 @Table(name = "turkey_setting",
-indexes = @Index(name = "setting_to_user_index", columnList = "user"),
-uniqueConstraints = { @UniqueConstraint(name = "uk__platform__setting", columnNames = { "user", "settingKey", "platform" }) })
+indexes = @Index(name = "setting_to_user_index", columnList = "turkey_user"),
+uniqueConstraints = { @UniqueConstraint(name = "uk__platform__setting", columnNames = { "turkey_user", "settingKey", "platform" }) })
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -41,9 +41,9 @@ public class Setting {
 	private UUID id;
 
 	@ManyToOne
-	@JoinColumn(name = "user", referencedColumnName = "id", nullable=false)
+	@JoinColumn(name = "turkey_user", referencedColumnName = "id", nullable=false)
 	@NotNull
-	private User user;
+	private TurkeyUser user;
 
 	@NotBlank
 	private String settingKey;

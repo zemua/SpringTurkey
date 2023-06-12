@@ -1,12 +1,12 @@
 package devs.mrp.springturkey.database.service;
 
-import devs.mrp.springturkey.database.entity.User;
+import devs.mrp.springturkey.database.entity.TurkeyUser;
 import reactor.core.publisher.Mono;
 
 public interface UserService {
 
-	public Mono<User> addCurrentUser();
+	public Mono<TurkeyUser> addCurrentUser();
 
-	public Mono<User> getUser();
+	public Mono<TurkeyUser> getUser();
 
 }
