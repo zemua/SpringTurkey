@@ -36,7 +36,7 @@ public class DeviceServiceImpl implements DeviceService {
 	@Override
 	public Flux<Device> getUserDevices(TurkeyUser user) {
 		return Flux.fromIterable(deviceRepository.findAllByUser(user))
-				.filter(this::belongsToUser);
+				.filter(device -> loginDetailsReader.isCurrentUser(device.getUser()));
 	}
 
 	@Override
@@ -52,12 +52,8 @@ public class DeviceServiceImpl implements DeviceService {
 		return Mono.just(deviceRepository.findById(deviceId))
 				.filter(Optional::isPresent)
 				.map(Optional::get)
-				.filter(this::belongsToUser)
+				.filter(device -> loginDetailsReader.isCurrentUser(device.getUser()))
 				.switchIfEmpty(Mono.error(new DoesNotBelongToUserException()));
-	}
-
-	private boolean belongsToUser(Device device) {
-		return device.getUser().getEmail().equals(loginDetailsReader.getUsername());
 	}
 
 }

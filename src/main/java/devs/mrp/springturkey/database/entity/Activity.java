@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "categorizable")
 @Table(name = "turkey_activities",
-indexes = @Index(name = "device_to_user_index", columnList = "turkey_user"),
+indexes = @Index(name = "activity_to_user_index", columnList = "turkey_user"),
 uniqueConstraints = { @UniqueConstraint(name = "uk__activity__name_and_type", columnNames = { "turkey_user", "activityName", "activityType" }) })
 @Builder
 @AllArgsConstructor

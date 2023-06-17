@@ -22,11 +22,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-@ContextConfiguration(classes = {LoginDetailsReaderImpl.class, DeviceServiceImpl.class})
+@DataJpaTest
 @EnableJpaRepositories(basePackages = "devs.mrp.springturkey.database.repository")
 @EntityScan("devs.mrp.springturkey.database.*")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DataJpaTest
+@ContextConfiguration(classes = {LoginDetailsReaderImpl.class, DeviceServiceImpl.class})
 class DeviceServiceImplTest {
 
 	@Autowired
