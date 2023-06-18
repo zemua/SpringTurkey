@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public class DoesNotBelongToUserException extends IOException {
 
-	private static final long serialVersionUID = -2086626011558446231L;
+	private static final long serialVersionUID = 1L;
 
 	public DoesNotBelongToUserException() {
 		super();

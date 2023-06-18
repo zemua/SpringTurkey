@@ -11,6 +11,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 
+import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
+import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
 import devs.mrp.springturkey.database.entity.Group;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
@@ -167,14 +169,39 @@ class GroupServiceImplTest {
 		Mono<Integer> monoGroup = groupService.addNewGroup(group1);
 
 		StepVerifier.create(monoGroup)
-		.expectNext(0)
-		.expectComplete()
+		.expectError(DoesNotBelongToUserException.class)
 		.verify();
 
 		Flux<Group> fluxGroup = groupService.findAllUserGroups(user);
 
 		StepVerifier.create(fluxGroup)
 		.expectComplete()
+		.verify();
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	void insertDouble() {
+		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser userResult = userRepository.save(user);
+
+		Group group1 = Group.builder()
+				.id(UUID.randomUUID())
+				.user(user)
+				.name("group1")
+				.type(GroupType.POSITIVE)
+				.build();
+
+		Mono<Integer> monoGroup = groupService.addNewGroup(group1);
+		Mono<Integer> monoGroup2 = groupService.addNewGroup(group1);
+
+		StepVerifier.create(monoGroup)
+		.expectNext(1)
+		.expectComplete()
+		.verify();
+
+		StepVerifier.create(monoGroup2)
+		.expectError(AlreadyExistsException.class)
 		.verify();
 	}
 

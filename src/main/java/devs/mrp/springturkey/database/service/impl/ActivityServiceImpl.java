@@ -1,8 +1,11 @@
 package devs.mrp.springturkey.database.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
+import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.Activity;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
@@ -29,15 +32,19 @@ public class ActivityServiceImpl implements ActivityService {
 	@Override
 	public Mono<Integer> addNewActivity(Activity activity) {
 		if (!loginDetailsReader.isCurrentUser(activity.getUser())) {
-			return Mono.just(0);
+			return Mono.error(new DoesNotBelongToUserException());
 		}
-		return Mono.just(activityRepository.insert(
-				activity.getId(),
-				activity.getUser().getId(),
-				activity.getActivityName(),
-				activity.getActivityType().name(),
-				activity.getCategoryType().name()
-				));
+		try {
+			return Mono.just(activityRepository.insert(
+					activity.getId(),
+					activity.getUser().getId(),
+					activity.getActivityName(),
+					activity.getActivityType().name(),
+					activity.getCategoryType().name()
+					));
+		} catch (DataIntegrityViolationException e) {
+			return Mono.error(new AlreadyExistsException());
+		}
 	}
 
 }

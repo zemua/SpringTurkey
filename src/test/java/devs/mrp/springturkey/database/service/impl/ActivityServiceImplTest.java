@@ -11,6 +11,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 
+import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
+import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
 import devs.mrp.springturkey.database.entity.Activity;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
@@ -165,14 +167,48 @@ class ActivityServiceImplTest {
 		Mono<Integer> monoActivity = activityService.addNewActivity(activity1);
 
 		StepVerifier.create(monoActivity)
-		.expectNext(0)
-		.expectComplete()
+		.expectError(DoesNotBelongToUserException.class)
 		.verify();
 
 		Flux<Activity> fluxActivity = activityService.findAllUserActivites(user);
 
 		StepVerifier.create(fluxActivity)
 		.expectComplete()
+		.verify();
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	void insertRepeatedId() {
+		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser userResult = userRepository.save(user);
+
+		Activity activity1 = Activity.builder()
+				.id(UUID.randomUUID())
+				.activityName("app1")
+				.activityType(ActivityType.ANDROID_APP)
+				.categoryType(CategoryType.NEUTRAL)
+				.user(user)
+				.build();
+		Activity activity2 = Activity.builder()
+				.id(activity1.getId())
+				.activityName("app2")
+				.activityType(ActivityType.ANDROID_APP)
+				.categoryType(CategoryType.NEUTRAL)
+				.user(user)
+				.build();
+
+		Mono<Integer> monoActivity = activityService.addNewActivity(activity1);
+
+		StepVerifier.create(monoActivity)
+		.expectNext(1)
+		.expectComplete()
+		.verify();
+
+		Mono<Integer> monoActivity2 = activityService.addNewActivity(activity2);
+
+		StepVerifier.create(monoActivity2)
+		.expectError(AlreadyExistsException.class)
 		.verify();
 	}
 

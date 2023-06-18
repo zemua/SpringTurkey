@@ -1,8 +1,11 @@
 package devs.mrp.springturkey.database.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
+import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.Group;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
@@ -29,14 +32,18 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	public Mono<Integer> addNewGroup(Group group) {
 		if (!loginDetailsReader.isCurrentUser(group.getUser())) {
-			return Mono.just(0);
+			return Mono.error(new DoesNotBelongToUserException());
 		}
-		return Mono.just(groupRepository.insert(
-				group.getId(),
-				group.getUser().getId(),
-				group.getName(),
-				group.getType().name()
-				));
+		try {
+			return Mono.just(groupRepository.insert(
+					group.getId(),
+					group.getUser().getId(),
+					group.getName(),
+					group.getType().name()
+					));
+		} catch (DataIntegrityViolationException e) {
+			return Mono.error(new AlreadyExistsException());
+		}
 	}
 
 }
