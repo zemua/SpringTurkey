@@ -154,6 +154,35 @@ class GroupServiceImplTest {
 	}
 
 	@Test
+	@WithMockUser("some@mail.com")
+	void insertNewGroupEmptyId() {
+		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser userResult = userRepository.save(user);
+
+		Group group1 = Group.builder()
+				.user(user)
+				.name("group1")
+				.type(GroupType.POSITIVE)
+				.build();
+
+		Mono<Integer> monoGroup = groupService.addNewGroup(group1);
+
+		StepVerifier.create(monoGroup)
+		.expectNext(1)
+		.expectComplete()
+		.verify();
+
+		Flux<Group> fluxGroup = groupService.findAllUserGroups(user);
+
+		StepVerifier.create(fluxGroup)
+		.expectNextMatches(g -> g.getUser().getId().equals(user.getId())
+				&& g.getName().equals("group1")
+				&& g.getId() != null)
+		.expectComplete()
+		.verify();
+	}
+
+	@Test
 	@WithMockUser("wrong@mail.com")
 	void insertNewGroupWrongUser() {
 		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();

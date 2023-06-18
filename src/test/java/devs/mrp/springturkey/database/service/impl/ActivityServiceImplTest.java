@@ -145,7 +145,35 @@ class ActivityServiceImplTest {
 		Flux<Activity> fluxActivity = activityService.findAllUserActivites(user);
 
 		StepVerifier.create(fluxActivity)
-		.expectNextMatches(activity -> activity.getUser().getId().equals(userResult.getId()) && activity.getActivityName().equals("app1"))
+		.expectNextMatches(activity -> activity.getUser().getId().equals(userResult.getId()) && activity.getId().equals(activity1.getId()))
+		.expectComplete()
+		.verify();
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	void insertNewActivityEmptyId() {
+		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser userResult = userRepository.save(user);
+
+		Activity activity1 = Activity.builder()
+				.activityName("app1")
+				.activityType(ActivityType.ANDROID_APP)
+				.categoryType(CategoryType.NEUTRAL)
+				.user(user)
+				.build();
+
+		Mono<Integer> monoActivity = activityService.addNewActivity(activity1);
+
+		StepVerifier.create(monoActivity)
+		.expectNext(1)
+		.expectComplete()
+		.verify();
+
+		Flux<Activity> fluxActivity = activityService.findAllUserActivites(user);
+
+		StepVerifier.create(fluxActivity)
+		.expectNextMatches(activity -> activity.getUser().getId().equals(userResult.getId()) && activity.getActivityName().equals("app1") && activity.getId() != null)
 		.expectComplete()
 		.verify();
 	}

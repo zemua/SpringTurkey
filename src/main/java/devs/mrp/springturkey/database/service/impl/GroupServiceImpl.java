@@ -35,14 +35,23 @@ public class GroupServiceImpl implements GroupService {
 			return Mono.error(new DoesNotBelongToUserException());
 		}
 		try {
+			return insert(group);
+		} catch (DataIntegrityViolationException e) {
+			return Mono.error(new AlreadyExistsException());
+		}
+	}
+
+	private Mono<Integer> insert(Group group) {
+		if (group.getId() == null) {
+			return Mono.just(groupRepository.save(group))
+					.map(grp -> grp != null ? 1 : 0);
+		} else {
 			return Mono.just(groupRepository.insert(
 					group.getId(),
 					group.getUser().getId(),
 					group.getName(),
 					group.getType().name()
 					));
-		} catch (DataIntegrityViolationException e) {
-			return Mono.error(new AlreadyExistsException());
 		}
 	}
 

@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import devs.mrp.springturkey.database.entity.enumerable.PlatformType;
 import jakarta.annotation.Nullable;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -30,7 +31,7 @@ import lombok.NoArgsConstructor;
 @Entity(name = "setting")
 @Table(name = "turkey_setting",
 indexes = @Index(name = "setting_to_user_index", columnList = "turkey_user"),
-uniqueConstraints = { @UniqueConstraint(name = "uk__platform__setting", columnNames = { "turkey_user", "settingKey", "platform" }) })
+uniqueConstraints = { @UniqueConstraint(name = "uk__platform__setting", columnNames = { "turkey_user", "setting_key", "platform" }) })
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -47,13 +48,15 @@ public class Setting {
 	@NotNull
 	private TurkeyUser user;
 
-	@NotBlank
-	private String settingKey;
-
 	@Enumerated(EnumType.STRING)
 	@NotBlank
 	private PlatformType platform;
 
+	@Column(name = "setting_key")
+	@NotBlank
+	private String settingKey;
+
+	@Column(name = "setting_value")
 	@NotBlank
 	private String settingValue;
 

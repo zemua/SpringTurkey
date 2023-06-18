@@ -7,6 +7,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import jakarta.annotation.Nullable;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -51,9 +52,11 @@ public class Condition {
 	@NotNull
 	private Group targetGroup;
 
+	@Column(name = "required_usage_ms")
 	@NotNull
 	private Long requiredUsageMs;
 
+	@Column(name = "last_days_to_consider")
 	@NotNull
 	private Integer lastDaysToConsider;
 

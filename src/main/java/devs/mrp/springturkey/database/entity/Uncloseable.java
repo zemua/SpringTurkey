@@ -38,6 +38,7 @@ public class Uncloseable {
 	@JoinColumn(name = "activity_id",referencedColumnName = "id")
 	private Activity activity;
 
+	@Column(name = "prevent_closing")
 	@Nullable
 	private Boolean preventClosing;
 

@@ -36,7 +36,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "turkey_activities",
 indexes = @Index(name = "activity_to_user_index", columnList = "turkey_user"),
 uniqueConstraints = { @UniqueConstraint(name = "uk__activity__name_and_type", columnNames = { "turkey_user", "activity_name", "activity_type" }) })
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
