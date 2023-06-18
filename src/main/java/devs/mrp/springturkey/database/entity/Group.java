@@ -10,6 +10,8 @@ import devs.mrp.springturkey.database.entity.enumerable.GroupType;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -50,6 +52,7 @@ public class Group {
 	@NotBlank
 	private String name;
 
+	@Enumerated(EnumType.STRING)
 	@NotNull
 	private GroupType type;
 

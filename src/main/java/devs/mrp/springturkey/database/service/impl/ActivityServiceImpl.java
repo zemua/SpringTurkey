@@ -8,6 +8,7 @@ import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.ActivityRepository;
 import devs.mrp.springturkey.database.service.ActivityService;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public class ActivityServiceImpl implements ActivityService {
 
@@ -21,6 +22,20 @@ public class ActivityServiceImpl implements ActivityService {
 	public Flux<Activity> findAllUserActivites(TurkeyUser user) {
 		return Flux.fromIterable(activityRepository.findAllByUser(user))
 				.filter(activity -> loginDetailsReader.isCurrentUser(activity.getUser()));
+	}
+
+	@Override
+	public Mono<Integer> addNewActivity(Activity activity) {
+		if (!loginDetailsReader.isCurrentUser(activity.getUser())) {
+			return Mono.just(0);
+		}
+		return Mono.just(activityRepository.insert(
+				activity.getId(),
+				activity.getUser().getId(),
+				activity.getActivityName(),
+				activity.getActivityType().name(),
+				activity.getCategoryType().name()
+				));
 	}
 
 }

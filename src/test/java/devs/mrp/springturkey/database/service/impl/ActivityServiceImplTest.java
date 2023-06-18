@@ -1,5 +1,7 @@
 package devs.mrp.springturkey.database.service.impl;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -17,6 +19,7 @@ import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.database.repository.ActivityRepository;
 import devs.mrp.springturkey.database.repository.UserRepository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @DataJpaTest
@@ -114,6 +117,63 @@ class ActivityServiceImplTest {
 
 		StepVerifier.create(fluxActivity)
 		.verifyComplete();
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	void insertNewActivity() {
+		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser userResult = userRepository.save(user);
+
+		Activity activity1 = Activity.builder()
+				.id(UUID.randomUUID())
+				.activityName("app1")
+				.activityType(ActivityType.ANDROID_APP)
+				.categoryType(CategoryType.NEUTRAL)
+				.user(user)
+				.build();
+
+		Mono<Integer> monoActivity = activityService.addNewActivity(activity1);
+
+		StepVerifier.create(monoActivity)
+		.expectNext(1)
+		.expectComplete()
+		.verify();
+
+		Flux<Activity> fluxActivity = activityService.findAllUserActivites(user);
+
+		StepVerifier.create(fluxActivity)
+		.expectNextMatches(activity -> activity.getUser().getId().equals(userResult.getId()) && activity.getActivityName().equals("app1"))
+		.expectComplete()
+		.verify();
+	}
+
+	@Test
+	@WithMockUser("wrong@mail.com")
+	void insertNewActivityWrongUser() {
+		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser userResult = userRepository.save(user);
+
+		Activity activity1 = Activity.builder()
+				.id(UUID.randomUUID())
+				.activityName("app1")
+				.activityType(ActivityType.ANDROID_APP)
+				.categoryType(CategoryType.NEUTRAL)
+				.user(user)
+				.build();
+
+		Mono<Integer> monoActivity = activityService.addNewActivity(activity1);
+
+		StepVerifier.create(monoActivity)
+		.expectNext(0)
+		.expectComplete()
+		.verify();
+
+		Flux<Activity> fluxActivity = activityService.findAllUserActivites(user);
+
+		StepVerifier.create(fluxActivity)
+		.expectComplete()
+		.verify();
 	}
 
 }

@@ -10,7 +10,10 @@ import devs.mrp.springturkey.database.entity.enumerable.ActivityType;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,10 +32,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "categorizable")
+@Entity(name = "activity")
 @Table(name = "turkey_activities",
 indexes = @Index(name = "activity_to_user_index", columnList = "turkey_user"),
-uniqueConstraints = { @UniqueConstraint(name = "uk__activity__name_and_type", columnNames = { "turkey_user", "activityName", "activityType" }) })
+uniqueConstraints = { @UniqueConstraint(name = "uk__activity__name_and_type", columnNames = { "turkey_user", "activity_name", "activity_type" }) })
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -49,12 +52,17 @@ public class Activity {
 	@NotNull
 	private TurkeyUser user;
 
+	@Column(name = "activity_name")
 	@NotBlank
 	private String activityName;
 
+	@Column(name = "activity_type")
+	@Enumerated(EnumType.STRING)
 	@NotNull
 	private ActivityType activityType;
 
+	@Column(name = "category_type")
+	@Enumerated(EnumType.STRING)
 	@NotNull
 	private CategoryType categoryType;
 
