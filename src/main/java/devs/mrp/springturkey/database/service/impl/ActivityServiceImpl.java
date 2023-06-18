@@ -1,6 +1,7 @@
 package devs.mrp.springturkey.database.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.Activity;
@@ -10,6 +11,7 @@ import devs.mrp.springturkey.database.service.ActivityService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Service
 public class ActivityServiceImpl implements ActivityService {
 
 	@Autowired

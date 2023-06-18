@@ -56,6 +56,7 @@ public class Group {
 	@NotNull
 	private GroupType type;
 
+	@Column(name = "prevent_close")
 	private Boolean preventClose;
 
 	@CreatedDate
