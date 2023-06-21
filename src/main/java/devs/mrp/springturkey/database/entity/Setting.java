@@ -1,7 +1,6 @@
 package devs.mrp.springturkey.database.entity;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -12,9 +11,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -38,10 +34,6 @@ uniqueConstraints = { @UniqueConstraint(name = "uk__platform__setting", columnNa
 @Getter
 @EqualsAndHashCode
 public class Setting {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	private UUID id;
 
 	@ManyToOne
 	@JoinColumn(name = "turkey_user", referencedColumnName = "id", nullable=false)

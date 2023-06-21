@@ -25,7 +25,7 @@ public class ActivityServiceImpl implements ActivityService {
 	@Autowired
 	private ActivityRepository activityRepository;
 
-	@Override
+	@Override // TODO remove user argument and get user one time
 	public Flux<Activity> findAllUserActivites(TurkeyUser user) {
 		return Flux.fromIterable(activityRepository.findAllByUser(user))
 				.filter(activity -> loginDetailsReader.isCurrentUser(activity.getUser()));
