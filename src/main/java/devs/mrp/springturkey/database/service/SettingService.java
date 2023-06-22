@@ -9,6 +9,6 @@ public interface SettingService {
 
 	public Flux<Setting> findAllUserSettings(TurkeyUser user);
 
-	public Mono<Integer> saveSetting(Setting setting);
+	public Mono<Integer> addNewSetting(Setting setting);
 
 }

@@ -43,7 +43,7 @@ uniqueConstraints = { @UniqueConstraint(name = "uk__activity__name_and_type", co
 @EqualsAndHashCode
 public class Activity {
 
-	@Id // TODO replace by composite ID = user + activityName + activityType
+	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
 
