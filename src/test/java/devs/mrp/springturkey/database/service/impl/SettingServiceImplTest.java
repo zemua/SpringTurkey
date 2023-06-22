@@ -16,7 +16,6 @@ import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
 import devs.mrp.springturkey.database.entity.Setting;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.entity.enumerable.PlatformType;
-import devs.mrp.springturkey.database.entity.ids.SettingId;
 import devs.mrp.springturkey.database.repository.SettingRepository;
 import devs.mrp.springturkey.database.repository.UserRepository;
 import reactor.core.publisher.Flux;
@@ -53,23 +52,33 @@ class SettingServiceImplTest {
 	@WithMockUser("some@mail.com")
 	void findAllUserSettings() {
 		Setting setting1 = Setting.builder()
-				.settingId(new SettingId(user, PlatformType.DESKTOP, "key1"))
+				.user(user)
+				.platform(PlatformType.DESKTOP)
+				.settingKey("key1")
 				.settingValue("value1")
 				.build();
 		Setting setting2 = Setting.builder()
-				.settingId(new SettingId(user, PlatformType.DESKTOP, "key2"))
+				.user(user)
+				.platform(PlatformType.DESKTOP)
+				.settingKey("key2")
 				.settingValue("value2")
 				.build();
 		Setting setting3 = Setting.builder()
-				.settingId(new SettingId(user, PlatformType.DESKTOP, "key3"))
+				.user(user)
+				.platform(PlatformType.DESKTOP)
+				.settingKey("key3")
 				.settingValue("value3")
 				.build();
 		Setting setting4 = Setting.builder()
-				.settingId(new SettingId(otherUser, PlatformType.DESKTOP, "key4"))
+				.user(otherUser)
+				.platform(PlatformType.DESKTOP)
+				.settingKey("key4")
 				.settingValue("value4")
 				.build();
 		Setting setting5 = Setting.builder()
-				.settingId(new SettingId(otherUser, PlatformType.DESKTOP, "key1"))
+				.user(otherUser)
+				.platform(PlatformType.DESKTOP)
+				.settingKey("key1")
 				.settingValue("value5")
 				.build();
 		settingRepository.save(setting1);
@@ -81,9 +90,9 @@ class SettingServiceImplTest {
 		Flux<Setting> fluxSetting = settingService.findAllUserSettings(user);
 
 		StepVerifier.create(fluxSetting)
-		.expectNextMatches(s -> s.getUser().getId().equals(user.getId()) && s.getSettingId().equals("key1"))
-		.expectNextMatches(s -> s.getUser().getId().equals(user.getId()) && s.getSettingId().equals("key2"))
-		.expectNextMatches(s -> s.getSettingId().getUser().getId().equals(user.getId()) && s.getSettingId().equals("key3"))
+		.expectNextMatches(s -> s.getUser().getId().equals(user.getId()) && s.getSettingKey().equals("key1"))
+		.expectNextMatches(s -> s.getUser().getId().equals(user.getId()) && s.getSettingKey().equals("key2"))
+		.expectNextMatches(s -> s.getUser().getId().equals(user.getId()) && s.getSettingKey().equals("key3"))
 		.verifyComplete();
 	}
 

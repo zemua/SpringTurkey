@@ -24,7 +24,8 @@ public class SettingServiceImpl implements SettingService {
 
 	@Override
 	public Flux<Setting> findAllUserSettings(TurkeyUser user) {
-		return Flux.fromIterable(settingRepository.findAllByUser(user))
+		var list = settingRepository.findAllByUser(user);
+		return Flux.fromIterable(list)
 				.filter(setting -> loginDetailsReader.isCurrentUser(setting.getUser()));
 	}
 
