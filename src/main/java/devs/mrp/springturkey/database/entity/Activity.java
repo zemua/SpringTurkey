@@ -21,7 +21,6 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
@@ -31,6 +30,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity(name = "activity")
 @Table(name = "turkey_activities",
@@ -71,7 +71,7 @@ public class Activity {
 	private Group group;
 
 	@OneToOne(mappedBy = "activity", cascade = CascadeType.ALL)
-	@PrimaryKeyJoinColumn
+	@Setter
 	private Uncloseable uncloseable;
 
 	@CreatedDate

@@ -2,6 +2,8 @@ package devs.mrp.springturkey.database.service.impl;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.database.repository.ActivityRepository;
 import devs.mrp.springturkey.database.repository.UncloseableRepository;
 import devs.mrp.springturkey.database.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -55,6 +58,7 @@ class UncloseableServiceImplTest {
 
 	@Test
 	@WithMockUser("some@mail.com")
+	@Transactional
 	void findAllUserUncloseables() {
 		Activity activity1 = Activity.builder()
 				.activityName("app1")
@@ -62,21 +66,11 @@ class UncloseableServiceImplTest {
 				.categoryType(CategoryType.NEUTRAL)
 				.user(user)
 				.build();
-		Uncloseable uncloseable1 = Uncloseable.builder()
-				.id(activity1.getId())
-				.activity(activity1)
-				.preventClosing(true)
-				.build();
 		Activity activity2 = Activity.builder()
 				.activityName("app2")
 				.activityType(ActivityType.ANDROID_APP)
 				.categoryType(CategoryType.NEUTRAL)
 				.user(user)
-				.build();
-		Uncloseable uncloseable2 = Uncloseable.builder()
-				.id(activity2.getId())
-				.activity(activity2)
-				.preventClosing(true)
 				.build();
 		Activity activity3 = Activity.builder()
 				.activityName("app3")
@@ -84,19 +78,32 @@ class UncloseableServiceImplTest {
 				.categoryType(CategoryType.NEUTRAL)
 				.user(otherUser)
 				.build();
+
+		Uncloseable uncloseable1 = Uncloseable.builder()
+				//.id(aResult1.getId())
+				.activity(activity1)
+				.preventClosing(true)
+				.build();
+		Uncloseable uncloseable2 = Uncloseable.builder()
+				//.id(aResult2.getId())
+				.activity(activity2)
+				.preventClosing(true)
+				.build();
 		Uncloseable uncloseable3 = Uncloseable.builder()
-				.id(activity3.getId())
+				//.id(aResult3.getId())
 				.activity(activity3)
 				.preventClosing(true)
 				.build();
 
-		activityRepository.save(activity1);
-		activityRepository.save(activity2);
-		activityRepository.save(activity3);
+		activity1.setUncloseable(uncloseable1);
+		activity2.setUncloseable(uncloseable2);
+		activity3.setUncloseable(uncloseable3);
 
-		uncloseableRepository.save(uncloseable1);
-		uncloseableRepository.save(uncloseable2);
-		uncloseableRepository.save(uncloseable3);
+		Activity aResult1 = activityRepository.save(activity1);
+		Activity aResult2 = activityRepository.save(activity2);
+		Activity aResult3 = activityRepository.save(activity3);
+
+		List<Uncloseable> uncloseables = uncloseableRepository.findAll();
 
 		Flux<Uncloseable> fluxUncloseable = uncloseableService.findAllUserUncloseables(user);
 
@@ -105,8 +112,6 @@ class UncloseableServiceImplTest {
 		.expectNextMatches(uc -> uc.getActivity().getUser().getId().equals(userResult.getId()) && uc.getActivity().getActivityName().equals("app2"))
 		.expectComplete()
 		.verify();
-
-		fail("Not yet implemented");
 	}
 
 	@Test

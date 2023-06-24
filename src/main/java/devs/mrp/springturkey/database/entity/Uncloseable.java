@@ -7,12 +7,13 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import jakarta.annotation.Nullable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,12 +31,11 @@ import lombok.NoArgsConstructor;
 public class Uncloseable {
 
 	@Id
-	@Column(name = "activity_id")
 	private UUID id;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
+	@PrimaryKeyJoinColumn
 	@MapsId
-	@JoinColumn(name = "activity_id",referencedColumnName = "id")
 	private Activity activity;
 
 	@Column(name = "prevent_closing")
