@@ -9,7 +9,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import devs.mrp.springturkey.database.entity.enumerable.ActivityType;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import jakarta.annotation.Nullable;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -20,7 +19,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
@@ -30,7 +28,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity(name = "activity")
 @Table(name = "turkey_activities",
@@ -70,9 +67,8 @@ public class Activity {
 	@JoinColumn(name = "turkey_group", referencedColumnName = "id", nullable = true)
 	private Group group;
 
-	@OneToOne(mappedBy = "activity", cascade = CascadeType.ALL)
-	@Setter
-	private Uncloseable uncloseable;
+	@Nullable
+	private Boolean preventClosing;
 
 	@CreatedDate
 	private LocalDateTime created;
