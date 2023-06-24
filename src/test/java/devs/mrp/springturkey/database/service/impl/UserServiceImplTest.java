@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,6 +18,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ContextConfiguration(classes = {LoginDetailsReaderImpl.class, UserServiceImpl.class})
+@EnableJpaAuditing
 @EnableJpaRepositories(basePackages = "devs.mrp.springturkey.database.repository")
 @EntityScan("devs.mrp.springturkey.database.*")
 @DataJpaTest
@@ -34,7 +36,9 @@ class UserServiceImplTest {
 		Mono<TurkeyUser> monoUser = userServiceImpl.addCurrentUser();
 
 		StepVerifier.create(monoUser)
-		.expectNextMatches(user -> user.getEmail().equals("user@mail.me"))
+		.expectNextMatches(user -> {
+			return user.getEmail().equals("user@mail.me") && user.getCreated() != null;
+		})
 		.expectComplete()
 		.verify();
 	}
@@ -48,7 +52,7 @@ class UserServiceImplTest {
 		Mono<TurkeyUser> monoUser = userServiceImpl.getUser();
 
 		StepVerifier.create(monoUser)
-		.expectNextMatches(u -> u.getId().equals(id) && u.getEmail().equals("user@mail.me"))
+		.expectNextMatches(u -> u.getId().equals(id) && u.getEmail().equals("user@mail.me")  && user.getCreated() != null)
 		.expectComplete()
 		.verify();
 	}

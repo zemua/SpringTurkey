@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
@@ -24,6 +25,7 @@ import reactor.test.StepVerifier;
 
 @DataJpaTest
 @EnableJpaRepositories(basePackages = "devs.mrp.springturkey.database.repository")
+@EnableJpaAuditing
 @EntityScan("devs.mrp.springturkey.database.*")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(classes = {LoginDetailsReaderImpl.class, DeviceServiceImpl.class})
@@ -47,7 +49,7 @@ class DeviceServiceImplTest {
 		Mono<Device> monoDevice = deviceServiceImpl.addDevice(user);
 
 		StepVerifier.create(monoDevice)
-		.expectNextMatches(device -> device.getUser().getId().equals(userResult.getId()))
+		.expectNextMatches(device -> device.getUser().getId().equals(userResult.getId()) && device.getCreated() != null)
 		.expectComplete()
 		.verify();
 	}
@@ -67,7 +69,7 @@ class DeviceServiceImplTest {
 		Flux<Device> fluxDevice = deviceServiceImpl.getUserDevices(user);
 
 		StepVerifier.create(fluxDevice)
-		.expectNextMatches(device -> device.getUser().getId().equals(userResult.getId()) && device.getUsageTime().equals(1234L))
+		.expectNextMatches(device -> device.getUser().getId().equals(userResult.getId()) && device.getUsageTime().equals(1234L) && device.getCreated() != null)
 		.expectNextMatches(device -> device.getUser().getId().equals(userResult.getId()) && device.getUsageTime().equals(2234L))
 		.expectNextMatches(device -> device.getUser().getId().equals(userResult.getId()) && device.getUsageTime().equals(3234L))
 		.expectComplete()

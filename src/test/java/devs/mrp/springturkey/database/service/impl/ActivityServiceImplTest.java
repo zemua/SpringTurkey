@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,6 +27,7 @@ import reactor.test.StepVerifier;
 
 @DataJpaTest
 @EnableJpaRepositories(basePackages = "devs.mrp.springturkey.database.repository")
+@EnableJpaAuditing
 @EntityScan("devs.mrp.springturkey.database.*")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(classes = {LoginDetailsReaderImpl.class, ActivityServiceImpl.class})
@@ -80,7 +82,7 @@ class ActivityServiceImplTest {
 		Flux<Activity> fluxActivity = activityService.findAllUserActivites(user);
 
 		StepVerifier.create(fluxActivity)
-		.expectNextMatches(activity -> activity.getUser().getId().equals(userResult.getId()) && activity.getActivityName().equals("app1"))
+		.expectNextMatches(activity -> activity.getUser().getId().equals(userResult.getId()) && activity.getActivityName().equals("app1") && activity.getCreated() != null)
 		.expectNextMatches(activity -> activity.getUser().getId().equals(userResult.getId()) && activity.getActivityName().equals("app2"))
 		.expectNextMatches(activity -> activity.getUser().getId().equals(userResult.getId()) && activity.getActivityName().equals("app3"))
 		.expectComplete()
@@ -145,7 +147,7 @@ class ActivityServiceImplTest {
 		Flux<Activity> fluxActivity = activityService.findAllUserActivites(user);
 
 		StepVerifier.create(fluxActivity)
-		.expectNextMatches(activity -> activity.getUser().getId().equals(userResult.getId()) && activity.getId().equals(activity1.getId()))
+		.expectNextMatches(activity -> activity.getUser().getId().equals(userResult.getId()) && activity.getId().equals(activity1.getId()) && activity.getCreated() != null && activity.getEdited() != null)
 		.expectComplete()
 		.verify();
 	}

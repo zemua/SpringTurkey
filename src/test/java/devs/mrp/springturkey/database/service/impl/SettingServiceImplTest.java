@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
@@ -29,6 +30,7 @@ import reactor.test.StepVerifier;
 @EntityScan("devs.mrp.springturkey.database.*")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(classes = {LoginDetailsReaderImpl.class, SettingServiceImpl.class})
+@EnableJpaAuditing
 class SettingServiceImplTest {
 
 	@Autowired
@@ -93,7 +95,7 @@ class SettingServiceImplTest {
 		Flux<Setting> fluxSetting = settingService.findAllUserSettings(user);
 
 		StepVerifier.create(fluxSetting)
-		.expectNextMatches(s -> s.getUser().getId().equals(user.getId()) && s.getSettingKey().equals("key1"))
+		.expectNextMatches(s -> s.getUser().getId().equals(user.getId()) && s.getSettingKey().equals("key1") && s.getCreated() != null && s.getEdited() != null)
 		.expectNextMatches(s -> s.getUser().getId().equals(user.getId()) && s.getSettingKey().equals("key2"))
 		.expectNextMatches(s -> s.getUser().getId().equals(user.getId()) && s.getSettingKey().equals("key3"))
 		.verifyComplete();
@@ -152,7 +154,7 @@ class SettingServiceImplTest {
 		Flux<Setting> fluxSetting = settingService.findAllUserSettings(user);
 
 		StepVerifier.create(fluxSetting)
-		.expectNextMatches(s -> s.getUser().getId().equals(userResult.getId()) && s.getId().equals(setting1.getId()))
+		.expectNextMatches(s -> s.getUser().getId().equals(userResult.getId()) && s.getId().equals(setting1.getId()) && s.getCreated() != null && s.getEdited() != null)
 		.expectComplete()
 		.verify();
 	}

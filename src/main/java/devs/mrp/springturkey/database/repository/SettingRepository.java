@@ -17,7 +17,7 @@ public interface SettingRepository extends JpaRepository<Setting, UUID> {
 
 	@Transactional
 	@Modifying
-	@Query(value = "INSERT INTO turkey_setting (id, turkey_user, platform, setting_key, setting_value) VALUES (?1, ?2, ?3, ?4, ?5)", nativeQuery = true)
+	@Query(value = "INSERT INTO turkey_setting (id, turkey_user, platform, setting_key, setting_value, created, edited) VALUES (?1, ?2, ?3, ?4, ?5, NOW(), NOW())", nativeQuery = true)
 	public int insert(UUID id, UUID user, String platform, String settingKey, String settingValue);
 
 }

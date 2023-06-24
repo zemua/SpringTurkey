@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
@@ -28,6 +29,7 @@ import reactor.test.StepVerifier;
 @EntityScan("devs.mrp.springturkey.database.*")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(classes = {LoginDetailsReaderImpl.class, GroupServiceImpl.class})
+@EnableJpaAuditing
 class GroupServiceImplTest {
 
 	@Autowired
@@ -75,7 +77,7 @@ class GroupServiceImplTest {
 		Flux<Group> fluxGroup = groupService.findAllUserGroups(user);
 
 		StepVerifier.create(fluxGroup)
-		.expectNextMatches(g -> g.getUser().getId().equals(user.getId()) && g.getName().equals("group1"))
+		.expectNextMatches(g -> g.getUser().getId().equals(user.getId()) && g.getName().equals("group1") && g.getCreated() != null && g.getEdited() != null)
 		.expectNextMatches(g -> g.getUser().getId().equals(user.getId()) && g.getName().equals("group2"))
 		.expectNextMatches(g -> g.getUser().getId().equals(user.getId()) && g.getName().equals("group3"))
 		.expectComplete()
@@ -148,7 +150,9 @@ class GroupServiceImplTest {
 		StepVerifier.create(fluxGroup)
 		.expectNextMatches(g -> g.getUser().getId().equals(user.getId())
 				&& g.getName().equals("group1")
-				&& g.getId().equals(group1.getId()))
+				&& g.getId().equals(group1.getId())
+				&& g.getCreated() != null
+				&& g.getEdited() != null)
 		.expectComplete()
 		.verify();
 	}

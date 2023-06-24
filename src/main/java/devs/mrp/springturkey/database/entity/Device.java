@@ -5,10 +5,12 @@ import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import devs.mrp.springturkey.database.entity.enumerable.DeviceType;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -28,6 +30,7 @@ import lombok.NoArgsConstructor;
 @Entity(name = "device")
 @Table(name = "turkey_device",
 indexes = @Index(name = "device_to_user_index", columnList = "turkey_user"))
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Builder
 @AllArgsConstructor

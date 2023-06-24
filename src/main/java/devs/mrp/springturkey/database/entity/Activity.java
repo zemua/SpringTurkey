@@ -5,12 +5,14 @@ import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import devs.mrp.springturkey.database.entity.enumerable.ActivityType;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -33,6 +35,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "turkey_activities",
 indexes = @Index(name = "activity_to_user_index", columnList = "turkey_user"),
 uniqueConstraints = { @UniqueConstraint(name = "uk__activity__name_and_type", columnNames = { "turkey_user", "activity_name", "activity_type" }) })
+@EntityListeners(AuditingEntityListener.class)
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor

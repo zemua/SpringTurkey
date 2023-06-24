@@ -17,7 +17,7 @@ public interface ActivityRepository extends JpaRepository<Activity, UUID> {
 
 	@Transactional
 	@Modifying
-	@Query(value = "INSERT INTO turkey_activities (id, turkey_user, activity_name, activity_type, category_type) VALUES (?1, ?2, ?3, ?4, ?5)", nativeQuery = true)
+	@Query(value = "INSERT INTO turkey_activities (id, turkey_user, activity_name, activity_type, category_type, created, edited) VALUES (?1, ?2, ?3, ?4, ?5, NOW(), NOW())", nativeQuery = true)
 	public int insert(UUID id, UUID user, String activityName, String activityType, String categoryType);
 
 }

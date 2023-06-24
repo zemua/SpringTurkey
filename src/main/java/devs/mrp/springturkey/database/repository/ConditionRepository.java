@@ -17,7 +17,7 @@ public interface ConditionRepository extends JpaRepository<Condition, UUID> {
 
 	@Transactional
 	@Modifying
-	@Query(value = "INSERT INTO turkey_condition (id, turkey_user, conditional_group, target_group, required_usage_ms, last_days_to_consider) VALUES (?1, ?2, ?3, ?4, ?5, ?6)", nativeQuery = true)
+	@Query(value = "INSERT INTO turkey_condition (id, turkey_user, conditional_group, target_group, required_usage_ms, last_days_to_consider, created, edited) VALUES (?1, ?2, ?3, ?4, ?5, ?6, NOW(), NOW())", nativeQuery = true)
 	public int insert(UUID id, UUID user, UUID conditionalGroup, UUID targetGroup, Long requiredUsageMs, Integer lastDaysToConsider);
 
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
@@ -31,6 +32,7 @@ import reactor.test.StepVerifier;
 @EntityScan("devs.mrp.springturkey.database.*")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(classes = {LoginDetailsReaderImpl.class, ConditionServiceImpl.class})
+@EnableJpaAuditing
 class ConditionServiceImplTest {
 
 	@Autowired
@@ -101,7 +103,7 @@ class ConditionServiceImplTest {
 		Flux<Condition> fluxCondition = conditionService.findAllUserConditions(user);
 
 		StepVerifier.create(fluxCondition)
-		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getRequiredUsageMs().equals(123L))
+		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getRequiredUsageMs().equals(123L) && c.getCreated() != null && c.getEdited() != null)
 		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getRequiredUsageMs().equals(234L))
 		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getRequiredUsageMs().equals(345L))
 		.expectComplete()
@@ -197,7 +199,7 @@ class ConditionServiceImplTest {
 		Flux<Condition> fluxCondition = conditionService.findAllUserConditions(user);
 
 		StepVerifier.create(fluxCondition)
-		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getId().equals(condition1.getId()))
+		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getId().equals(condition1.getId()) && c.getCreated() != null && c.getEdited() != null)
 		.expectComplete()
 		.verify();
 	}

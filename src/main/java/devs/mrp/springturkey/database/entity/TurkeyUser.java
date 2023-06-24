@@ -6,10 +6,12 @@ import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,6 +28,7 @@ import lombok.NoArgsConstructor;
 @Entity(name = "turkey_user")
 @Table(name = "turkey_user",
 indexes = @Index(name = "user_email_index", columnList = "email", unique = true))
+@EntityListeners(AuditingEntityListener.class)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
