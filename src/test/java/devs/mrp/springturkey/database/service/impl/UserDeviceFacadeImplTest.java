@@ -52,7 +52,7 @@ class UserDeviceFacadeImplTest {
 				.usageTime(123456L)
 				.build();
 
-		when(deviceService.addDevice(ArgumentMatchers.refEq(user))).thenReturn(Mono.just(device));
+		when(deviceService.addDevice()).thenReturn(Mono.just(device));
 		when(userService.getUser()).thenReturn(Mono.just(user));
 		when(userService.addCurrentUser()).thenReturn(Mono.just(user));
 
@@ -77,7 +77,7 @@ class UserDeviceFacadeImplTest {
 				.usageTime(123456L)
 				.build();
 
-		when(deviceService.addDevice(ArgumentMatchers.refEq(user))).thenReturn(Mono.just(device));
+		when(deviceService.addDevice()).thenReturn(Mono.just(device));
 		when(userService.getUser()).thenReturn(Mono.empty());
 		when(userService.addCurrentUser()).thenReturn(Mono.just(user));
 
@@ -101,9 +101,9 @@ class UserDeviceFacadeImplTest {
 		Device first = Device.builder().id(firstId).user(user).usageTime(1234L).build();
 		Device second = Device.builder().id(secondId).user(user).usageTime(4321L).build();;
 
-		when(deviceService.getUserDevices(ArgumentMatchers.refEq(user))).thenReturn(Flux.just(first, second));
+		when(deviceService.getUserDevices()).thenReturn(Flux.just(first, second));
 
-		Flux<Device> devicesFlux = deviceService.getUserDevices(user);
+		Flux<Device> devicesFlux = deviceService.getUserDevices();
 
 		StepVerifier.create(devicesFlux)
 		.expectNext(first)

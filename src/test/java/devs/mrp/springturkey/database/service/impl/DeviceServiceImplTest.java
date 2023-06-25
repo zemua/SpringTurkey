@@ -42,11 +42,11 @@ class DeviceServiceImplTest {
 	@Test
 	@WithMockUser("some@user.me")
 	void testAddDevice() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().email("some@user.me").build();
 		TurkeyUser userResult = userRepository.save(user);
 		Device expectedDevice = Device.builder().user(user).usageTime(0L).build();
 
-		Mono<Device> monoDevice = deviceServiceImpl.addDevice(user);
+		Mono<Device> monoDevice = deviceServiceImpl.addDevice();
 
 		StepVerifier.create(monoDevice)
 		.expectNextMatches(device -> device.getUser().getId().equals(userResult.getId()) && device.getCreated() != null)
@@ -66,7 +66,7 @@ class DeviceServiceImplTest {
 		deviceRepository.save(deviceTwo);
 		deviceRepository.save(deviceThree);
 
-		Flux<Device> fluxDevice = deviceServiceImpl.getUserDevices(user);
+		Flux<Device> fluxDevice = deviceServiceImpl.getUserDevices();
 
 		StepVerifier.create(fluxDevice)
 		.expectNextMatches(device -> device.getUser().getId().equals(userResult.getId()) && device.getUsageTime().equals(1234L) && device.getCreated() != null)
@@ -88,7 +88,7 @@ class DeviceServiceImplTest {
 		deviceRepository.save(deviceTwo);
 		deviceRepository.save(deviceThree);
 
-		Flux<Device> fluxDevice = deviceServiceImpl.getUserDevices(user);
+		Flux<Device> fluxDevice = deviceServiceImpl.getUserDevices();
 
 		StepVerifier.create(fluxDevice)
 		.verifyComplete();
@@ -108,7 +108,7 @@ class DeviceServiceImplTest {
 
 		Device filteringDevice = Device.builder().user(user).usageTime(2234L).deviceType(DeviceType.IOS).id(idTwo).build();
 
-		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(user, filteringDevice);
+		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(filteringDevice);
 
 		StepVerifier.create(fluxDevice)
 		.expectNextMatches(device -> device.getUser().getId().equals(userResult.getId()) && device.getUsageTime().equals(1234L))
@@ -131,7 +131,7 @@ class DeviceServiceImplTest {
 
 		Device filteringDevice = Device.builder().user(user).usageTime(2234L).deviceType(DeviceType.IOS).id(idTwo).build();
 
-		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(user, filteringDevice);
+		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(filteringDevice);
 
 		StepVerifier.create(fluxDevice)
 		.verifyComplete();

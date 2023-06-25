@@ -14,6 +14,8 @@ public class LoginDetailsReaderImpl implements LoginDetailsReader {
 	@Autowired
 	private UserRepository userRepository;
 
+	private static final Object CREATE_USER_LOCK = new Object();
+
 	@Override
 	public String getUsername() {
 		return SecurityContextHolder.getContext().getAuthentication().getName();
@@ -27,6 +29,18 @@ public class LoginDetailsReaderImpl implements LoginDetailsReader {
 	@Override
 	public TurkeyUser getTurkeyUser() {
 		return userRepository.findByEmail(getUsername());
+	}
+
+	@Override
+	public TurkeyUser createCurrentUser() {
+		if (getTurkeyUser() == null) {
+			synchronized (CREATE_USER_LOCK) {
+				if (getTurkeyUser() == null) {
+					userRepository.save(TurkeyUser.builder().email(getUsername()).build());
+				}
+			}
+		}
+		return getTurkeyUser();
 	}
 
 }

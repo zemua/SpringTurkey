@@ -24,12 +24,12 @@ public class UserDeviceFacadeImpl implements UserDeviceFacade {
 	public Mono<Device> addDevice() {
 		return userService.getUser()
 				.switchIfEmpty(Mono.defer(() -> userService.addCurrentUser()))
-				.flatMap(user -> deviceService.addDevice(user));
+				.flatMap(user -> deviceService.addDevice());
 	}
 
 	@Override
 	public Flux<Device> getUserDevices() {
-		return userService.getUser().flatMapMany(user -> deviceService.getUserDevices(user));
+		return userService.getUser().flatMapMany(user -> deviceService.getUserDevices());
 	}
 
 	@Override
