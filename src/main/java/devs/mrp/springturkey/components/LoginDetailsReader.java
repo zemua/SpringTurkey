@@ -8,4 +8,6 @@ public interface LoginDetailsReader {
 
 	public boolean isCurrentUser(TurkeyUser user);
 
+	public TurkeyUser getTurkeyUser();
+
 }
