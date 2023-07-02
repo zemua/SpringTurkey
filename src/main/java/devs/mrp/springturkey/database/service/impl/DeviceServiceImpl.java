@@ -30,7 +30,7 @@ public class DeviceServiceImpl implements DeviceService {
 	@Override
 	public Mono<Device> addDevice() {
 		Device device = Device.builder()
-				.user(loginDetailsReader.createCurrentUser())
+				.user(loginDetailsReader.setupCurrentUser())
 				.usageTime(0L)
 				.build();
 		return Mono.just(deviceRepository.save(device));

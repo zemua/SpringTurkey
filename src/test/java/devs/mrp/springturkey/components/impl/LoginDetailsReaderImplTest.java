@@ -4,14 +4,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import devs.mrp.springturkey.database.entity.TurkeyUser;
@@ -27,7 +32,7 @@ class LoginDetailsReaderImplTest {
 	@Autowired
 	private LoginDetailsReaderImpl reader;
 
-	@Autowired
+	@SpyBean
 	private UserRepository userRepository;
 
 	@Test
@@ -38,6 +43,7 @@ class LoginDetailsReaderImplTest {
 	}
 
 	@Test
+	@DirtiesContext
 	@WithMockUser(username = "basic@user.me", password = "password", roles = "USER")
 	void getUserObject() {
 		TurkeyUser tobesaved = TurkeyUser.builder()
@@ -65,16 +71,22 @@ class LoginDetailsReaderImplTest {
 	}
 
 	@Test
+	@DirtiesContext
 	@WithMockUser(username = "basic@user.me", password = "password", roles = "USER")
 	void createCurrentUser() {
 		TurkeyUser user = reader.getTurkeyUser();
 		assertNull(user);
-		user = reader.createCurrentUser();
+		user = reader.setupCurrentUser();
 		assertEquals("basic@user.me", user.getEmail());
 		user = reader.getTurkeyUser();
 		assertEquals("basic@user.me", user.getEmail());
-		TurkeyUser user2 = reader.createCurrentUser();
+		TurkeyUser user2 = reader.setupCurrentUser();
 		assertEquals(user.getId(), user2.getId());
+
+		TurkeyUser sameUser = reader.setupCurrentUser();
+		assertEquals(user.getId(), sameUser.getId());
+
+		verify(userRepository, times(1)).save(ArgumentMatchers.any());
 	}
 
 }

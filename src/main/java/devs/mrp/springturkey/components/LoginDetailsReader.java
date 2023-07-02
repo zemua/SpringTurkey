@@ -10,6 +10,6 @@ public interface LoginDetailsReader {
 
 	public TurkeyUser getTurkeyUser();
 
-	public TurkeyUser createCurrentUser();
+	public TurkeyUser setupCurrentUser();
 
 }

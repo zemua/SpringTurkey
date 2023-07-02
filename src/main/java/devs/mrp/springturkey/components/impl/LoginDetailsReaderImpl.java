@@ -32,15 +32,16 @@ public class LoginDetailsReaderImpl implements LoginDetailsReader {
 	}
 
 	@Override
-	public TurkeyUser createCurrentUser() {
-		if (getTurkeyUser() == null) {
+	public TurkeyUser setupCurrentUser() {
+		TurkeyUser currentUser = getTurkeyUser();
+		if (currentUser == null) {
 			synchronized (CREATE_USER_LOCK) {
 				if (getTurkeyUser() == null) {
-					userRepository.save(TurkeyUser.builder().email(getUsername()).build());
+					currentUser = userRepository.save(TurkeyUser.builder().email(getUsername()).build());
 				}
 			}
 		}
-		return getTurkeyUser();
+		return currentUser;
 	}
 
 }
