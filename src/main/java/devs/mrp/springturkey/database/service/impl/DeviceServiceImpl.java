@@ -44,6 +44,9 @@ public class DeviceServiceImpl implements DeviceService {
 
 	@Override
 	public Flux<Device> getUserOtherDevices(Device device) {
+		if (device == null) {
+			return Flux.empty();
+		}
 		return getUserDevices()
 				.filter(d -> {
 					return !d.getId().equals(device.getId());
