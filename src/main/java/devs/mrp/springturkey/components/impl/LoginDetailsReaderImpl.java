@@ -36,7 +36,8 @@ public class LoginDetailsReaderImpl implements LoginDetailsReader {
 		TurkeyUser currentUser = getTurkeyUser();
 		if (currentUser == null) {
 			synchronized (CREATE_USER_LOCK) {
-				if (getTurkeyUser() == null) {
+				currentUser = getTurkeyUser();
+				if (currentUser == null) {
 					currentUser = userRepository.save(TurkeyUser.builder().email(getUsername()).build());
 				}
 			}
