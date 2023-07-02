@@ -8,7 +8,6 @@ import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
 import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.Setting;
-import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.SettingRepository;
 import devs.mrp.springturkey.database.service.SettingService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +25,8 @@ public class SettingServiceImpl implements SettingService {
 	private SettingRepository settingRepository;
 
 	@Override
-	public Flux<Setting> findAllUserSettings(TurkeyUser user) {
-		var list = settingRepository.findAllByUser(user);
+	public Flux<Setting> findAllUserSettings() {
+		var list = settingRepository.findAllByUser(loginDetailsReader.getTurkeyUser());
 		return Flux.fromIterable(list)
 				.filter(setting -> loginDetailsReader.isCurrentUser(setting.getUser()));
 	}

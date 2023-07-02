@@ -92,7 +92,7 @@ class SettingServiceImplTest {
 		settingRepository.save(setting4);
 		settingRepository.save(setting5);
 
-		Flux<Setting> fluxSetting = settingService.findAllUserSettings(user);
+		Flux<Setting> fluxSetting = settingService.findAllUserSettings();
 
 		StepVerifier.create(fluxSetting)
 		.expectNextMatches(s -> s.getUser().getId().equals(user.getId()) && s.getSettingKey().equals("key1") && s.getCreated() != null && s.getEdited() != null)
@@ -127,7 +127,7 @@ class SettingServiceImplTest {
 		settingRepository.save(setting2);
 		settingRepository.save(setting3);
 
-		Flux<Setting> fluxSetting = settingService.findAllUserSettings(user);
+		Flux<Setting> fluxSetting = settingService.findAllUserSettings();
 
 		StepVerifier.create(fluxSetting)
 		.verifyComplete();
@@ -151,7 +151,7 @@ class SettingServiceImplTest {
 		.expectComplete()
 		.verify();
 
-		Flux<Setting> fluxSetting = settingService.findAllUserSettings(user);
+		Flux<Setting> fluxSetting = settingService.findAllUserSettings();
 
 		StepVerifier.create(fluxSetting)
 		.expectNextMatches(s -> s.getUser().getId().equals(userResult.getId()) && s.getId().equals(setting1.getId()) && s.getCreated() != null && s.getEdited() != null)
@@ -176,7 +176,7 @@ class SettingServiceImplTest {
 		.expectComplete()
 		.verify();
 
-		Flux<Setting> fluxSetting = settingService.findAllUserSettings(user);
+		Flux<Setting> fluxSetting = settingService.findAllUserSettings();
 
 		StepVerifier.create(fluxSetting)
 		.expectNextMatches(s -> s.getUser().getId().equals(userResult.getId()) && s.getId() != null && s.getSettingKey().equals("key1"))
@@ -201,7 +201,7 @@ class SettingServiceImplTest {
 		.expectError(DoesNotBelongToUserException.class)
 		.verify();
 
-		Flux<Setting> fluxSetting = settingService.findAllUserSettings(user);
+		Flux<Setting> fluxSetting = settingService.findAllUserSettings();
 
 		StepVerifier.create(fluxSetting)
 		.expectComplete()

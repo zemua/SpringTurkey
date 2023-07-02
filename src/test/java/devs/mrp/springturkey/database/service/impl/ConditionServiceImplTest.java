@@ -100,7 +100,7 @@ class ConditionServiceImplTest {
 		conditionRepository.save(condition3);
 		conditionRepository.save(condition4);
 
-		Flux<Condition> fluxCondition = conditionService.findAllUserConditions(user);
+		Flux<Condition> fluxCondition = conditionService.findAllUserConditions();
 
 		StepVerifier.create(fluxCondition)
 		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getRequiredUsageMs().equals(123L) && c.getCreated() != null && c.getEdited() != null)
@@ -154,7 +154,7 @@ class ConditionServiceImplTest {
 		conditionRepository.save(condition2);
 		conditionRepository.save(condition3);
 
-		Flux<Condition> fluxCondition = conditionService.findAllUserConditions(user);
+		Flux<Condition> fluxCondition = conditionService.findAllUserConditions();
 
 		StepVerifier.create(fluxCondition)
 		.expectComplete()
@@ -196,7 +196,7 @@ class ConditionServiceImplTest {
 		.expectComplete()
 		.verify();
 
-		Flux<Condition> fluxCondition = conditionService.findAllUserConditions(user);
+		Flux<Condition> fluxCondition = conditionService.findAllUserConditions();
 
 		StepVerifier.create(fluxCondition)
 		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getId().equals(condition1.getId()) && c.getCreated() != null && c.getEdited() != null)
@@ -238,7 +238,7 @@ class ConditionServiceImplTest {
 		.expectComplete()
 		.verify();
 
-		Flux<Condition> fluxCondition = conditionService.findAllUserConditions(user);
+		Flux<Condition> fluxCondition = conditionService.findAllUserConditions();
 
 		StepVerifier.create(fluxCondition)
 		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getRequiredUsageMs().equals(123L) && c.getId() != null)
@@ -279,7 +279,7 @@ class ConditionServiceImplTest {
 		.expectError(DoesNotBelongToUserException.class)
 		.verify();
 
-		Flux<Condition> fluxCondition = conditionService.findAllUserConditions(user);
+		Flux<Condition> fluxCondition = conditionService.findAllUserConditions();
 
 		StepVerifier.create(fluxCondition)
 		.expectComplete()
@@ -322,7 +322,7 @@ class ConditionServiceImplTest {
 		.expectError(DoesNotBelongToUserException.class)
 		.verify();
 
-		Flux<Condition> fluxCondition = conditionService.findAllUserConditions(user);
+		Flux<Condition> fluxCondition = conditionService.findAllUserConditions();
 
 		StepVerifier.create(fluxCondition)
 		.expectComplete()
@@ -356,7 +356,7 @@ class ConditionServiceImplTest {
 		.expectError(WrongDataException.class)
 		.verify();
 
-		Flux<Condition> fluxCondition = conditionService.findAllUserConditions(user);
+		Flux<Condition> fluxCondition = conditionService.findAllUserConditions();
 
 		StepVerifier.create(fluxCondition)
 		.expectComplete()
@@ -403,7 +403,7 @@ class ConditionServiceImplTest {
 		.expectError(AlreadyExistsException.class)
 		.verify();
 
-		Flux<Condition> fluxCondition = conditionService.findAllUserConditions(user);
+		Flux<Condition> fluxCondition = conditionService.findAllUserConditions();
 
 		StepVerifier.create(fluxCondition)
 		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getId().equals(condition1.getId()))

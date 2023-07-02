@@ -9,7 +9,6 @@ import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.Condition;
-import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.ConditionRepository;
 import devs.mrp.springturkey.database.service.ConditionService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +26,8 @@ public class ConditionServiceImpl implements ConditionService {
 	private ConditionRepository conditionRepository;
 
 	@Override
-	public Flux<Condition> findAllUserConditions(TurkeyUser user) {
-		return Flux.fromIterable(conditionRepository.findAllByUser(user))
+	public Flux<Condition> findAllUserConditions() {
+		return Flux.fromIterable(conditionRepository.findAllByUser(loginDetailsReader.getTurkeyUser()))
 				.filter(condition -> loginDetailsReader.isCurrentUser(condition.getUser()));
 	}
 

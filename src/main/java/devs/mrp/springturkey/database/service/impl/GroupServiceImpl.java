@@ -8,7 +8,6 @@ import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
 import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.Group;
-import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.GroupRepository;
 import devs.mrp.springturkey.database.service.GroupService;
 import reactor.core.publisher.Flux;
@@ -24,8 +23,8 @@ public class GroupServiceImpl implements GroupService {
 	private GroupRepository groupRepository;
 
 	@Override
-	public Flux<Group> findAllUserGroups(TurkeyUser user) {
-		return Flux.fromIterable(groupRepository.findAllByUser(user))
+	public Flux<Group> findAllUserGroups() {
+		return Flux.fromIterable(groupRepository.findAllByUser(loginDetailsReader.getTurkeyUser()))
 				.filter(activity -> loginDetailsReader.isCurrentUser(activity.getUser()));
 	}
 

@@ -74,7 +74,7 @@ class GroupServiceImplTest {
 		groupRepository.save(group3);
 		groupRepository.save(group4);
 
-		Flux<Group> fluxGroup = groupService.findAllUserGroups(user);
+		Flux<Group> fluxGroup = groupService.findAllUserGroups();
 
 		StepVerifier.create(fluxGroup)
 		.expectNextMatches(g -> g.getUser().getId().equals(user.getId()) && g.getName().equals("group1") && g.getCreated() != null && g.getEdited() != null)
@@ -118,7 +118,7 @@ class GroupServiceImplTest {
 		groupRepository.save(group3);
 		groupRepository.save(group4);
 
-		Flux<Group> fluxGroup = groupService.findAllUserGroups(user);
+		Flux<Group> fluxGroup = groupService.findAllUserGroups();
 
 		StepVerifier.create(fluxGroup)
 		.expectComplete()
@@ -145,7 +145,7 @@ class GroupServiceImplTest {
 		.expectComplete()
 		.verify();
 
-		Flux<Group> fluxGroup = groupService.findAllUserGroups(user);
+		Flux<Group> fluxGroup = groupService.findAllUserGroups();
 
 		StepVerifier.create(fluxGroup)
 		.expectNextMatches(g -> g.getUser().getId().equals(user.getId())
@@ -176,7 +176,7 @@ class GroupServiceImplTest {
 		.expectComplete()
 		.verify();
 
-		Flux<Group> fluxGroup = groupService.findAllUserGroups(user);
+		Flux<Group> fluxGroup = groupService.findAllUserGroups();
 
 		StepVerifier.create(fluxGroup)
 		.expectNextMatches(g -> g.getUser().getId().equals(user.getId())
@@ -205,7 +205,7 @@ class GroupServiceImplTest {
 		.expectError(DoesNotBelongToUserException.class)
 		.verify();
 
-		Flux<Group> fluxGroup = groupService.findAllUserGroups(user);
+		Flux<Group> fluxGroup = groupService.findAllUserGroups();
 
 		StepVerifier.create(fluxGroup)
 		.expectComplete()
