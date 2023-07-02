@@ -8,7 +8,6 @@ import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
 import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.Activity;
-import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.ActivityRepository;
 import devs.mrp.springturkey.database.service.ActivityService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +24,9 @@ public class ActivityServiceImpl implements ActivityService {
 	@Autowired
 	private ActivityRepository activityRepository;
 
-	@Override // TODO remove user argument and get user one time
-	public Flux<Activity> findAllUserActivites(TurkeyUser user) {
-		return Flux.fromIterable(activityRepository.findAllByUser(user))
+	@Override
+	public Flux<Activity> findAllUserActivites() {
+		return Flux.fromIterable(activityRepository.findAllByUser(loginDetailsReader.getTurkeyUser()))
 				.filter(activity -> loginDetailsReader.isCurrentUser(activity.getUser()));
 	}
 

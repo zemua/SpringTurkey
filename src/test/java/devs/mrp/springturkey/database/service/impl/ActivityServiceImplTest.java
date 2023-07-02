@@ -79,7 +79,7 @@ class ActivityServiceImplTest {
 		activityRepository.save(activity3);
 		activityRepository.save(activity4);
 
-		Flux<Activity> fluxActivity = activityService.findAllUserActivites(user);
+		Flux<Activity> fluxActivity = activityService.findAllUserActivites();
 
 		StepVerifier.create(fluxActivity)
 		.expectNextMatches(activity -> activity.getUser().getId().equals(userResult.getId()) && activity.getActivityName().equals("app1") && activity.getCreated() != null)
@@ -117,7 +117,7 @@ class ActivityServiceImplTest {
 		activityRepository.save(activity2);
 		activityRepository.save(activity3);
 
-		Flux<Activity> fluxActivity = activityService.findAllUserActivites(user);
+		Flux<Activity> fluxActivity = activityService.findAllUserActivites();
 
 		StepVerifier.create(fluxActivity)
 		.verifyComplete();
@@ -144,7 +144,7 @@ class ActivityServiceImplTest {
 		.expectComplete()
 		.verify();
 
-		Flux<Activity> fluxActivity = activityService.findAllUserActivites(user);
+		Flux<Activity> fluxActivity = activityService.findAllUserActivites();
 
 		StepVerifier.create(fluxActivity)
 		.expectNextMatches(activity -> activity.getUser().getId().equals(userResult.getId()) && activity.getId().equals(activity1.getId()) && activity.getCreated() != null && activity.getEdited() != null)
@@ -172,7 +172,7 @@ class ActivityServiceImplTest {
 		.expectComplete()
 		.verify();
 
-		Flux<Activity> fluxActivity = activityService.findAllUserActivites(user);
+		Flux<Activity> fluxActivity = activityService.findAllUserActivites();
 
 		StepVerifier.create(fluxActivity)
 		.expectNextMatches(activity -> activity.getUser().getId().equals(userResult.getId()) && activity.getActivityName().equals("app1") && activity.getId() != null)
@@ -200,7 +200,7 @@ class ActivityServiceImplTest {
 		.expectError(DoesNotBelongToUserException.class)
 		.verify();
 
-		Flux<Activity> fluxActivity = activityService.findAllUserActivites(user);
+		Flux<Activity> fluxActivity = activityService.findAllUserActivites();
 
 		StepVerifier.create(fluxActivity)
 		.expectComplete()
