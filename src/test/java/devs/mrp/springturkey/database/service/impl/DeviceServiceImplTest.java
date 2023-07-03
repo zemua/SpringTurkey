@@ -108,7 +108,7 @@ class DeviceServiceImplTest {
 
 		Device filteringDevice = Device.builder().user(user).usageTime(2234L).deviceType(DeviceType.IOS).id(idTwo).build();
 
-		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(filteringDevice);
+		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(filteringDevice.getId());
 
 		StepVerifier.create(fluxDevice)
 		.expectNextMatches(device -> device.getUser().getId().equals(userResult.getId()) && device.getUsageTime().equals(1234L))
@@ -131,10 +131,11 @@ class DeviceServiceImplTest {
 
 		Device filteringDevice = Device.builder().user(user).usageTime(2234L).deviceType(DeviceType.IOS).id(idTwo).build();
 
-		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(filteringDevice);
+		Flux<Device> fluxDevice = deviceServiceImpl.getUserOtherDevices(filteringDevice.getId());
 
 		StepVerifier.create(fluxDevice)
-		.verifyComplete();
+		.expectError(DoesNotBelongToUserException.class)
+		.verify();
 	}
 
 	@Test

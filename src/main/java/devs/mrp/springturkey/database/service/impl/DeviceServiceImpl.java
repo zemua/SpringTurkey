@@ -43,14 +43,13 @@ public class DeviceServiceImpl implements DeviceService {
 	}
 
 	@Override
-	public Flux<Device> getUserOtherDevices(Device device) {
-		if (device == null) {
-			return Flux.empty();
+	public Flux<Device> getUserOtherDevices(UUID deviceId) {
+		if (deviceId == null) {
+			return Flux.error(new DoesNotBelongToUserException("No devices available as null"));
 		}
-		return getUserDevices()
-				.filter(d -> {
-					return !d.getId().equals(device.getId());
-				});
+		return getDeviceById(deviceId)
+				.flatMapMany(existingDevice -> getUserDevices())
+				.filter(d -> !d.getId().equals(deviceId));
 	}
 
 	@Override

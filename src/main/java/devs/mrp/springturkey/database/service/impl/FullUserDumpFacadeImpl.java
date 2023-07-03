@@ -3,6 +3,7 @@ package devs.mrp.springturkey.database.service.impl;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,10 +33,13 @@ public class FullUserDumpFacadeImpl implements FullUserDumpFacade {
 	private SettingService settingService;
 
 	@Override
-	public Mono<Map<Object, Object>> fullUserDump(Device currentDevice) {
+	public Mono<Map<Object, Object>> fullUserDump(UUID currentDeviceId) {
 		return Mono.just(new HashMap<Object, Object>())
-				.flatMap(map -> addToMap(map, userDevices(currentDevice)))
-				.flatMap(map -> addToMap(map, userActivities()));
+				.flatMap(map -> addToMap(map, otherDevicesTime(currentDeviceId)))
+				.flatMap(map -> addToMap(map, userActivities()))
+				.flatMap(map -> addToMap(map, userGroups()))
+				.flatMap(map -> addToMap(map, userConditions()))
+				.flatMap(map -> addToMap(map, userSettings()));
 	}
 
 	private Mono<Map<Object,Object>> addToMap(Map<Object,Object> map, Mono<Map<?,?>> toAdd) {
@@ -45,8 +49,8 @@ public class FullUserDumpFacadeImpl implements FullUserDumpFacade {
 		});
 	}
 
-	private Mono<Map<?,?>> userDevices(Device currentDevice) {
-		return deviceService.getUserOtherDevices(currentDevice)
+	private Mono<Map<?,?>> otherDevicesTime(UUID currentDeviceId) {
+		return deviceService.getUserOtherDevices(currentDeviceId)
 				.map(Device::getUsageTime)
 				.switchIfEmpty(Flux.just(0L))
 				.reduce((t1,t2) -> t1+t2)
@@ -57,6 +61,24 @@ public class FullUserDumpFacadeImpl implements FullUserDumpFacade {
 		return activityService.findAllUserActivites()
 				.collectList()
 				.map(activites -> Collections.singletonMap("activities", activites));
+	}
+
+	private Mono<Map<?,?>> userGroups() {
+		return groupService.findAllUserGroups()
+				.collectList()
+				.map(groups -> Collections.singletonMap("groups", groups));
+	}
+
+	private Mono<Map<?,?>> userConditions() {
+		return conditionService.findAllUserConditions()
+				.collectList()
+				.map(conditions -> Collections.singletonMap("conditions", conditions));
+	}
+
+	private Mono<Map<?,?>> userSettings() {
+		return settingService.findAllUserSettings()
+				.collectList()
+				.map(settings -> Collections.singletonMap("settings", settings));
 	}
 
 }

@@ -12,7 +12,7 @@ public interface DeviceService {
 
 	public Flux<Device> getUserDevices();
 
-	public Flux<Device> getUserOtherDevices(Device device);
+	public Flux<Device> getUserOtherDevices(UUID deviceId);
 
 	public Mono<Device> getDeviceById(UUID deviceId);
 
