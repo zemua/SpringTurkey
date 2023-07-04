@@ -1,7 +1,7 @@
 package devs.mrp.springturkey.database.service.impl;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -9,13 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import devs.mrp.springturkey.database.entity.Device;
+import devs.mrp.springturkey.database.entity.dto.ExportData;
 import devs.mrp.springturkey.database.service.ActivityService;
 import devs.mrp.springturkey.database.service.ConditionService;
 import devs.mrp.springturkey.database.service.DeviceService;
 import devs.mrp.springturkey.database.service.FullUserDumpFacade;
 import devs.mrp.springturkey.database.service.GroupService;
 import devs.mrp.springturkey.database.service.SettingService;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -33,13 +33,9 @@ public class FullUserDumpFacadeImpl implements FullUserDumpFacade {
 	private SettingService settingService;
 
 	@Override
-	public Mono<Map<Object, Object>> fullUserDump(UUID currentDeviceId) {
-		return Mono.just(new HashMap<Object, Object>())
-				.flatMap(map -> addToMap(map, otherDevicesTime(currentDeviceId)))
-				.flatMap(map -> addToMap(map, userActivities()))
-				.flatMap(map -> addToMap(map, userGroups()))
-				.flatMap(map -> addToMap(map, userConditions()))
-				.flatMap(map -> addToMap(map, userSettings()));
+	public Mono<ExportData> fullUserDump(UUID currentDeviceId) {
+		return Mono.just(new ExportData())
+				.zipWith(otherDevicesTime(currentDeviceId)).map(tupla -> tupla.getT1().withOtherDevices(tupla.getT2()));
 	}
 
 	private Mono<Map<Object,Object>> addToMap(Map<Object,Object> map, Mono<Map<?,?>> toAdd) {
@@ -49,12 +45,13 @@ public class FullUserDumpFacadeImpl implements FullUserDumpFacade {
 		});
 	}
 
-	private Mono<Map<?,?>> otherDevicesTime(UUID currentDeviceId) {
+	private Mono<List<Device>> otherDevicesTime(UUID currentDeviceId) {
 		return deviceService.getUserOtherDevices(currentDeviceId)
-				.map(Device::getUsageTime)
-				.switchIfEmpty(Flux.just(0L))
-				.reduce((t1,t2) -> t1+t2)
-				.map(usageTime -> Collections.singletonMap("usageTime", usageTime));
+				.collectList();
+		//.map(Device::getUsageTime)
+		//.switchIfEmpty(Flux.just(0L))
+		//.reduce((t1,t2) -> t1+t2)
+		//.map(usageTime -> Collections.singletonMap("usageTime", usageTime));
 	}
 
 	private Mono<Map<?,?>> userActivities() {
