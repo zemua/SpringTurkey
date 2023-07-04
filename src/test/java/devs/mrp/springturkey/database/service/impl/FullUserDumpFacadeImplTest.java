@@ -1,8 +1,8 @@
 package devs.mrp.springturkey.database.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +26,7 @@ import devs.mrp.springturkey.database.entity.Device;
 import devs.mrp.springturkey.database.entity.Group;
 import devs.mrp.springturkey.database.entity.Setting;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
+import devs.mrp.springturkey.database.entity.dto.ExportData;
 import devs.mrp.springturkey.database.entity.enumerable.ActivityType;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.database.entity.enumerable.DeviceType;
@@ -68,6 +69,18 @@ class FullUserDumpFacadeImplTest {
 	private Device device2;
 	private Device device3;
 
+	private Group group1;
+	private Group group2;
+
+	private Activity activity1;
+	private Activity activity2;
+
+	private Condition condition1;
+	private Condition condition2;
+
+	private Setting setting1;
+	private Setting setting2;
+
 	@BeforeEach
 	void setup() {
 		user = userRepository.save(TurkeyUser.builder().email("some@user.me").build());
@@ -75,21 +88,21 @@ class FullUserDumpFacadeImplTest {
 		device2 = deviceRepository.save(Device.builder().deviceType(DeviceType.ANDROID).usageTime(234L).user(user).build());
 		device3 = deviceRepository.save(Device.builder().deviceType(DeviceType.ANDROID).usageTime(345L).user(user).build());
 
-		Group group1 = groupRepository.save(Group.builder().user(user).name("group1").type(GroupType.NEGATIVE).build());
-		Group group2 = groupRepository.save(Group.builder().user(user).name("group2").type(GroupType.POSITIVE).build());
+		group1 = groupRepository.save(Group.builder().user(user).name("group1").type(GroupType.NEGATIVE).build());
+		group2 = groupRepository.save(Group.builder().user(user).name("group2").type(GroupType.POSITIVE).build());
 
-		activityRepository.save(Activity.builder().user(user).activityName("act1").group(group1).activityType(ActivityType.ANDROID_APP).categoryType(CategoryType.NEGATIVE).build());
-		activityRepository.save(Activity.builder().user(user).activityName("act2").activityType(ActivityType.ANDROID_APP).categoryType(CategoryType.NEGATIVE).build());
+		activity1 = activityRepository.save(Activity.builder().user(user).activityName("act1").group(group1).activityType(ActivityType.ANDROID_APP).categoryType(CategoryType.NEGATIVE).build());
+		activity2 = activityRepository.save(Activity.builder().user(user).activityName("act2").activityType(ActivityType.ANDROID_APP).categoryType(CategoryType.NEGATIVE).build());
 
-		conditionRepository.save(Condition.builder().user(user)
+		condition1 = conditionRepository.save(Condition.builder().user(user)
 				.conditionalGroup(group1).targetGroup(group2)
 				.lastDaysToConsider(3).requiredUsageMs(1234L).build());
-		conditionRepository.save(Condition.builder().user(user)
+		condition2 = conditionRepository.save(Condition.builder().user(user)
 				.conditionalGroup(group1).targetGroup(group2)
 				.lastDaysToConsider(2).requiredUsageMs(123L).build());
 
-		settingRepository.save(Setting.builder().user(user).platform(PlatformType.ALL).settingKey("setting1").settingValue("value1").build());
-		settingRepository.save(Setting.builder().user(user).platform(PlatformType.ALL).settingKey("setting2").settingValue("value2").build());
+		setting1 = settingRepository.save(Setting.builder().user(user).platform(PlatformType.ALL).settingKey("setting1").settingValue("value1").build());
+		setting2 = settingRepository.save(Setting.builder().user(user).platform(PlatformType.ALL).settingKey("setting2").settingValue("value2").build());
 	}
 
 	@Test
@@ -97,16 +110,21 @@ class FullUserDumpFacadeImplTest {
 	void testFullUserDump() throws JsonMappingException, JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 
-		Map<Object,Object> expected = mapper.readValue(expectedJson(), Map.class);
+		Map<Object,Object> expected = mapper.convertValue(expectedData(), Map.class);
 
-		Map<Object,Object> result = fullUserDumpFacade.fullUserDump(device1.getId()).block();
+		ExportData result = fullUserDumpFacade.fullUserDump(device1.getId()).block();
+		Map<Object,Object> mapResult = mapper.convertValue(result, Map.class);
 
-		assertEquals(expected, result);
-		fail("Not yet implemented");
+		assertEquals(expected, mapResult);
 	}
 
-	private String expectedJson() {
-		return "{\"someJson\":\"someValue\"}";
+	private ExportData expectedData() {
+		return new ExportData()
+				.withActivities(List.of(activity1, activity2))
+				.withConditions(List.of(condition1, condition2))
+				.withGroups(List.of(group1, group2))
+				.withOtherDevices(List.of(device2, device3))
+				.withSettings(List.of(setting1, setting2));
 	}
 
 }

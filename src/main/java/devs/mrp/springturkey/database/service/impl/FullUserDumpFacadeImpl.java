@@ -1,14 +1,16 @@
 package devs.mrp.springturkey.database.service.impl;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import devs.mrp.springturkey.database.entity.Activity;
+import devs.mrp.springturkey.database.entity.Condition;
 import devs.mrp.springturkey.database.entity.Device;
+import devs.mrp.springturkey.database.entity.Group;
+import devs.mrp.springturkey.database.entity.Setting;
 import devs.mrp.springturkey.database.entity.dto.ExportData;
 import devs.mrp.springturkey.database.service.ActivityService;
 import devs.mrp.springturkey.database.service.ConditionService;
@@ -35,47 +37,36 @@ public class FullUserDumpFacadeImpl implements FullUserDumpFacade {
 	@Override
 	public Mono<ExportData> fullUserDump(UUID currentDeviceId) {
 		return Mono.just(new ExportData())
-				.zipWith(otherDevicesTime(currentDeviceId)).map(tupla -> tupla.getT1().withOtherDevices(tupla.getT2()));
-	}
-
-	private Mono<Map<Object,Object>> addToMap(Map<Object,Object> map, Mono<Map<?,?>> toAdd) {
-		return toAdd.map(mapToAdd -> {
-			map.putAll(mapToAdd);
-			return map;
-		});
+				.zipWith(otherDevicesTime(currentDeviceId)).map(tupla -> tupla.getT1().withOtherDevices(tupla.getT2()))
+				.zipWith(userActivities()).map(tupla -> tupla.getT1().withActivities(tupla.getT2()))
+				.zipWith(userGroups()).map(tupla -> tupla.getT1().withGroups(tupla.getT2()))
+				.zipWith(userConditions()).map(tupla -> tupla.getT1().withConditions(tupla.getT2()))
+				.zipWith(userSettings()).map(tupla -> tupla.getT1().withSettings(tupla.getT2()));
 	}
 
 	private Mono<List<Device>> otherDevicesTime(UUID currentDeviceId) {
 		return deviceService.getUserOtherDevices(currentDeviceId)
 				.collectList();
-		//.map(Device::getUsageTime)
-		//.switchIfEmpty(Flux.just(0L))
-		//.reduce((t1,t2) -> t1+t2)
-		//.map(usageTime -> Collections.singletonMap("usageTime", usageTime));
 	}
 
-	private Mono<Map<?,?>> userActivities() {
+	private Mono<List<Activity>> userActivities() {
 		return activityService.findAllUserActivites()
-				.collectList()
-				.map(activites -> Collections.singletonMap("activities", activites));
+				.collectList();
 	}
 
-	private Mono<Map<?,?>> userGroups() {
+	private Mono<List<Group>> userGroups() {
 		return groupService.findAllUserGroups()
-				.collectList()
-				.map(groups -> Collections.singletonMap("groups", groups));
+				.collectList();
 	}
 
-	private Mono<Map<?,?>> userConditions() {
+	private Mono<List<Condition>> userConditions() {
 		return conditionService.findAllUserConditions()
-				.collectList()
-				.map(conditions -> Collections.singletonMap("conditions", conditions));
+				.collectList();
 	}
 
-	private Mono<Map<?,?>> userSettings() {
+	private Mono<List<Setting>> userSettings() {
 		return settingService.findAllUserSettings()
-				.collectList()
-				.map(settings -> Collections.singletonMap("settings", settings));
+				.collectList();
 	}
 
 }
