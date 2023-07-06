@@ -19,7 +19,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.configuration.SecurityConfig;
 import devs.mrp.springturkey.controller.dto.ExportDataDto;
 import devs.mrp.springturkey.database.entity.dto.ExportData;
@@ -60,12 +59,18 @@ class ExportControllerTest {
 		String deviceId = "not a valid UUID";
 		when(fullUserDumpFacade.fullUserDump(ArgumentMatchers.any())).thenReturn(Mono.just(mockExportData()));
 
-		ExportDataDto expectedResult = expectedData();
+		webClient.get().uri("/export/full/" + deviceId)
+		.exchange()
+		.expectStatus().isEqualTo(HttpStatusCode.valueOf(400));
+	}
+
+	@Test
+	void testFullExportNotIdentified() throws JsonMappingException, JsonProcessingException {
+		UUID deviceId = UUID.randomUUID();
 
 		webClient.get().uri("/export/full/" + deviceId)
 		.exchange()
-		.expectStatus().isEqualTo(HttpStatusCode.valueOf(400))
-		.expectBody(WrongDataException.class);
+		.expectStatus().isEqualTo(HttpStatusCode.valueOf(401));
 	}
 
 	private ExportData mockExportData() throws JsonMappingException, JsonProcessingException {
