@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
+import devs.mrp.springturkey.Exceptions.WrongDataException;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
@@ -20,6 +21,14 @@ public class TurkeyExceptionHandler {
 	public Mono<String> handleDoesNotBelongToUserException(DoesNotBelongToUserException ex) {
 		log.error("Handling exception: ", ex);
 		return Mono.just("Resource does not belong to this user");
+	}
+
+	@ExceptionHandler(WrongDataException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseBody
+	public Mono<String> handleWrongDataException(WrongDataException e) {
+		log.error("Handling exception: ", e);
+		return Mono.just("Error in data");
 	}
 
 	@ExceptionHandler(Exception.class)
