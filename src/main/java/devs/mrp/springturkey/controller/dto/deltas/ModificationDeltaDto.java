@@ -8,7 +8,7 @@ public class ModificationDeltaDto {
 	private LocalDateTime timestamp;
 	private Table table;
 	private UUID recordId;
-	private String field;
-	private String value;
+	private String fieldName;
+	private String textValue;
 
 }
