@@ -1,0 +1,74 @@
+server:
+  port: 8082
+turkey:
+  scheme: http
+  host: localhost
+  gateway:
+    port: 8080
+  usermgm:
+    port: 8081
+  authscheme: http
+  authport: 28080
+  authhost: localhost
+  authcontenttype: application/json
+  realm: Turkey
+  authclient: turkeyTest
+  authsecret: gYrhtCrDekDl0nkclhI1yjWN5dUqTbND
+  tokenproperty: access_token
+  paths:
+    token: /auth/realms/${turkey.realm}/protocol/openid-connect/token
+    createuser: /client/create
+    verifyemail: /client/verify
+    changepass: /client/password
+jwk:
+  endpoint: ${turkey.authscheme}://${turkey.authhost}:${turkey.authport}/auth/realms/${turkey.realm}/protocol/openid-connect/certs
+spring:
+  application:
+    name: Turkey-Keycloak Bridge
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${turkey.authscheme}://${turkey.authhost}:${turkey.authport}/auth/realms/${turkey.realm}
+      client:
+        registration:
+          keycloak:
+            provider: keycloak
+            client-id: ${turkey.authclient}
+            client-secret: ${turkey.authsecret}
+            authorization-grant-type: client_credentials
+            scope: openid
+        provider:
+          keycloak:
+            issuer-uri: ${turkey.authscheme}://${turkey.authhost}:${turkey.authport}/auth/realms/${turkey.realm}
+            token-uri: ${turkey.authscheme}://${turkey.authhost}:${turkey.authport}/auth/realms/${turkey.realm}/protocol/openid-connect/token
+            authorization-uri: ${turkey.authscheme}://${turkey.authhost}:${turkey.authport}/auth/realms/${turkey.realm}/protocol/openid-connect/auth
+            user-info-uri: ${turkey.authscheme}://${turkey.authhost}:${turkey.authport}/auth/realms/${turkey.realm}/protocol/openid-connect/userinfo
+            user-name-attribute: preferred_username
+            jwk-set-uri: ${turkey.authscheme}://${turkey.authhost}:${turkey.authport}/auth/realms/${turkey.realm}/protocol/openid-connect/certs
+  datasource:
+    url: jdbc:mysql://localhost:4407/turkeydb?createDatabaseIfNotExist=true
+    username: testuser
+    password: pwd_123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    generate-ddl: false # for creating db schema, change to false
+    show-sql: false # false instead of true in prod
+    #defer-datasource-initialization: true # comment out in prod
+    properties:
+      hibernate:
+        dialtect: org.hibernate.dialect.MySQL8Dialect
+        ddl-auto: validate # change to validate instead of create for prod
+        format_sql: true
+  sql:
+    init:
+      mode: never # never instead of always in prod
+
+---
+spring:
+  config:
+    activate:
+      on-profile: debug
+logging:
+  level:
+    root: TRACE

@@ -1,0 +1,46 @@
+server:
+  port: 8082
+turkey:
+  scheme: http
+  host: localhost
+  gateway:
+    port: 8080
+  usermgm:
+    port: 8081
+  authscheme: http
+  authport: 28080
+  authhost: localhost
+  authcontenttype: application/json
+  realm: Turkey
+  authclient: turkeyTest
+  authsecret: gYrhtCrDekDl0nkclhI1yjWN5dUqTbND
+  tokenproperty: access_token
+  paths:
+    token: /auth/realms/${turkey.realm}/protocol/openid-connect/token
+    createuser: /client/create
+    verifyemail: /client/verify
+    changepass: /client/password
+jwk:
+  endpoint: ${turkey.authscheme}://${turkey.authhost}:${turkey.authport}/auth/realms/${turkey.realm}/protocol/openid-connect/certs
+spring:
+  application:
+    name: Turkey-Keycloak Bridge
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${turkey.authscheme}://${turkey.authhost}:${turkey.authport}/auth/realms/${turkey.realm}
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa
+
+---
+spring:
+  config:
+    activate:
+      on-profile: debug
+logging:
+  level:
+    root: TRACE
