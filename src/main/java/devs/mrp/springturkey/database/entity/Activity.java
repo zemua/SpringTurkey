@@ -71,6 +71,7 @@ public class Activity {
 	private Group group;
 
 	@Nullable
+	@Column(name = "prevent_closing")
 	private Boolean preventClosing;
 
 	@CreatedDate
