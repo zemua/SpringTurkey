@@ -1,4 +1,4 @@
-package devs.mrp.springturkey.controller.dto.deltas;
+package devs.mrp.springturkey.delta.validation;
 
 import static java.util.Map.entry;
 
@@ -9,6 +9,7 @@ import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 
 public enum Table {
 
+	DEVICE(null, null),
 	GROUP(Map.ofEntries(
 			entry("name", FieldValidator.builder().fieldName("name").pattern(nameRegex()).build()),
 			entry("preventClose", FieldValidator.builder().fieldName("prevent_close").pattern(booleanRegex()).build())

@@ -1,10 +1,10 @@
-package devs.mrp.springturkey.controller.dto.deltas;
+package devs.mrp.springturkey.delta.validation.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-class TableTest {
+class DataConstrainerProviderImplTest {
 
 	@Test
 	void test() {

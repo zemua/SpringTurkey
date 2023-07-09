@@ -1,4 +1,4 @@
-package devs.mrp.springturkey.controller.dto.deltas;
+package devs.mrp.springturkey.delta.validation;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,7 +44,8 @@ public class FieldValidator {
 		}
 
 		public FieldValidator build() {
-			return new FieldValidator(this.fieldName, this.pattern);
+			FieldValidator result = new FieldValidator(this.fieldName, this.pattern);
+			return result;
 		}
 
 	}
