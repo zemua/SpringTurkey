@@ -1,7 +1,7 @@
 package devs.mrp.springturkey.delta.validation.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -59,8 +59,84 @@ class GroupDataConstrainerTest {
 	}
 
 	@Test
-	void test() {
-		fail("not yet implemented");
+	void pushesPreventCloseFails() throws WrongDataException {
+		UUID id = UUID.randomUUID();
+		ModificationDelta delta = ModificationDelta.builder()
+				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
+				.table(Table.GROUP)
+				.recordId(id)
+				.fieldName("preventClose")
+				.textValue("invalid")
+				.build();
+
+		assertThrows(WrongDataException.class, () -> dataConstrainer.pushDelta(delta));
+	}
+
+	@Test
+	void pushesNameCorrectly() throws WrongDataException {
+		UUID id = UUID.randomUUID();
+		ModificationDelta delta = ModificationDelta.builder()
+				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
+				.table(Table.GROUP)
+				.recordId(id)
+				.fieldName("name")
+				.textValue("some name with numbers 123")
+				.build();
+
+		ModificationDelta modifiedDelta = ModificationDelta.builder()
+				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
+				.table(Table.GROUP)
+				.recordId(id)
+				.fieldName("name")
+				.textValue("some name with numbers 123")
+				.build();
+
+		when(deltaFacade.pushDelta(ArgumentMatchers.refEq(modifiedDelta))).thenReturn(1);
+
+		int result = dataConstrainer.pushDelta(delta);
+		assertEquals(1, result);
+	}
+
+	@Test
+	void pushesNameFails() throws WrongDataException {
+		UUID id = UUID.randomUUID();
+		ModificationDelta delta = ModificationDelta.builder()
+				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
+				.table(Table.GROUP)
+				.recordId(id)
+				.fieldName("name")
+				.textValue("invalid symbol {")
+				.build();
+
+		assertThrows(WrongDataException.class, () -> dataConstrainer.pushDelta(delta));
+	}
+
+	@Test
+	void invalidField() {
+		UUID id = UUID.randomUUID();
+		ModificationDelta delta = ModificationDelta.builder()
+				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
+				.table(Table.GROUP)
+				.recordId(id)
+				.fieldName("invalidField")
+				.textValue("true")
+				.build();
+
+		assertThrows(WrongDataException.class, () -> dataConstrainer.pushDelta(delta));
+	}
+
+	@Test
+	void invalidTable() {
+		UUID id = UUID.randomUUID();
+		ModificationDelta delta = ModificationDelta.builder()
+				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
+				.table(Table.ACTIVITY)
+				.recordId(id)
+				.fieldName("preventClose")
+				.textValue("true")
+				.build();
+
+		assertThrows(WrongDataException.class, () -> dataConstrainer.pushDelta(delta));
 	}
 
 }

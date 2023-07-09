@@ -18,8 +18,10 @@ public abstract class DataConstrainerTemplate implements DataConstrainer {
 	private boolean isValid(ModificationDelta delta) {
 		String name = delta.getFieldName();
 		String value = delta.getTextValue();
-		return getFieldMap().containsKey(name) && getFieldMap().get(name).isValid(value);
+		return isValidTable(delta.getTable()) && getFieldMap().containsKey(name) && getFieldMap().get(name).isValid(value);
 	}
+
+	protected abstract boolean isValidTable(Table table);
 
 	private ModificationDelta mapDeltaField(ModificationDelta delta) throws WrongDataException {
 		return delta.withFieldName(getFieldName(delta));
