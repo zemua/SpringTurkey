@@ -3,7 +3,7 @@ package devs.mrp.springturkey.delta.validation;
 import java.util.Map;
 
 import devs.mrp.springturkey.Exceptions.WrongDataException;
-import devs.mrp.springturkey.database.service.DeltaFacade;
+import devs.mrp.springturkey.database.service.DeltaFacadeService;
 
 public abstract class DataConstrainerTemplate implements DataConstrainer {
 
@@ -12,7 +12,7 @@ public abstract class DataConstrainerTemplate implements DataConstrainer {
 		if (!isValid(delta)) {
 			throw new WrongDataException("Incorrect field name");
 		}
-		return getDeltaFacade().pushDelta(mapDeltaField(delta));
+		return getDeltaFacadeService().pushDelta(mapDeltaField(delta));
 	}
 
 	private boolean isValid(ModificationDelta delta) {
@@ -35,7 +35,7 @@ public abstract class DataConstrainerTemplate implements DataConstrainer {
 
 	protected abstract Map<String,FieldValidator> getFieldMap();
 
-	protected abstract DeltaFacade getDeltaFacade();
+	protected abstract DeltaFacadeService getDeltaFacadeService();
 
 	protected static final String nameRegex() {
 		return "^\\w+[\\h\\w]*$";
