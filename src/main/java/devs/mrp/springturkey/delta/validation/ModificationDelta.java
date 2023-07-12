@@ -16,6 +16,8 @@ import lombok.With;
 @NoArgsConstructor
 public class ModificationDelta {
 
+	// TODO add field deltaType and change class name to "Delta"
+
 	private LocalDateTime timestamp;
 	private Table table;
 	private UUID recordId;
