@@ -1,13 +1,22 @@
 package devs.mrp.springturkey.delta.validation;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.database.service.DeltaFacadeService;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaTable;
+import lombok.Getter;
 
 public abstract class DataConstrainerTemplate implements DataConstrainer {
+
+	@Getter
+	private static final Pattern namePattern = Pattern.compile("^\\w+[\\h\\w]*$");
+	@Getter
+	private static final Pattern booleanPattern = Pattern.compile("^true$|^false$");
+	@Getter
+	private static final Pattern uuidPattern = Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
 
 	@Override
 	public int pushDelta(Delta delta) throws WrongDataException {
@@ -49,18 +58,6 @@ public abstract class DataConstrainerTemplate implements DataConstrainer {
 	protected abstract Map<String,FieldValidator> getFieldMap();
 
 	protected abstract DeltaFacadeService getDeltaFacadeService();
-
-	protected static final String nameRegex() {
-		return "^\\w+[\\h\\w]*$";
-	}
-
-	protected static final String booleanRegex() {
-		return "^true$|^false$";
-	}
-
-	protected static final String uuidRegex() {
-		return "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
-	}
 
 	protected static final <T extends Enum<T>> String regexFromEnum(Class<T> enumerable) {
 		StringBuilder builder = new StringBuilder();

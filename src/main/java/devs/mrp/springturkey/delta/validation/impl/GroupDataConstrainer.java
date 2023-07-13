@@ -21,8 +21,8 @@ public class GroupDataConstrainer extends DataConstrainerTemplate {
 	@Override
 	protected Map<String, FieldValidator> getFieldMap() {
 		return Map.ofEntries(
-				entry("name", FieldValidator.builder().fieldName("name").pattern(nameRegex()).build()),
-				entry("preventClose", FieldValidator.builder().fieldName("prevent_close").pattern(booleanRegex()).build())
+				entry("name", FieldValidator.builder().fieldName("name").predicate(s -> getNamePattern().matcher(s).matches()).build()),
+				entry("preventClose", FieldValidator.builder().fieldName("prevent_close").predicate(s -> getBooleanPattern().matcher(s).matches()).build())
 				);
 	}
 

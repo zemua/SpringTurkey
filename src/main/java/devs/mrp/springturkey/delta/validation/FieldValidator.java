@@ -1,7 +1,6 @@
 package devs.mrp.springturkey.delta.validation;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.function.Predicate;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -16,11 +15,10 @@ public class FieldValidator {
 	private String fieldName;
 
 	@NotNull
-	private Pattern pattern;
+	private Predicate<String> predicate;
 
 	public boolean isValid(String value) {
-		Matcher matcher = pattern.matcher(value);
-		return matcher.matches();
+		return predicate.test(value);
 	}
 
 	public static FieldValidatorBuilder builder() {
@@ -31,20 +29,20 @@ public class FieldValidator {
 
 		private String fieldName;
 
-		private Pattern pattern;
+		private Predicate<String> predicate;
 
 		public FieldValidatorBuilder fieldName(String name) {
 			this.fieldName = name;
 			return this;
 		}
 
-		public FieldValidatorBuilder pattern(String regex) {
-			this.pattern = Pattern.compile(regex);
+		public FieldValidatorBuilder predicate(Predicate<String> p) {
+			this.predicate = p;
 			return this;
 		}
 
 		public FieldValidator build() {
-			FieldValidator result = new FieldValidator(this.fieldName, this.pattern);
+			FieldValidator result = new FieldValidator(this.fieldName, this.predicate);
 			return result;
 		}
 
