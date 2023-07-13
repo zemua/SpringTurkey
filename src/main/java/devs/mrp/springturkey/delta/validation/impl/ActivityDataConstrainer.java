@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.database.service.DeltaFacadeService;
+import devs.mrp.springturkey.delta.DeltaTable;
 import devs.mrp.springturkey.delta.validation.DataConstrainerTemplate;
 import devs.mrp.springturkey.delta.validation.FieldValidator;
-import devs.mrp.springturkey.delta.validation.Table;
 
 @Service("activityConstraints")
 public class ActivityDataConstrainer extends DataConstrainerTemplate {
@@ -20,8 +20,8 @@ public class ActivityDataConstrainer extends DataConstrainerTemplate {
 	private DeltaFacadeService deltaFacadeService;
 
 	@Override
-	protected boolean isValidTable(Table table) {
-		return Table.ACTIVITY.equals(table);
+	protected boolean isValidTable(DeltaTable table) {
+		return DeltaTable.ACTIVITY.equals(table);
 	}
 
 	@Override

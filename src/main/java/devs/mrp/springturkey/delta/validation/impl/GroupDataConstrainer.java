@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import devs.mrp.springturkey.database.service.DeltaFacadeService;
+import devs.mrp.springturkey.delta.DeltaTable;
 import devs.mrp.springturkey.delta.validation.DataConstrainerTemplate;
 import devs.mrp.springturkey.delta.validation.FieldValidator;
-import devs.mrp.springturkey.delta.validation.Table;
 
 @Service("groupConstraints")
 public class GroupDataConstrainer extends DataConstrainerTemplate {
@@ -32,8 +32,8 @@ public class GroupDataConstrainer extends DataConstrainerTemplate {
 	}
 
 	@Override
-	protected boolean isValidTable(Table table) {
-		return Table.GROUP.equals(table);
+	protected boolean isValidTable(DeltaTable table) {
+		return DeltaTable.GROUP.equals(table);
 	}
 
 }

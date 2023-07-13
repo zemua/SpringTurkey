@@ -18,9 +18,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.database.service.DeltaFacadeService;
+import devs.mrp.springturkey.delta.Delta;
+import devs.mrp.springturkey.delta.DeltaTable;
+import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.DataConstrainer;
-import devs.mrp.springturkey.delta.validation.ModificationDelta;
-import devs.mrp.springturkey.delta.validation.Table;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {GroupDataConstrainer.class})
@@ -36,17 +37,19 @@ class GroupDataConstrainerTest {
 	@Test
 	void pushesPreventCloseCorrectly() throws WrongDataException {
 		UUID id = UUID.randomUUID();
-		ModificationDelta delta = ModificationDelta.builder()
+		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
-				.table(Table.GROUP)
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.GROUP)
 				.recordId(id)
 				.fieldName("preventClose")
 				.textValue("true")
 				.build();
 
-		ModificationDelta modifiedDelta = ModificationDelta.builder()
+		Delta modifiedDelta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
-				.table(Table.GROUP)
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.GROUP)
 				.recordId(id)
 				.fieldName("prevent_close")
 				.textValue("true")
@@ -61,9 +64,10 @@ class GroupDataConstrainerTest {
 	@Test
 	void pushesPreventCloseFails() throws WrongDataException {
 		UUID id = UUID.randomUUID();
-		ModificationDelta delta = ModificationDelta.builder()
+		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
-				.table(Table.GROUP)
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.GROUP)
 				.recordId(id)
 				.fieldName("preventClose")
 				.textValue("invalid")
@@ -75,17 +79,19 @@ class GroupDataConstrainerTest {
 	@Test
 	void pushesNameCorrectly() throws WrongDataException {
 		UUID id = UUID.randomUUID();
-		ModificationDelta delta = ModificationDelta.builder()
+		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
-				.table(Table.GROUP)
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.GROUP)
 				.recordId(id)
 				.fieldName("name")
 				.textValue("some name with numbers 123")
 				.build();
 
-		ModificationDelta modifiedDelta = ModificationDelta.builder()
+		Delta modifiedDelta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
-				.table(Table.GROUP)
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.GROUP)
 				.recordId(id)
 				.fieldName("name")
 				.textValue("some name with numbers 123")
@@ -100,9 +106,10 @@ class GroupDataConstrainerTest {
 	@Test
 	void pushesNameFails() throws WrongDataException {
 		UUID id = UUID.randomUUID();
-		ModificationDelta delta = ModificationDelta.builder()
+		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
-				.table(Table.GROUP)
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.GROUP)
 				.recordId(id)
 				.fieldName("name")
 				.textValue("invalid symbol {")
@@ -114,9 +121,10 @@ class GroupDataConstrainerTest {
 	@Test
 	void invalidField() {
 		UUID id = UUID.randomUUID();
-		ModificationDelta delta = ModificationDelta.builder()
+		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
-				.table(Table.GROUP)
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.GROUP)
 				.recordId(id)
 				.fieldName("invalidField")
 				.textValue("true")
@@ -128,9 +136,10 @@ class GroupDataConstrainerTest {
 	@Test
 	void invalidTable() {
 		UUID id = UUID.randomUUID();
-		ModificationDelta delta = ModificationDelta.builder()
+		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
-				.table(Table.ACTIVITY)
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.ACTIVITY)
 				.recordId(id)
 				.fieldName("preventClose")
 				.textValue("true")

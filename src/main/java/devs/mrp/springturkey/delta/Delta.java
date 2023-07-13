@@ -1,8 +1,10 @@
-package devs.mrp.springturkey.delta.validation;
+package devs.mrp.springturkey.delta;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,14 +16,19 @@ import lombok.With;
 @With
 @AllArgsConstructor
 @NoArgsConstructor
-public class ModificationDelta {
+public class Delta {
 
-	// TODO add field deltaType and change class name to "Delta"
-
+	@NotNull
 	private LocalDateTime timestamp;
-	private Table table;
+	@NotNull
+	private DeltaType deltaType;
+	@NotNull
+	private DeltaTable table;
+	@NotNull
 	private UUID recordId;
+	@NotBlank
 	private String fieldName;
+	@NotBlank
 	private String textValue;
 
 }

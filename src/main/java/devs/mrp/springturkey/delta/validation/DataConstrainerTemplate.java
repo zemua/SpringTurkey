@@ -4,30 +4,41 @@ import java.util.Map;
 
 import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.database.service.DeltaFacadeService;
+import devs.mrp.springturkey.delta.Delta;
+import devs.mrp.springturkey.delta.DeltaTable;
 
 public abstract class DataConstrainerTemplate implements DataConstrainer {
 
 	@Override
-	public int pushDelta(ModificationDelta delta) throws WrongDataException {
+	public int pushDelta(Delta delta) throws WrongDataException {
 		if (!isValid(delta)) {
 			throw new WrongDataException("Incorrect field name");
 		}
 		return getDeltaFacadeService().pushDelta(mapDeltaField(delta));
 	}
 
-	private boolean isValid(ModificationDelta delta) {
-		String name = delta.getFieldName();
-		String value = delta.getTextValue();
-		return isValidTable(delta.getTable()) && getFieldMap().containsKey(name) && getFieldMap().get(name).isValid(value);
+	private boolean isValid(Delta delta) {
+		switch(delta.getDeltaType()) {
+		case MODIFICATION:
+			return isValidModificationDelta(delta);
+		case CREATION:
+		case DELETION:
+		default:
+			throw new RuntimeException("DeltaType not contemplated: " + delta.getDeltaType());
+		}
 	}
 
-	protected abstract boolean isValidTable(Table table);
+	private boolean isValidModificationDelta(Delta delta) {
+		return isValidTable(delta.getTable()) && getFieldMap().containsKey(delta.getFieldName()) && getFieldMap().get(delta.getFieldName()).isValid(delta.getTextValue());
+	}
 
-	private ModificationDelta mapDeltaField(ModificationDelta delta) throws WrongDataException {
+	protected abstract boolean isValidTable(DeltaTable table);
+
+	private Delta mapDeltaField(Delta delta) throws WrongDataException {
 		return delta.withFieldName(getFieldName(delta));
 	}
 
-	private String getFieldName(ModificationDelta delta) throws WrongDataException {
+	private String getFieldName(Delta delta) throws WrongDataException {
 		String name = delta.getFieldName();
 		if (!getFieldMap().containsKey(name)) {
 			throw new WrongDataException("Incorrect field name");

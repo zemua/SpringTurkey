@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import devs.mrp.springturkey.Exceptions.WrongDataException;
-import devs.mrp.springturkey.delta.validation.Table;
+import devs.mrp.springturkey.delta.DeltaTable;
 import devs.mrp.springturkey.delta.validation.DataConstrainer;
 import devs.mrp.springturkey.delta.validation.DataConstrainerProvider;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DataConstrainerProviderImpl implements DataConstrainerProvider {
 
-	@Autowired
-	@Qualifier("deviceConstraints")
+	//@Autowired
+	//@Qualifier("deviceConstraints")
 	private DataConstrainer deviceConstraints;
 
 	@Autowired
@@ -26,17 +26,17 @@ public class DataConstrainerProviderImpl implements DataConstrainerProvider {
 	@Qualifier("activityConstraints")
 	private DataConstrainer activityConstraints;
 
-	@Autowired
-	@Qualifier("conditionConstraints")
+	//@Autowired
+	//@Qualifier("conditionConstraints")
 	private DataConstrainer conditionConstraints;
 
-	@Autowired
-	@Qualifier("settingConstraints")
+	//@Autowired
+	//@Qualifier("settingConstraints")
 	private DataConstrainer settingConstraints;
 
 
 	@Override
-	public DataConstrainer getFor(Table table) throws WrongDataException {
+	public DataConstrainer getFor(DeltaTable table) throws WrongDataException {
 		if (table == null) {
 			throw new WrongDataException("Invalid table");
 		}

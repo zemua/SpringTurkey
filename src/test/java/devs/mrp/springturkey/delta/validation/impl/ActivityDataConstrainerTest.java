@@ -18,9 +18,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.database.service.DeltaFacadeService;
+import devs.mrp.springturkey.delta.Delta;
+import devs.mrp.springturkey.delta.DeltaTable;
+import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.DataConstrainer;
-import devs.mrp.springturkey.delta.validation.ModificationDelta;
-import devs.mrp.springturkey.delta.validation.Table;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {ActivityDataConstrainer.class})
@@ -36,15 +37,16 @@ class ActivityDataConstrainerTest {
 	@Test
 	void pushesCategoryTypeCorrectly() throws WrongDataException {
 		UUID id = UUID.randomUUID();
-		ModificationDelta delta = ModificationDelta.builder()
+		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
-				.table(Table.ACTIVITY)
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.ACTIVITY)
 				.recordId(id)
 				.fieldName("categoryType")
 				.textValue("POSITIVE")
 				.build();
 
-		ModificationDelta modifiedDelta = delta.withFieldName("category_type");
+		Delta modifiedDelta = delta.withFieldName("category_type");
 
 		when(deltaFacade.pushDelta(ArgumentMatchers.refEq(modifiedDelta))).thenReturn(1);
 
@@ -55,9 +57,10 @@ class ActivityDataConstrainerTest {
 	@Test
 	void pushesCategoryTypeFails() throws WrongDataException {
 		UUID id = UUID.randomUUID();
-		ModificationDelta delta = ModificationDelta.builder()
+		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
-				.table(Table.ACTIVITY)
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.ACTIVITY)
 				.recordId(id)
 				.fieldName("categoryType")
 				.textValue("invalid")
@@ -69,15 +72,16 @@ class ActivityDataConstrainerTest {
 	@Test
 	void pushesGroupIdCorrectly() throws WrongDataException {
 		UUID id = UUID.randomUUID();
-		ModificationDelta delta = ModificationDelta.builder()
+		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
-				.table(Table.ACTIVITY)
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.ACTIVITY)
 				.recordId(id)
 				.fieldName("groupId")
 				.textValue(UUID.randomUUID().toString())
 				.build();
 
-		ModificationDelta modifiedDelta = delta.withFieldName("turkey_group");
+		Delta modifiedDelta = delta.withFieldName("turkey_group");
 
 		when(deltaFacade.pushDelta(ArgumentMatchers.refEq(modifiedDelta))).thenReturn(1);
 
@@ -88,9 +92,10 @@ class ActivityDataConstrainerTest {
 	@Test
 	void pushedGroupIdFails() {
 		UUID id = UUID.randomUUID();
-		ModificationDelta delta = ModificationDelta.builder()
+		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
-				.table(Table.ACTIVITY)
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.ACTIVITY)
 				.recordId(id)
 				.fieldName("groupId")
 				.textValue("invalid")
@@ -102,15 +107,16 @@ class ActivityDataConstrainerTest {
 	@Test
 	void pushesPreventClosingCorrectly() throws WrongDataException {
 		UUID id = UUID.randomUUID();
-		ModificationDelta delta = ModificationDelta.builder()
+		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
-				.table(Table.ACTIVITY)
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.ACTIVITY)
 				.recordId(id)
 				.fieldName("preventClosing")
 				.textValue("true")
 				.build();
 
-		ModificationDelta modifiedDelta = delta.withFieldName("prevent_closing");
+		Delta modifiedDelta = delta.withFieldName("prevent_closing");
 
 		when(deltaFacade.pushDelta(ArgumentMatchers.refEq(modifiedDelta))).thenReturn(1);
 
@@ -121,9 +127,10 @@ class ActivityDataConstrainerTest {
 	@Test
 	void pushesPreventClosingFails() throws WrongDataException {
 		UUID id = UUID.randomUUID();
-		ModificationDelta delta = ModificationDelta.builder()
+		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
-				.table(Table.ACTIVITY)
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.ACTIVITY)
 				.recordId(id)
 				.fieldName("preventClosing")
 				.textValue("invalid")
@@ -135,9 +142,10 @@ class ActivityDataConstrainerTest {
 	@Test
 	void invalidField() {
 		UUID id = UUID.randomUUID();
-		ModificationDelta delta = ModificationDelta.builder()
+		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
-				.table(Table.ACTIVITY)
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.ACTIVITY)
 				.recordId(id)
 				.fieldName("invalidField")
 				.textValue("true")
@@ -149,9 +157,10 @@ class ActivityDataConstrainerTest {
 	@Test
 	void invalidTable() {
 		UUID id = UUID.randomUUID();
-		ModificationDelta delta = ModificationDelta.builder()
+		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
-				.table(Table.CONDITION)
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.CONDITION)
 				.recordId(id)
 				.fieldName("preventClosing")
 				.textValue("true")

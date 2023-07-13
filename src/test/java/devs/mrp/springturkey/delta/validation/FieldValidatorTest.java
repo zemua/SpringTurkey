@@ -3,10 +3,9 @@ package devs.mrp.springturkey.delta.validation;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
-
-import devs.mrp.springturkey.delta.validation.FieldValidator;
 
 class FieldValidatorTest {
 
@@ -26,6 +25,7 @@ class FieldValidatorTest {
 		assertThrows(Exception.class, () -> FieldValidator.builder().fieldName("some name").pattern(null).build());
 		assertThrows(Exception.class, () -> FieldValidator.builder().fieldName("some name").build());
 		assertThrows(Exception.class, () -> FieldValidator.builder().pattern("^hello").build());
+		fail("to be implemented");
 	}
 
 }

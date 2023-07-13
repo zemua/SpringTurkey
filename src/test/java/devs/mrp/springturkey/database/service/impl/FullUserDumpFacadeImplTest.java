@@ -12,12 +12,14 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import devs.mrp.springturkey.configuration.ServiceBeansConfig;
 import devs.mrp.springturkey.database.entity.Activity;
@@ -44,7 +46,7 @@ import devs.mrp.springturkey.database.repository.UserRepository;
 @EntityScan("devs.mrp.springturkey.database.*")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import({ServiceBeansConfig.class})
-// JPA auditing is disabled to verify equals of the json
+@EnableJpaAuditing
 class FullUserDumpFacadeImplTest {
 
 	@Autowired
@@ -109,6 +111,7 @@ class FullUserDumpFacadeImplTest {
 	@WithMockUser("some@user.me")
 	void testFullUserDump() throws JsonMappingException, JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
 
 		Map<Object,Object> expected = mapper.convertValue(expectedData(), Map.class);
 

@@ -1,9 +1,9 @@
 package devs.mrp.springturkey.database.service;
 
-import devs.mrp.springturkey.delta.validation.ModificationDelta;
+import devs.mrp.springturkey.delta.Delta;
 
 public interface DeltaFacadeService {
 
-	public int pushDelta(ModificationDelta delta);
+	public int pushDelta(Delta delta);
 
 }
