@@ -3,6 +3,7 @@ package devs.mrp.springturkey.delta.validation.impl;
 import static java.util.Map.entry;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ public class ActivityDataConstrainer extends DataConstrainerTemplate {
 	@Autowired
 	private DeltaFacadeService deltaFacadeService;
 
+	private Pattern categoryTypePattern = Pattern.compile(regexFromEnum(CategoryType.class));
+
 	@Override
 	protected boolean isValidTable(DeltaTable table) {
 		return DeltaTable.ACTIVITY.equals(table);
@@ -27,9 +30,18 @@ public class ActivityDataConstrainer extends DataConstrainerTemplate {
 	@Override
 	protected Map<String, FieldValidator> getFieldMap() {
 		return Map.ofEntries(
-				entry("categoryType", FieldValidator.builder().fieldName("category_type").pattern(regexFromEnum(CategoryType.class)).build()),
-				entry("groupId", FieldValidator.builder().fieldName("turkey_group").pattern(uuidRegex()).build()),
-				entry("preventClosing", FieldValidator.builder().fieldName("prevent_closing").pattern(booleanRegex()).build())
+				entry("categoryType", FieldValidator.builder()
+						.fieldName("category_type")
+						.predicate(s -> categoryTypePattern.matcher(s).matches())
+						.build()),
+				entry("groupId", FieldValidator.builder()
+						.fieldName("turkey_group")
+						.predicate(s -> getUuidPattern().matcher(s).matches())
+						.build()),
+				entry("preventClosing", FieldValidator.builder()
+						.fieldName("prevent_closing")
+						.predicate(s -> getBooleanPattern().matcher(s).matches())
+						.build())
 				);
 	}
 

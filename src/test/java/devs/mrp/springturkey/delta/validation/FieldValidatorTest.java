@@ -3,29 +3,52 @@ package devs.mrp.springturkey.delta.validation;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
+
+import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
 
 class FieldValidatorTest {
 
 	@Test
 	void testValidation() {
-		FieldValidator validator = FieldValidator.builder().fieldName("some name").pattern("^hello.+").build();
+		FieldValidator validator = FieldValidator.builder()
+				.fieldName("some name")
+				.predicate(s -> Pattern.compile("^hello.+").matcher(s).matches())
+				.build();
+
 		assertTrue(validator.isValid("hello world!"));
 		assertFalse(validator.isValid("bye world!"));
-		validator = FieldValidator.builder().fieldName("some name").pattern("^hello").build();
+
+		validator = FieldValidator.builder()
+				.fieldName("some name")
+				.predicate(s -> Pattern.compile("^hello").matcher(s).matches())
+				.build();
 		assertFalse(validator.isValid("hello world!"));
 		assertFalse(validator.isValid("bye world!"));
 	}
 
 	@Test
 	void testNotNullFields() {
-		assertThrows(Exception.class, () -> FieldValidator.builder().fieldName(null).pattern("^hello").build());
-		assertThrows(Exception.class, () -> FieldValidator.builder().fieldName("some name").pattern(null).build());
-		assertThrows(Exception.class, () -> FieldValidator.builder().fieldName("some name").build());
-		assertThrows(Exception.class, () -> FieldValidator.builder().pattern("^hello").build());
-		fail("to be implemented");
+		assertThrows(TurkeySurpriseException.class, () -> FieldValidator.builder()
+				.fieldName(null)
+				.predicate(s -> Pattern.compile("^hello").matcher(s).matches())
+				.build());
+
+		assertThrows(TurkeySurpriseException.class, () -> FieldValidator.builder()
+				.fieldName("some name")
+				.predicate(null)
+				.build());
+
+		assertThrows(TurkeySurpriseException.class, () -> FieldValidator.builder()
+				.fieldName("some name")
+				.build());
+
+		assertThrows(TurkeySurpriseException.class, () -> FieldValidator.builder()
+				.predicate(s -> Pattern.compile("^hello").matcher(s).matches())
+				.build());
 	}
 
 }

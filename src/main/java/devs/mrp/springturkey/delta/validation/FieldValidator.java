@@ -1,7 +1,9 @@
 package devs.mrp.springturkey.delta.validation;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 
+import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -42,6 +44,9 @@ public class FieldValidator {
 		}
 
 		public FieldValidator build() {
+			if (Objects.isNull(this.fieldName) || Objects.isNull(this.predicate)) {
+				throw new TurkeySurpriseException("No fields were expected to be null");
+			}
 			FieldValidator result = new FieldValidator(this.fieldName, this.predicate);
 			return result;
 		}
