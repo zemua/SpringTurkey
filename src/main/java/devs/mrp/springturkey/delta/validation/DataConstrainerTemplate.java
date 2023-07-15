@@ -11,6 +11,11 @@ import lombok.Getter;
 
 public abstract class DataConstrainerTemplate implements DataConstrainer {
 
+	// TODO remake deltas logic, instead of a map of field -> column|value
+	// refactor it to map for Map<Table<Map<Field,Column|Value>>
+	// and construct the map with a builder function adding Table, Field, Column, Predicate (encapsulated in an object)
+	// separate in different classes Modification, Creation, Deletion instead of segregating by tables
+
 	@Getter
 	private static final Pattern namePattern = Pattern.compile("^\\w+[\\h\\w]*$");
 	@Getter
