@@ -14,7 +14,7 @@ public class FieldValidator {
 
 	@Getter
 	@NotEmpty
-	private String fieldName;
+	private String columnName;
 
 	@NotNull
 	private Predicate<String> predicate;
@@ -29,12 +29,12 @@ public class FieldValidator {
 
 	public static class FieldValidatorBuilder {
 
-		private String fieldName;
+		private String columnName;
 
 		private Predicate<String> predicate;
 
-		public FieldValidatorBuilder fieldName(String name) {
-			this.fieldName = name;
+		public FieldValidatorBuilder columnName(String name) {
+			this.columnName = name;
 			return this;
 		}
 
@@ -44,11 +44,10 @@ public class FieldValidator {
 		}
 
 		public FieldValidator build() {
-			if (Objects.isNull(this.fieldName) || Objects.isNull(this.predicate)) {
+			if (Objects.isNull(this.columnName) || Objects.isNull(this.predicate)) {
 				throw new TurkeySurpriseException("No fields were expected to be null");
 			}
-			FieldValidator result = new FieldValidator(this.fieldName, this.predicate);
-			return result;
+			return new FieldValidator(this.columnName, this.predicate);
 		}
 
 	}

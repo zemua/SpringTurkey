@@ -22,11 +22,11 @@ public class GroupDataConstrainer extends DataConstrainerTemplate {
 	protected Map<String, FieldValidator> getFieldMap() {
 		return Map.ofEntries(
 				entry("name", FieldValidator.builder()
-						.fieldName("name")
+						.columnName("name")
 						.predicate(s -> getNamePattern().matcher(s).matches())
 						.build()),
 				entry("preventClose", FieldValidator.builder()
-						.fieldName("prevent_close")
+						.columnName("prevent_close")
 						.predicate(s -> getBooleanPattern().matcher(s).matches())
 						.build())
 				);

@@ -2,6 +2,7 @@ package devs.mrp.springturkey.delta.validation.impl;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +24,20 @@ public class ConditionDataConstrainer extends DataConstrainerTemplate {
 
 	@Override
 	protected Map<String, FieldValidator> getFieldMap() {
-		// TODO Auto-generated method stub
-		return null;
+		return Map.of(
+				"requiredUsageMs", FieldValidator.builder()
+				.columnName("required_usage_ms")
+				.predicate(StringUtils::isNumeric)
+				.build(),
+				"lastDaysToConsider", FieldValidator.builder()
+				.columnName("last_days_to_consider")
+				.predicate(StringUtils::isNumeric)
+				.build(),
+				"conditionalGroup", FieldValidator.builder()
+				.columnName("conditional_group")
+				.predicate(s -> getNamePattern().matcher(s).matches())
+				.build()
+				);
 	}
 
 	@Override

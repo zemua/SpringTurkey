@@ -52,7 +52,7 @@ public abstract class DataConstrainerTemplate implements DataConstrainer {
 		if (!getFieldMap().containsKey(name)) {
 			throw new WrongDataException("Incorrect field name");
 		}
-		return getFieldMap().get(name).getFieldName();
+		return getFieldMap().get(name).getColumnName();
 	}
 
 	protected abstract Map<String,FieldValidator> getFieldMap();

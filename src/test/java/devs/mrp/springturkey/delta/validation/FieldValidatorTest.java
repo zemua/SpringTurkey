@@ -15,7 +15,7 @@ class FieldValidatorTest {
 	@Test
 	void testValidation() {
 		FieldValidator validator = FieldValidator.builder()
-				.fieldName("some name")
+				.columnName("some name")
 				.predicate(s -> Pattern.compile("^hello.+").matcher(s).matches())
 				.build();
 
@@ -23,7 +23,7 @@ class FieldValidatorTest {
 		assertFalse(validator.isValid("bye world!"));
 
 		validator = FieldValidator.builder()
-				.fieldName("some name")
+				.columnName("some name")
 				.predicate(s -> Pattern.compile("^hello").matcher(s).matches())
 				.build();
 		assertFalse(validator.isValid("hello world!"));
@@ -33,17 +33,17 @@ class FieldValidatorTest {
 	@Test
 	void testNotNullFields() {
 		assertThrows(TurkeySurpriseException.class, () -> FieldValidator.builder()
-				.fieldName(null)
+				.columnName(null)
 				.predicate(s -> Pattern.compile("^hello").matcher(s).matches())
 				.build());
 
 		assertThrows(TurkeySurpriseException.class, () -> FieldValidator.builder()
-				.fieldName("some name")
+				.columnName("some name")
 				.predicate(null)
 				.build());
 
 		assertThrows(TurkeySurpriseException.class, () -> FieldValidator.builder()
-				.fieldName("some name")
+				.columnName("some name")
 				.build());
 
 		assertThrows(TurkeySurpriseException.class, () -> FieldValidator.builder()

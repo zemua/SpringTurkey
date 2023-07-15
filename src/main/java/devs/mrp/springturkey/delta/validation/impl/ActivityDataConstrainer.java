@@ -31,15 +31,15 @@ public class ActivityDataConstrainer extends DataConstrainerTemplate {
 	protected Map<String, FieldValidator> getFieldMap() {
 		return Map.ofEntries(
 				entry("categoryType", FieldValidator.builder()
-						.fieldName("category_type")
+						.columnName("category_type")
 						.predicate(s -> categoryTypePattern.matcher(s).matches())
 						.build()),
 				entry("groupId", FieldValidator.builder()
-						.fieldName("turkey_group")
+						.columnName("turkey_group")
 						.predicate(s -> getUuidPattern().matcher(s).matches())
 						.build()),
 				entry("preventClosing", FieldValidator.builder()
-						.fieldName("prevent_closing")
+						.columnName("prevent_closing")
 						.predicate(s -> getBooleanPattern().matcher(s).matches())
 						.build())
 				);
