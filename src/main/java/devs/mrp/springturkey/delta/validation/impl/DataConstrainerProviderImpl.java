@@ -14,8 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DataConstrainerProviderImpl implements DataConstrainerProvider {
 
-	//@Autowired
-	//@Qualifier("deviceConstraints")
+	@Autowired
+	@Qualifier("deviceConstraints")
 	private DataConstrainer deviceConstraints;
 
 	@Autowired
@@ -26,12 +26,12 @@ public class DataConstrainerProviderImpl implements DataConstrainerProvider {
 	@Qualifier("activityConstraints")
 	private DataConstrainer activityConstraints;
 
-	//@Autowired
-	//@Qualifier("conditionConstraints")
+	@Autowired
+	@Qualifier("conditionConstraints")
 	private DataConstrainer conditionConstraints;
 
-	//@Autowired
-	//@Qualifier("settingConstraints")
+	@Autowired
+	@Qualifier("settingConstraints")
 	private DataConstrainer settingConstraints;
 
 
