@@ -15,6 +15,7 @@ public abstract class DataConstrainerTemplate implements DataConstrainer {
 	// refactor it to map for Map<Table<Map<Field,Column|Value>>
 	// and construct the map with a builder function adding Table, Field, Column, Predicate (encapsulated in an object)
 	// separate in different classes Modification, Creation, Deletion instead of segregating by tables
+	// and dont include Device table on it, it follows a completely different logic, and it is not governed by deltas
 
 	@Getter
 	private static final Pattern namePattern = Pattern.compile("^\\w+[\\h\\w]*$");

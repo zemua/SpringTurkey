@@ -18,7 +18,7 @@ public class DeviceDataConstrainer extends DataConstrainerTemplate {
 
 	@Override
 	protected boolean isValidTable(DeltaTable table) {
-		return DeltaTable.DEVICE.equals(table);
+		return false;
 	}
 
 	@Override

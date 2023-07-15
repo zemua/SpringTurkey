@@ -41,8 +41,6 @@ public class DataConstrainerProviderImpl implements DataConstrainerProvider {
 			throw new WrongDataException("Invalid table");
 		}
 		switch (table) {
-		case DEVICE:
-			return deviceConstraints;
 		case GROUP:
 			return groupConstraints;
 		case ACTIVITY:
