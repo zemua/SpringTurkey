@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import devs.mrp.springturkey.database.entity.enumerable.ActivityType;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
+import devs.mrp.springturkey.validation.AlphaNumericSpaceConstraint;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,6 +55,7 @@ public class Activity {
 
 	@Column(name = "activity_name")
 	@NotBlank
+	@AlphaNumericSpaceConstraint
 	private String activityName;
 
 	@Column(name = "activity_type")

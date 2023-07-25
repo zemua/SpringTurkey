@@ -1,7 +1,5 @@
 package devs.mrp.springturkey.delta;
 
-import static java.util.Map.entry;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -12,62 +10,46 @@ import org.apache.commons.lang3.StringUtils;
 
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.delta.validation.FieldValidator;
+import devs.mrp.springturkey.delta.validation.entity.GroupCreationDelta;
 
 public enum DeltaTable {
 
-	GROUP(Map.ofEntries(
-			entry("name", FieldValidator.builder()
-					.columnName("name")
-					.predicate(StringUtils::isAlphanumericSpace)
-					.build()),
-			entry("preventClose", FieldValidator.builder()
-					.columnName("prevent_close")
-					.predicate(getBooleanPredicate())
-					.build())
-			)),
-	ACTIVITY(Map.ofEntries(
-			entry("categoryType", FieldValidator.builder()
-					.columnName("category_type")
-					.predicate(getEnumPredicate(CategoryType.class))
-					.build()),
-			entry("groupId", FieldValidator.builder()
-					.columnName("turkey_group")
-					.predicate(s -> getUuidPattern().matcher(s).matches())
-					.build()),
-			entry("preventClosing", FieldValidator.builder()
-					.columnName("prevent_closing")
-					.predicate(getBooleanPredicate())
-					.build())
-			)),
+	GROUP(Map.of(
+			"name", FieldValidator.builder().columnName("name").predicate(StringUtils::isAlphanumericSpace).build(),
+			"preventClose", FieldValidator.builder().columnName("prevent_close").predicate(getBooleanPredicate()).build()
+			),
+			GroupCreationDelta.class),
+	ACTIVITY(Map.of(
+			"categoryType", FieldValidator.builder().columnName("category_type").predicate(getEnumPredicate(CategoryType.class)).build(),
+			"groupId", FieldValidator.builder().columnName("turkey_group").predicate(s -> getUuidPattern().matcher(s).matches()).build(),
+			"preventClosing", FieldValidator.builder().columnName("prevent_closing").predicate(getBooleanPredicate()).build()
+			),
+			null),
 	CONDITION(Map.of(
-			"requiredUsageMs", FieldValidator.builder()
-			.columnName("required_usage_ms")
-			.predicate(StringUtils::isNumeric)
-			.build(),
-			"lastDaysToConsider", FieldValidator.builder()
-			.columnName("last_days_to_consider")
-			.predicate(StringUtils::isNumeric)
-			.build(),
-			"conditionalGroup", FieldValidator.builder()
-			.columnName("conditional_group")
-			.predicate(StringUtils::isAlphanumericSpace)
-			.build()
-			)),
+			"requiredUsageMs", FieldValidator.builder().columnName("required_usage_ms").predicate(StringUtils::isNumeric).build(),
+			"lastDaysToConsider", FieldValidator.builder().columnName("last_days_to_consider").predicate(StringUtils::isNumeric).build(),
+			"conditionalGroup", FieldValidator.builder().columnName("conditional_group").predicate(StringUtils::isAlphanumericSpace).build()
+			),
+			null),
 	SETTING(Map.of(
-			"settingValue", FieldValidator.builder()
-			.columnName("setting_value")
-			.predicate(StringUtils::isAlphanumericSpace)
-			.build()
-			));
+			"settingValue", FieldValidator.builder().columnName("setting_value").predicate(StringUtils::isAlphanumericSpace).build()
+			),
+			null);
 
 	private Map<String,FieldValidator> fieldMap;
+	private Class<?> entityDtoClass;
 
-	DeltaTable(Map<String,FieldValidator> fieldMap) {
+	DeltaTable(Map<String,FieldValidator> fieldMap, Class<?> clazz) {
 		this.fieldMap = fieldMap;
+		this.entityDtoClass = clazz;
 	}
 
 	public Map<String,FieldValidator> getFieldMap() {
 		return fieldMap;
+	}
+
+	public Class<?> getEntityClass() {
+		return entityDtoClass;
 	}
 
 	private static final Pattern uuidPattern = Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
