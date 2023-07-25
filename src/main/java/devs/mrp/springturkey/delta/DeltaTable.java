@@ -32,7 +32,7 @@ public enum DeltaTable {
 					.build()),
 			entry("groupId", FieldValidator.builder()
 					.columnName("turkey_group")
-					.predicate(s -> getUuidPattern().matcher(s).matches()) // TODO check if regex can be avoided
+					.predicate(s -> getUuidPattern().matcher(s).matches())
 					.build()),
 			entry("preventClosing", FieldValidator.builder()
 					.columnName("prevent_closing")
@@ -82,7 +82,8 @@ public enum DeltaTable {
 
 	private static final <T extends Enum<T>> Predicate<String> getEnumPredicate(Class<T> enumerable) {
 		List<Enum<T>> types = Arrays.asList(enumerable.getEnumConstants());
-		return s -> types.contains(s);
+		List<String> enumNames = types.stream().map(Enum::name).toList();
+		return enumNames::contains;
 	}
 
 }

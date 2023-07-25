@@ -2,14 +2,12 @@ package devs.mrp.springturkey.delta.validation.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -43,7 +41,13 @@ class ModificationDataConstrainerTest {
 		return Stream.of(
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "requiredUsageMs", "required_usage_ms", "12345"),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "lastDaysToConsider", "last_days_to_consider", "3"),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "conditionalGroup", "conditional_group", "some group name 123")
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "conditionalGroup", "conditional_group", "some group name 123"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "name", "name", "some group name 123"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "preventClose", "prevent_close", "true"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "categoryType", "category_type", "NEGATIVE"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", "turkey_group", UUID.randomUUID().toString()),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "preventClosing", "prevent_closing", "true"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.SETTING, "settingValue", "setting_value", "some setting value 123")
 				);
 	}
 
@@ -81,7 +85,8 @@ class ModificationDataConstrainerTest {
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "lastDaysToConsider", "abc123"),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "lastDaysToConsider", "-123"),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "lastDaysToConsider", "123.45"),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "conditionalGroup", "abc 123 $")
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "conditionalGroup", "abc 123 $"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "preventClosing", "invalid")
 				);
 	}
 
@@ -99,11 +104,6 @@ class ModificationDataConstrainerTest {
 				.build();
 
 		assertThrows(WrongDataException.class, () -> dataConstrainer.pushDelta(delta));
-	}
-
-	@Test
-	void test() {
-		fail("Not yet implemented");
 	}
 
 }

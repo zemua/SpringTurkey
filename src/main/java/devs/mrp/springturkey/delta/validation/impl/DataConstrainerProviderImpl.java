@@ -4,8 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.Exceptions.WrongDataException;
-import devs.mrp.springturkey.delta.DeltaTable;
+import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.DataConstrainer;
 import devs.mrp.springturkey.delta.validation.DataConstrainerProvider;
 import lombok.extern.slf4j.Slf4j;
@@ -15,43 +16,25 @@ import lombok.extern.slf4j.Slf4j;
 public class DataConstrainerProviderImpl implements DataConstrainerProvider {
 
 	@Autowired
-	@Qualifier("deviceConstraints")
-	private DataConstrainer deviceConstraints;
-
-	@Autowired
-	@Qualifier("groupConstraints")
-	private DataConstrainer groupConstraints;
-
-	@Autowired
-	@Qualifier("activityConstraints")
-	private DataConstrainer activityConstraints;
-
-	@Autowired
-	@Qualifier("conditionConstraints")
-	private DataConstrainer conditionConstraints;
-
-	@Autowired
-	@Qualifier("settingConstraints")
-	private DataConstrainer settingConstraints;
+	@Qualifier("modificationConstraints")
+	private DataConstrainer modificationConstrainter;
 
 
 	@Override
-	public DataConstrainer getFor(DeltaTable table) throws WrongDataException {
-		if (table == null) {
+	public DataConstrainer getFor(DeltaType type) throws WrongDataException {
+		if (type == null) {
 			throw new WrongDataException("Invalid table");
 		}
-		switch (table) {
-		case GROUP:
-			return groupConstraints;
-		case ACTIVITY:
-			return activityConstraints;
-		case CONDITION:
-			return conditionConstraints;
-		case SETTING:
-			return settingConstraints;
+		switch (type) {
+		case MODIFICATION:
+			return modificationConstrainter;
+		case CREATION:
+			return null; // TODO contemplate case
+		case DELETION:
+			return null; // TODO contemplate case
 		default:
-			log.error("Enum case {} not contemplated", table);
-			throw new RuntimeException("Enum case not contemplated");
+			log.error("Enum case {} not contemplated", type);
+			throw new TurkeySurpriseException("Enum case not contemplated");
 		}
 	}
 
