@@ -19,6 +19,10 @@ public class DataConstrainerProviderImpl implements DataConstrainerProvider {
 	@Qualifier("modificationConstraints")
 	private DataConstrainer modificationConstrainter;
 
+	@Autowired
+	@Qualifier("creationConstraints")
+	private DataConstrainer creationConstrainter;
+
 
 	@Override
 	public DataConstrainer getFor(DeltaType type) throws WrongDataException {
@@ -29,7 +33,7 @@ public class DataConstrainerProviderImpl implements DataConstrainerProvider {
 		case MODIFICATION:
 			return modificationConstrainter;
 		case CREATION:
-			return null; // TODO contemplate case
+			return creationConstrainter;
 		case DELETION:
 			return null; // TODO contemplate case
 		default:

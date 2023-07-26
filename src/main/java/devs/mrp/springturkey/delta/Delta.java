@@ -24,7 +24,7 @@ public class Delta {
 	private DeltaType deltaType;
 	@NotNull
 	private DeltaTable table;
-	@NotNull
+	@NotNull // TODO see how to handle for creation
 	private UUID recordId;
 	@NotBlank
 	private String fieldName;
