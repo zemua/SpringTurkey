@@ -66,7 +66,7 @@ class ModificationDataConstrainerTest {
 
 		Delta modifiedDelta = delta.withFieldName(columnName);
 
-		when(deltaFacade.pushDelta(ArgumentMatchers.refEq(modifiedDelta))).thenReturn(1);
+		when(deltaFacade.pushModification(ArgumentMatchers.refEq(modifiedDelta))).thenReturn(1);
 
 		int result = dataConstrainer.pushDelta(delta);
 		assertEquals(1, result);

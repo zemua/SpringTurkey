@@ -23,7 +23,7 @@ public class ModificationDataConstrainer implements DataConstrainer {
 		if (!isValid(delta)) {
 			throw new WrongDataException("Incorrect field name");
 		}
-		return deltaFacadeService.pushDelta(mapDeltaField(delta));
+		return deltaFacadeService.pushModification(mapDeltaField(delta));
 	}
 
 	private boolean isValid(Delta delta) {

@@ -9,7 +9,13 @@ import devs.mrp.springturkey.delta.Delta;
 public class DeltaFacadeServiceImpl implements DeltaFacadeService {
 
 	@Override
-	public int pushDelta(Delta delta) {
+	public int pushModification(Delta delta) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int pushCreation(Delta delta) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
