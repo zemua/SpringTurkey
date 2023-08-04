@@ -29,7 +29,7 @@ import devs.mrp.springturkey.database.entity.Group;
 import devs.mrp.springturkey.database.entity.Setting;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.entity.dto.ExportData;
-import devs.mrp.springturkey.database.entity.enumerable.ActivityType;
+import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.database.entity.enumerable.DeviceType;
 import devs.mrp.springturkey.database.entity.enumerable.GroupType;
@@ -93,8 +93,8 @@ class FullUserDumpFacadeImplTest {
 		group1 = groupRepository.save(Group.builder().user(user).name("group1").type(GroupType.NEGATIVE).build());
 		group2 = groupRepository.save(Group.builder().user(user).name("group2").type(GroupType.POSITIVE).build());
 
-		activity1 = activityRepository.save(Activity.builder().user(user).activityName("act1").group(group1).activityType(ActivityType.ANDROID_APP).categoryType(CategoryType.NEGATIVE).build());
-		activity2 = activityRepository.save(Activity.builder().user(user).activityName("act2").activityType(ActivityType.ANDROID_APP).categoryType(CategoryType.NEGATIVE).build());
+		activity1 = activityRepository.save(Activity.builder().user(user).activityName("act1").group(group1).activityType(ActivityPlatform.ANDROID_APP).categoryType(CategoryType.NEGATIVE).build());
+		activity2 = activityRepository.save(Activity.builder().user(user).activityName("act2").activityType(ActivityPlatform.ANDROID_APP).categoryType(CategoryType.NEGATIVE).build());
 
 		condition1 = conditionRepository.save(Condition.builder().user(user)
 				.conditionalGroup(group1).targetGroup(group2)

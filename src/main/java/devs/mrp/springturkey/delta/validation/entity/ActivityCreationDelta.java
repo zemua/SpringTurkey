@@ -1,6 +1,9 @@
 package devs.mrp.springturkey.delta.validation.entity;
 
-import devs.mrp.springturkey.database.entity.enumerable.GroupType;
+import java.util.UUID;
+
+import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
+import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.validation.AlphaNumericSpaceConstraint;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,14 +18,19 @@ import lombok.ToString;
 @Builder
 @Getter
 @ToString
-public class GroupCreationDelta {
+public class ActivityCreationDelta {
 
 	@NotBlank
 	@AlphaNumericSpaceConstraint
-	private String name;
+	private String activityName;
 
 	@NotNull
-	private GroupType type;
+	private ActivityPlatform activityType;
+
+	@NotNull
+	private CategoryType categoryType;
+
+	private UUID groupId;
 
 	private Boolean preventClose;
 

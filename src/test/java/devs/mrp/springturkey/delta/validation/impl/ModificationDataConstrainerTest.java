@@ -2,6 +2,7 @@ package devs.mrp.springturkey.delta.validation.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -104,6 +105,7 @@ class ModificationDataConstrainerTest {
 				.build();
 
 		assertThrows(WrongDataException.class, () -> dataConstrainer.pushDelta(delta));
+		verifyNoInteractions(deltaFacade);
 	}
 
 }

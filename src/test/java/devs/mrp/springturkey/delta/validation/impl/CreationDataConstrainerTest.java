@@ -2,7 +2,7 @@ package devs.mrp.springturkey.delta.validation.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -25,12 +25,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import devs.mrp.springturkey.Exceptions.WrongDataException;
+import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
+import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.database.entity.enumerable.GroupType;
 import devs.mrp.springturkey.database.service.DeltaFacadeService;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaTable;
 import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.DataConstrainer;
+import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
+import devs.mrp.springturkey.delta.validation.entity.ConditionCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.GroupCreationDelta;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -50,71 +54,89 @@ class CreationDataConstrainerTest {
 	@Qualifier("creationConstraints")
 	private DataConstrainer dataConstrainer;
 
-	private ObjectMapper objectMapper;
-
 	@BeforeEach
 	void setup() {
-		objectMapper = new ObjectMapper();
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		Validator val = factory.getValidator();
 		when(validator.validate(ArgumentMatchers.any())).thenAnswer(a -> val.validate(a.getArgument(0)));
 	}
 
-	private static Stream<Arguments> provideCorrectValues() {
+	private static Stream<Arguments> provideCorrectValues() throws JsonProcessingException {
+		ObjectMapper objectMapper = new ObjectMapper();
 		return Stream.of(
-				// TODO
-				//Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "requiredUsageMs", "required_usage_ms", "12345"),
+				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", objectMapper.writeValueAsString(validGroup().build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.writeValueAsString(validActivity().build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().build()))
 				);
 	}
 
 	@ParameterizedTest
 	@MethodSource("provideCorrectValues")
-	void testSucess(DeltaType deltaType, DeltaTable table, String fieldName, String textValue) throws JsonProcessingException, WrongDataException {
-		GroupCreationDelta creationDelta = GroupCreationDelta.builder().id(UUID.randomUUID()).name("valid 123").type(GroupType.NEGATIVE).preventClose(false).build();
-		String json = objectMapper.writeValueAsString(creationDelta);
+	void testSucess(DeltaType deltaType, DeltaTable table, String fieldName, String jsonValue) throws JsonProcessingException, WrongDataException {
 		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.now())
-				.deltaType(DeltaType.CREATION)
-				.table(DeltaTable.GROUP)
+				.deltaType(deltaType)
+				.table(table)
 				.recordId(UUID.randomUUID())
-				.fieldName("object")
-				.textValue(json)
+				.fieldName(fieldName)
+				.textValue(jsonValue)
 				.build();
 
 		when(deltaFacade.pushCreation(ArgumentMatchers.refEq(delta))).thenReturn(1);
 
 		int result = dataConstrainer.pushDelta(delta);
 		assertEquals(1, result);
-
-		fail("Not yet implemented");
 	}
 
-	private static Stream<Arguments> provideIncorrectValues() {
-		// this doesn't throw exception
-		// Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "requiredUsageMs", "12345")
+	private static Stream<Arguments> provideIncorrectValues() throws JsonProcessingException {
+		ObjectMapper objectMapper = new ObjectMapper();
 		return Stream.of(
-				// TODO
-				// Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "requiredUsageMs", "12345")
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "object", objectMapper.writeValueAsString(validGroup().build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "invalid", objectMapper.writeValueAsString(validGroup().build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", objectMapper.writeValueAsString(validGroup().name("invalid 123 $").build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", objectMapper.writeValueAsString(validGroup().type(null).build())),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "object", objectMapper.writeValueAsString(validActivity().build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "invalid", objectMapper.writeValueAsString(validActivity().build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.writeValueAsString(validActivity().activityName("invalid 123 $").build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.writeValueAsString(validActivity().activityType(null).build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.writeValueAsString(validActivity().categoryType(null).build()))
 				);
 	}
 
 	@ParameterizedTest
 	@MethodSource("provideIncorrectValues")
-	void testInvalidDeltaData(DeltaType deltaType, DeltaTable table, String fieldName, String textValue) throws JsonProcessingException {
-		GroupCreationDelta creationDelta = GroupCreationDelta.builder().id(UUID.randomUUID()).name("invalid 123 $%&").type(GroupType.NEGATIVE).preventClose(false).build();
-		String json = objectMapper.writeValueAsString(creationDelta);
+	void testInvalidDeltaData(DeltaType deltaType, DeltaTable table, String fieldName, String jsonValue) throws JsonProcessingException, WrongDataException {
 		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.now())
-				.deltaType(DeltaType.CREATION)
-				.table(DeltaTable.GROUP)
+				.deltaType(deltaType)
+				.table(table)
 				.recordId(UUID.randomUUID())
-				.fieldName("object")
-				.textValue(json)
+				.fieldName(fieldName)
+				.textValue(jsonValue)
 				.build();
 
 		assertThrows(WrongDataException.class, () -> dataConstrainer.pushDelta(delta));
+		verifyNoInteractions(deltaFacade);
+	}
 
-		fail("Not yet implemented");
+	private static GroupCreationDelta.GroupCreationDeltaBuilder validGroup() {
+		return GroupCreationDelta.builder()
+				.name("valid 123")
+				.type(GroupType.NEGATIVE)
+				.preventClose(false);
+	}
+
+	private static ActivityCreationDelta.ActivityCreationDeltaBuilder validActivity() {
+		return ActivityCreationDelta.builder()
+				.activityName("valid 123")
+				.activityType(ActivityPlatform.ANDROID_APP)
+				.categoryType(CategoryType.NEGATIVE)
+				.groupId(UUID.randomUUID())
+				.preventClose(false);
+	}
+
+	private static ConditionCreationDelta.ConditionCreationDeltaBuilder validCondition() {
+		return ConditionCreationDelta.builder();
 	}
 
 }

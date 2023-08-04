@@ -10,6 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.delta.validation.FieldValidator;
+import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
+import devs.mrp.springturkey.delta.validation.entity.ConditionCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.GroupCreationDelta;
 
 public enum DeltaTable {
@@ -24,13 +26,13 @@ public enum DeltaTable {
 			"groupId", FieldValidator.builder().columnName("turkey_group").predicate(s -> getUuidPattern().matcher(s).matches()).build(),
 			"preventClosing", FieldValidator.builder().columnName("prevent_closing").predicate(getBooleanPredicate()).build()
 			),
-			null),
+			ActivityCreationDelta.class),
 	CONDITION(Map.of(
 			"requiredUsageMs", FieldValidator.builder().columnName("required_usage_ms").predicate(StringUtils::isNumeric).build(),
 			"lastDaysToConsider", FieldValidator.builder().columnName("last_days_to_consider").predicate(StringUtils::isNumeric).build(),
 			"conditionalGroup", FieldValidator.builder().columnName("conditional_group").predicate(StringUtils::isAlphanumericSpace).build()
 			),
-			null),
+			ConditionCreationDelta.class),
 	SETTING(Map.of(
 			"settingValue", FieldValidator.builder().columnName("setting_value").predicate(StringUtils::isAlphanumericSpace).build()
 			),

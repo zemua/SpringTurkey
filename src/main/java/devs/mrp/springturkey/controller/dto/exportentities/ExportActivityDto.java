@@ -3,7 +3,7 @@ package devs.mrp.springturkey.controller.dto.exportentities;
 import java.util.UUID;
 
 import devs.mrp.springturkey.database.entity.Activity;
-import devs.mrp.springturkey.database.entity.enumerable.ActivityType;
+import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import lombok.ToString;
 public class ExportActivityDto {
 
 	private String activityName;
-	private ActivityType activityType;
+	private ActivityPlatform activityType;
 	private CategoryType categoryType;
 	private UUID groupId;
 	private Boolean preventClosing;
