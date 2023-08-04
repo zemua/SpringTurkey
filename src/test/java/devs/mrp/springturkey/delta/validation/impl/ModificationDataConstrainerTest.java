@@ -87,7 +87,16 @@ class ModificationDataConstrainerTest {
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "lastDaysToConsider", "-123"),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "lastDaysToConsider", "123.45"),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "conditionalGroup", "abc 123 $"),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "preventClosing", "invalid")
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "name", "invalid group name 123 $"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "preventClose", "invalid"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "categoryType", "INVALID"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", "not-an-uuid"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", "a96399b7-2fff-407e-935e-dce4d6a2bd9dq"), // 1 extra character
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", "a96399b7-2fff-407e-935e-dce4d6a2bd9"), // 1 missing character
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", "a96399b7-2fff-407e-935e-dce4d6a2bd9$"), // 1 wrong character
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", "a96399b7-2fff-407e-935etdce4d6a2bd9d"), // 1 wrong slash
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "preventClosing", "invalid"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.SETTING, "settingValue", "invalid setting value 123 %")
 				);
 	}
 

@@ -28,6 +28,7 @@ import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.database.entity.enumerable.GroupType;
+import devs.mrp.springturkey.database.entity.enumerable.PlatformType;
 import devs.mrp.springturkey.database.service.DeltaFacadeService;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaTable;
@@ -36,6 +37,7 @@ import devs.mrp.springturkey.delta.validation.DataConstrainer;
 import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.ConditionCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.GroupCreationDelta;
+import devs.mrp.springturkey.delta.validation.entity.SettingCreationDelta;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
@@ -66,7 +68,8 @@ class CreationDataConstrainerTest {
 		return Stream.of(
 				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", objectMapper.writeValueAsString(validGroup().build())),
 				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.writeValueAsString(validActivity().build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().build()))
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.writeValueAsString(validSetting().build()))
 				);
 	}
 
@@ -99,7 +102,20 @@ class CreationDataConstrainerTest {
 				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "invalid", objectMapper.writeValueAsString(validActivity().build())),
 				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.writeValueAsString(validActivity().activityName("invalid 123 $").build())),
 				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.writeValueAsString(validActivity().activityType(null).build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.writeValueAsString(validActivity().categoryType(null).build()))
+				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.writeValueAsString(validActivity().categoryType(null).build())),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "invalid", objectMapper.writeValueAsString(validCondition().build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().conditionalGroup(null).build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().targetGroup(null).build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().requiredUsageMs(25000L).build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().requiredUsageMs(-5L).build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().lastDaysToConsider(35).build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().lastDaysToConsider(-5).build())),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.SETTING, "object", objectMapper.writeValueAsString(validSetting().build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "invalid", objectMapper.writeValueAsString(validSetting().build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.writeValueAsString(validSetting().platformType(null).build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.writeValueAsString(validSetting().settingKey("invalid 123 $").build())),
+				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.writeValueAsString(validSetting().settingValue("invalid 456 &").build()))
 				);
 	}
 
@@ -136,7 +152,18 @@ class CreationDataConstrainerTest {
 	}
 
 	private static ConditionCreationDelta.ConditionCreationDeltaBuilder validCondition() {
-		return ConditionCreationDelta.builder();
+		return ConditionCreationDelta.builder()
+				.conditionalGroup(UUID.randomUUID())
+				.targetGroup(UUID.randomUUID())
+				.requiredUsageMs(120000L)
+				.lastDaysToConsider(10);
+	}
+
+	private static SettingCreationDelta.SettingCreationDeltaBuilder validSetting() {
+		return SettingCreationDelta.builder()
+				.platformType(PlatformType.DESKTOP)
+				.settingKey("some setting key 123")
+				.settingValue("some setting value 123");
 	}
 
 }

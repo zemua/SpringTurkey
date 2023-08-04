@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,6 +12,7 @@ import devs.mrp.springturkey.delta.validation.FieldValidator;
 import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.ConditionCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.GroupCreationDelta;
+import devs.mrp.springturkey.delta.validation.entity.SettingCreationDelta;
 
 public enum DeltaTable {
 
@@ -23,7 +23,7 @@ public enum DeltaTable {
 			GroupCreationDelta.class),
 	ACTIVITY(Map.of(
 			"categoryType", FieldValidator.builder().columnName("category_type").predicate(getEnumPredicate(CategoryType.class)).build(),
-			"groupId", FieldValidator.builder().columnName("turkey_group").predicate(s -> getUuidPattern().matcher(s).matches()).build(),
+			"groupId", FieldValidator.builder().columnName("turkey_group").predicate(getUuidPredicate()).build(),
 			"preventClosing", FieldValidator.builder().columnName("prevent_closing").predicate(getBooleanPredicate()).build()
 			),
 			ActivityCreationDelta.class),
@@ -36,7 +36,7 @@ public enum DeltaTable {
 	SETTING(Map.of(
 			"settingValue", FieldValidator.builder().columnName("setting_value").predicate(StringUtils::isAlphanumericSpace).build()
 			),
-			null);
+			SettingCreationDelta.class);
 
 	private Map<String,FieldValidator> fieldMap;
 	private Class<?> entityDtoClass;
@@ -54,10 +54,29 @@ public enum DeltaTable {
 		return entityDtoClass;
 	}
 
-	private static final Pattern uuidPattern = Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+	private static final Predicate<String> getUuidPredicate() {
+		return s -> isUuid(s);
+	}
 
-	private static Pattern getUuidPattern() {
-		return uuidPattern;
+	private static boolean isUuid(String s) { // TODO refactor
+		int uuidLength = 36;
+		if (s.length() != uuidLength) {
+			return false;
+		}
+		List<Integer> slahes = List.of(8,13,18,23);
+		for (int i = 0; i < uuidLength; i++) {
+			char c = s.charAt(i);
+			if (slahes.contains(i)) {
+				if ('-' != c) {
+					return false;
+				}
+			} else {
+				if (!Character.isLetterOrDigit(c)) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	private static final Predicate<String> getBooleanPredicate() {
