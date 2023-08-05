@@ -76,6 +76,7 @@ class ModificationDataConstrainerTest {
 	private static Stream<Arguments> provideIncorrectValues() {
 		// this doesn't throw exception
 		// Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "requiredUsageMs", "12345")
+		String uuid = UUID.randomUUID().toString();
 		return Stream.of(
 				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "requiredUsageMs", "12345"),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "requiredUsageMs", "12345"),
@@ -91,10 +92,11 @@ class ModificationDataConstrainerTest {
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "preventClose", "invalid"),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "categoryType", "INVALID"),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", "not-an-uuid"),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", "a96399b7-2fff-407e-935e-dce4d6a2bd9dq"), // 1 extra character
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", "a96399b7-2fff-407e-935e-dce4d6a2bd9"), // 1 missing character
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", "a96399b7-2fff-407e-935e-dce4d6a2bd9$"), // 1 wrong character
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", "a96399b7-2fff-407e-935etdce4d6a2bd9d"), // 1 wrong slash
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", uuid + "q"), // 1 extra character
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", uuid.substring(1)), // 1 missing character at start
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", uuid.substring(0, uuid.length()-1)), // 1 missing character at end
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", uuid.replace(uuid.charAt(3), '$')), // 1 wrong character
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", uuid.replace('-', 'a')), // wrong slashes
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "preventClosing", "invalid"),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.SETTING, "settingValue", "invalid setting value 123 %")
 				);

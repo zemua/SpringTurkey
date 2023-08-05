@@ -1,9 +1,6 @@
 package devs.mrp.springturkey.delta;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,18 +10,21 @@ import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.ConditionCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.GroupCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.SettingCreationDelta;
+import devs.mrp.springturkey.utils.BooleanUtils;
+import devs.mrp.springturkey.utils.EnumUtils;
+import devs.mrp.springturkey.utils.UuidUtils;
 
 public enum DeltaTable {
 
 	GROUP(Map.of(
 			"name", FieldValidator.builder().columnName("name").predicate(StringUtils::isAlphanumericSpace).build(),
-			"preventClose", FieldValidator.builder().columnName("prevent_close").predicate(getBooleanPredicate()).build()
+			"preventClose", FieldValidator.builder().columnName("prevent_close").predicate(BooleanUtils::isBoolean).build()
 			),
 			GroupCreationDelta.class),
 	ACTIVITY(Map.of(
-			"categoryType", FieldValidator.builder().columnName("category_type").predicate(getEnumPredicate(CategoryType.class)).build(),
-			"groupId", FieldValidator.builder().columnName("turkey_group").predicate(getUuidPredicate()).build(),
-			"preventClosing", FieldValidator.builder().columnName("prevent_closing").predicate(getBooleanPredicate()).build()
+			"categoryType", FieldValidator.builder().columnName("category_type").predicate(EnumUtils.getEnumPredicate(CategoryType.class)).build(),
+			"groupId", FieldValidator.builder().columnName("turkey_group").predicate(UuidUtils::isUuid).build(),
+			"preventClosing", FieldValidator.builder().columnName("prevent_closing").predicate(BooleanUtils::isBoolean).build()
 			),
 			ActivityCreationDelta.class),
 	CONDITION(Map.of(
@@ -52,41 +52,6 @@ public enum DeltaTable {
 
 	public Class<?> getEntityClass() {
 		return entityDtoClass;
-	}
-
-	private static final Predicate<String> getUuidPredicate() {
-		return s -> isUuid(s);
-	}
-
-	private static boolean isUuid(String s) { // TODO refactor
-		int uuidLength = 36;
-		if (s.length() != uuidLength) {
-			return false;
-		}
-		List<Integer> slahes = List.of(8,13,18,23);
-		for (int i = 0; i < uuidLength; i++) {
-			char c = s.charAt(i);
-			if (slahes.contains(i)) {
-				if ('-' != c) {
-					return false;
-				}
-			} else {
-				if (!Character.isLetterOrDigit(c)) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	private static final Predicate<String> getBooleanPredicate() {
-		return s -> StringUtils.equalsAnyIgnoreCase(s, "true", "false");
-	}
-
-	private static final <T extends Enum<T>> Predicate<String> getEnumPredicate(Class<T> enumerable) {
-		List<Enum<T>> types = Arrays.asList(enumerable.getEnumConstants());
-		List<String> enumNames = types.stream().map(Enum::name).toList();
-		return enumNames::contains;
 	}
 
 }
