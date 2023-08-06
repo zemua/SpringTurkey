@@ -23,6 +23,10 @@ public class DataConstrainerProviderImpl implements DataConstrainerProvider {
 	@Qualifier("creationConstraints")
 	private DataConstrainer creationConstrainter;
 
+	@Autowired
+	@Qualifier("deletionConstraints")
+	private DataConstrainer deletionConstrainer;
+
 
 	@Override
 	public DataConstrainer getFor(DeltaType type) throws WrongDataException {
@@ -35,7 +39,7 @@ public class DataConstrainerProviderImpl implements DataConstrainerProvider {
 		case CREATION:
 			return creationConstrainter;
 		case DELETION:
-			return null; // TODO contemplate case
+			return deletionConstrainer;
 		default:
 			log.error("Enum case {} not contemplated", type);
 			throw new TurkeySurpriseException("Enum case not contemplated");

@@ -79,11 +79,11 @@ class DeletionDataConstrainerTest {
 				.textValue(textValue)
 				.build();
 
-		when(deltaFacade.pushCreation(ArgumentMatchers.refEq(delta))).thenReturn(1);
+		when(deltaFacade.pushDeletion(ArgumentMatchers.refEq(delta))).thenReturn(1);
 
 		int result = dataConstrainer.pushDelta(delta);
 		assertEquals(1, result);
-		verify(deltaFacade, times(1)).pushDeletion(ArgumentMatchers.eq(delta));
+		verify(deltaFacade, times(1)).pushDeletion(ArgumentMatchers.refEq(delta));
 	}
 
 	private static Stream<Arguments> provideIncorrectValues() throws JsonProcessingException {
@@ -96,11 +96,13 @@ class DeletionDataConstrainerTest {
 				Arguments.of(DeltaType.DELETION, DeltaTable.ACTIVITY, "othervalue", "deletion"),
 				Arguments.of(DeltaType.DELETION, DeltaTable.CONDITION, "othervalue", "deletion"),
 				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "othervalue", "deletion"),
+				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, null, "deletion"),
 
 				Arguments.of(DeltaType.DELETION, DeltaTable.GROUP, "object", "othervalue"),
 				Arguments.of(DeltaType.DELETION, DeltaTable.ACTIVITY, "object", "othervalue"),
 				Arguments.of(DeltaType.DELETION, DeltaTable.CONDITION, "object", "othervalue"),
-				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", "othervalue")
+				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", "othervalue"),
+				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", null)
 				);
 	}
 

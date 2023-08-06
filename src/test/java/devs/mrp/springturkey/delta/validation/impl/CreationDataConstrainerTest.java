@@ -2,6 +2,8 @@ package devs.mrp.springturkey.delta.validation.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -89,6 +91,7 @@ class CreationDataConstrainerTest {
 
 		int result = dataConstrainer.pushDelta(delta);
 		assertEquals(1, result);
+		verify(deltaFacade, times(1)).pushCreation(ArgumentMatchers.refEq(delta));
 	}
 
 	private static Stream<Arguments> provideIncorrectValues() throws JsonProcessingException {

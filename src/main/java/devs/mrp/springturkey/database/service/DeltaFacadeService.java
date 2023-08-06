@@ -8,4 +8,6 @@ public interface DeltaFacadeService {
 
 	public int pushCreation(Delta delta);
 
+	public int pushDeletion(Delta delta);
+
 }
