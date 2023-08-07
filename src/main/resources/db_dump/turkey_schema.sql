@@ -209,3 +209,8 @@ ALTER TABLE turkey_condition
 ALTER TABLE turkey_condition
     ADD CONSTRAINT groups_shall_be_different
     CHECK (conditional_group <> target_group);
+    
+ALTER TABLE turkey_activities
+    ADD CONSTRAINT activity_type_matches_group_type FOREIGN KEY
+    (turkey_group, category_type)
+    REFERENCES turkey_group (id, type);

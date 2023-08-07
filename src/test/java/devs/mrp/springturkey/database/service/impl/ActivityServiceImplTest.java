@@ -17,7 +17,7 @@ import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
 import devs.mrp.springturkey.database.entity.Activity;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
-import devs.mrp.springturkey.database.entity.enumerable.ActivityType;
+import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.database.repository.ActivityRepository;
 import devs.mrp.springturkey.database.repository.UserRepository;
@@ -52,25 +52,25 @@ class ActivityServiceImplTest {
 
 		Activity activity1 = Activity.builder()
 				.activityName("app1")
-				.activityType(ActivityType.ANDROID_APP)
+				.activityType(ActivityPlatform.ANDROID_APP)
 				.categoryType(CategoryType.NEUTRAL)
 				.user(user)
 				.build();
 		Activity activity2 = Activity.builder()
 				.activityName("app2")
-				.activityType(ActivityType.MAC_PROCESS)
+				.activityType(ActivityPlatform.MAC_PROCESS)
 				.categoryType(CategoryType.NEGATIVE)
 				.user(user)
 				.build();
 		Activity activity3 = Activity.builder()
 				.activityName("app3")
-				.activityType(ActivityType.UBUNTU_PROCESS)
+				.activityType(ActivityPlatform.UBUNTU_PROCESS)
 				.categoryType(CategoryType.POSITIVE)
 				.user(user)
 				.build();
 		Activity activity4 = Activity.builder()
 				.activityName("app4")
-				.activityType(ActivityType.UBUNTU_PROCESS)
+				.activityType(ActivityPlatform.UBUNTU_PROCESS)
 				.categoryType(CategoryType.POSITIVE)
 				.user(otherUser)
 				.build();
@@ -97,19 +97,19 @@ class ActivityServiceImplTest {
 
 		Activity activity1 = Activity.builder()
 				.activityName("app1")
-				.activityType(ActivityType.ANDROID_APP)
+				.activityType(ActivityPlatform.ANDROID_APP)
 				.categoryType(CategoryType.NEUTRAL)
 				.user(user)
 				.build();
 		Activity activity2 = Activity.builder()
 				.activityName("app2")
-				.activityType(ActivityType.MAC_PROCESS)
+				.activityType(ActivityPlatform.MAC_PROCESS)
 				.categoryType(CategoryType.NEGATIVE)
 				.user(user)
 				.build();
 		Activity activity3 = Activity.builder()
 				.activityName("app3")
-				.activityType(ActivityType.UBUNTU_PROCESS)
+				.activityType(ActivityPlatform.UBUNTU_PROCESS)
 				.categoryType(CategoryType.POSITIVE)
 				.user(user)
 				.build();
@@ -132,7 +132,7 @@ class ActivityServiceImplTest {
 		Activity activity1 = Activity.builder()
 				.id(UUID.randomUUID())
 				.activityName("app1")
-				.activityType(ActivityType.ANDROID_APP)
+				.activityType(ActivityPlatform.ANDROID_APP)
 				.categoryType(CategoryType.NEUTRAL)
 				.user(user)
 				.build();
@@ -160,7 +160,7 @@ class ActivityServiceImplTest {
 
 		Activity activity1 = Activity.builder()
 				.activityName("app1")
-				.activityType(ActivityType.ANDROID_APP)
+				.activityType(ActivityPlatform.ANDROID_APP)
 				.categoryType(CategoryType.NEUTRAL)
 				.user(user)
 				.build();
@@ -189,7 +189,7 @@ class ActivityServiceImplTest {
 		Activity activity1 = Activity.builder()
 				.id(UUID.randomUUID())
 				.activityName("app1")
-				.activityType(ActivityType.ANDROID_APP)
+				.activityType(ActivityPlatform.ANDROID_APP)
 				.categoryType(CategoryType.NEUTRAL)
 				.user(user)
 				.build();
@@ -216,14 +216,14 @@ class ActivityServiceImplTest {
 		Activity activity1 = Activity.builder()
 				.id(UUID.randomUUID())
 				.activityName("app1")
-				.activityType(ActivityType.ANDROID_APP)
+				.activityType(ActivityPlatform.ANDROID_APP)
 				.categoryType(CategoryType.NEUTRAL)
 				.user(user)
 				.build();
 		Activity activity2 = Activity.builder()
 				.id(activity1.getId())
 				.activityName("app2")
-				.activityType(ActivityType.ANDROID_APP)
+				.activityType(ActivityPlatform.ANDROID_APP)
 				.categoryType(CategoryType.NEUTRAL)
 				.user(user)
 				.build();

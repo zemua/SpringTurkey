@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import devs.mrp.springturkey.database.entity.enumerable.GroupType;
+import devs.mrp.springturkey.validation.AlphaNumericSpaceConstraint;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -53,6 +54,7 @@ public class Group {
 	private TurkeyUser user;
 
 	@NotBlank
+	@AlphaNumericSpaceConstraint
 	private String name;
 
 	@Enumerated(EnumType.STRING)

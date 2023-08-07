@@ -12,12 +12,14 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import devs.mrp.springturkey.configuration.ServiceBeansConfig;
 import devs.mrp.springturkey.database.entity.Activity;
@@ -27,7 +29,7 @@ import devs.mrp.springturkey.database.entity.Group;
 import devs.mrp.springturkey.database.entity.Setting;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.entity.dto.ExportData;
-import devs.mrp.springturkey.database.entity.enumerable.ActivityType;
+import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.database.entity.enumerable.DeviceType;
 import devs.mrp.springturkey.database.entity.enumerable.GroupType;
@@ -44,7 +46,7 @@ import devs.mrp.springturkey.database.repository.UserRepository;
 @EntityScan("devs.mrp.springturkey.database.*")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import({ServiceBeansConfig.class})
-// JPA auditing is disabled to verify equals of the json
+@EnableJpaAuditing
 class FullUserDumpFacadeImplTest {
 
 	@Autowired
@@ -91,8 +93,8 @@ class FullUserDumpFacadeImplTest {
 		group1 = groupRepository.save(Group.builder().user(user).name("group1").type(GroupType.NEGATIVE).build());
 		group2 = groupRepository.save(Group.builder().user(user).name("group2").type(GroupType.POSITIVE).build());
 
-		activity1 = activityRepository.save(Activity.builder().user(user).activityName("act1").group(group1).activityType(ActivityType.ANDROID_APP).categoryType(CategoryType.NEGATIVE).build());
-		activity2 = activityRepository.save(Activity.builder().user(user).activityName("act2").activityType(ActivityType.ANDROID_APP).categoryType(CategoryType.NEGATIVE).build());
+		activity1 = activityRepository.save(Activity.builder().user(user).activityName("act1").group(group1).activityType(ActivityPlatform.ANDROID_APP).categoryType(CategoryType.NEGATIVE).build());
+		activity2 = activityRepository.save(Activity.builder().user(user).activityName("act2").activityType(ActivityPlatform.ANDROID_APP).categoryType(CategoryType.NEGATIVE).build());
 
 		condition1 = conditionRepository.save(Condition.builder().user(user)
 				.conditionalGroup(group1).targetGroup(group2)
@@ -109,6 +111,7 @@ class FullUserDumpFacadeImplTest {
 	@WithMockUser("some@user.me")
 	void testFullUserDump() throws JsonMappingException, JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
 
 		Map<Object,Object> expected = mapper.convertValue(expectedData(), Map.class);
 

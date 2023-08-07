@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import devs.mrp.springturkey.database.entity.enumerable.PlatformType;
+import devs.mrp.springturkey.validation.AlphaNumericSpaceConstraint;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -57,10 +58,12 @@ public class Setting {
 
 	@Column(name = "setting_key")
 	@NotBlank
+	@AlphaNumericSpaceConstraint
 	private String settingKey;
 
 	@Column(name = "setting_value")
 	@NotBlank
+	@AlphaNumericSpaceConstraint
 	private String settingValue;
 
 	@CreatedDate
