@@ -25,6 +25,7 @@ import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.database.repository.ActivityRepository;
 import devs.mrp.springturkey.database.repository.ConditionRepository;
+import devs.mrp.springturkey.database.repository.DeltaRepository;
 import devs.mrp.springturkey.database.repository.DeviceRepository;
 import devs.mrp.springturkey.database.repository.GroupRepository;
 import devs.mrp.springturkey.database.repository.SettingRepository;
@@ -55,6 +56,8 @@ class DeltaFacadeServiceImplTest {
 	private GroupRepository groupRepository;
 	@Autowired
 	private SettingRepository settingRepository;
+	@Autowired
+	private DeltaRepository deltaRepository;
 
 	@Autowired
 	private DeltaFacadeServiceImpl deltaFacadeService;
@@ -74,15 +77,19 @@ class DeltaFacadeServiceImplTest {
 
 	@Test
 	@DirtiesContext
-	void createOne() throws JsonProcessingException {
-		var preCreation = activityRepository.findAll();
-		assertEquals(0, preCreation.size());
+	void createOneActivity() throws JsonProcessingException {
+		var preActivities = activityRepository.findAll();
+		var preDeltas = deltaRepository.findAll();
+		assertEquals(0, preActivities.size());
+		assertEquals(0, preDeltas.size());
 
 		Delta delta = creationDeltaBuilder().build();
 		deltaFacadeService.pushCreation(delta);
 
-		var postCreation = activityRepository.findAll();
-		assertEquals(1, postCreation.size());
+		var postActivities = activityRepository.findAll();
+		var postDeltas = deltaRepository.findAll();
+		assertEquals(1, postActivities.size());
+		assertEquals(1, postDeltas.size());
 	}
 
 	@Test

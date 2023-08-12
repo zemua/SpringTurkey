@@ -2,6 +2,7 @@ package devs.mrp.springturkey.delta.validation.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -74,6 +75,8 @@ class ModificationDataConstrainerTest {
 		int result = dataConstrainer.pushDelta(delta);
 		assertEquals(1, result);
 		verify(deltaFacade, times(1)).pushModification(ArgumentMatchers.refEq(modifiedDelta));
+
+		fail("implement random checks and blocks");
 	}
 
 	private static Stream<Arguments> provideIncorrectValues() {
@@ -120,6 +123,8 @@ class ModificationDataConstrainerTest {
 
 		assertThrows(WrongDataException.class, () -> dataConstrainer.pushDelta(delta));
 		verifyNoInteractions(deltaFacade);
+
+		fail("implement random checks and blocks");
 	}
 
 }

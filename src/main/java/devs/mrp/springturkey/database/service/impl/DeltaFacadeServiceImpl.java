@@ -10,7 +10,7 @@ public class DeltaFacadeServiceImpl implements DeltaFacadeService {
 
 	@Override
 	public int pushCreation(Delta delta) {
-		// TODO Auto-generated method stub
+
 		return 0;
 	}
 
