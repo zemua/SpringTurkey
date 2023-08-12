@@ -8,4 +8,8 @@ public class TurkeySurpriseException extends RuntimeException {
 		super(msg);
 	}
 
+	public TurkeySurpriseException(String msg, Throwable e) {
+		super(msg, e);
+	}
+
 }
