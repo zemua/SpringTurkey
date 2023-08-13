@@ -30,6 +30,7 @@ import devs.mrp.springturkey.database.repository.DeviceRepository;
 import devs.mrp.springturkey.database.repository.GroupRepository;
 import devs.mrp.springturkey.database.repository.SettingRepository;
 import devs.mrp.springturkey.database.repository.UserRepository;
+import devs.mrp.springturkey.database.repository.dao.impl.EntityFromDeltaDaoImpl;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaTable;
 import devs.mrp.springturkey.delta.DeltaType;
@@ -40,7 +41,7 @@ import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
 @EnableJpaAuditing
 @EntityScan("devs.mrp.springturkey.database.*")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(classes = {DeltaFacadeServiceImpl.class})
+@ContextConfiguration(classes = {DeltaFacadeServiceImpl.class, EntityFromDeltaDaoImpl.class})
 class DeltaFacadeServiceImplTest {
 
 	@Autowired

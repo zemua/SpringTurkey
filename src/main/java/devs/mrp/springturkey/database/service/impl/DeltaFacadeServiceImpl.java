@@ -1,5 +1,7 @@
 package devs.mrp.springturkey.database.service.impl;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,15 +30,14 @@ public class DeltaFacadeServiceImpl implements DeltaFacadeService {
 	@Override
 	@Transactional
 	public int pushCreation(Delta delta) {
-		Object entity;
+		Map<String,String> entity;
 		try {
-			entity = objectMapper.readValue(delta.getTextValue(), delta.getTable().getEntityClass());
+			entity = objectMapper.readValue(delta.getTextValue(), Map.class);
 		} catch (JsonProcessingException e) {
-			throw new TurkeySurpriseException("Delta content has not been validated: " + delta.toString(), e);
+			throw new TurkeySurpriseException("Delta content has not been correctly validated: " + delta.toString(), e);
 		}
 		deltaRepository.save(DeltaEntity.from(delta));
-		entityFromDeltaDao.save(entity);
-		return 0;
+		return entityFromDeltaDao.save(delta, entity);
 	}
 
 	@Override
