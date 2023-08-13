@@ -19,15 +19,15 @@ class FieldValidatorTest {
 				.predicate(s -> Pattern.compile("^hello.+").matcher(s).matches())
 				.build();
 
-		assertTrue(validator.isValid("hello world!"));
-		assertFalse(validator.isValid("bye world!"));
+		assertTrue(validator.isValidModification("hello world!"));
+		assertFalse(validator.isValidModification("bye world!"));
 
 		validator = FieldValidator.builder()
 				.columnName("some name")
 				.predicate(s -> Pattern.compile("^hello").matcher(s).matches())
 				.build();
-		assertFalse(validator.isValid("hello world!"));
-		assertFalse(validator.isValid("bye world!"));
+		assertFalse(validator.isValidModification("hello world!"));
+		assertFalse(validator.isValidModification("bye world!"));
 	}
 
 	@Test

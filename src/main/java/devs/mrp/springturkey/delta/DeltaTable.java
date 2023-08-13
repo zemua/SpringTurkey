@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.delta.validation.FieldValidator;
 import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
@@ -17,27 +18,29 @@ import devs.mrp.springturkey.utils.UuidUtils;
 public enum DeltaTable {
 
 	GROUP(Map.of(
-			"name", FieldValidator.builder().columnName("name").predicate(StringUtils::isAlphanumericSpace).build(),
-			"preventClose", FieldValidator.builder().columnName("prevent_close").predicate(BooleanUtils::isBoolean).build()
+			"name", FieldValidator.builder().columnName("name").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build(),
+			"preventClose", FieldValidator.builder().columnName("prevent_close").predicate(BooleanUtils::isBoolean).modifiable(true).creatable(true).build()
 			),
 			GroupCreationDelta.class,
 			"group"),
 	ACTIVITY(Map.of(
-			"categoryType", FieldValidator.builder().columnName("category_type").predicate(EnumUtils.getEnumPredicate(CategoryType.class)).build(),
-			"groupId", FieldValidator.builder().columnName("turkey_group").predicate(UuidUtils::isUuid).build(),
-			"preventClosing", FieldValidator.builder().columnName("prevent_closing").predicate(BooleanUtils::isBoolean).build()
+			"categoryType", FieldValidator.builder().columnName("category_type").predicate(EnumUtils.getEnumPredicate(CategoryType.class)).modifiable(true).creatable(true).build(),
+			"groupId", FieldValidator.builder().columnName("turkey_group").predicate(UuidUtils::isNullableUuid).modifiable(true).creatable(true).build(),
+			"preventClose", FieldValidator.builder().columnName("prevent_closing").predicate(BooleanUtils::isNullableBoolean).modifiable(true).creatable(true).build(),
+			"activityName", FieldValidator.builder().columnName("activity_name").predicate(StringUtils::isAlphanumericSpace).creatable(true).build(),
+			"activityType", FieldValidator.builder().columnName("activity_type").predicate(EnumUtils.getEnumPredicate(ActivityPlatform.class)).creatable(true).build()
 			),
 			ActivityCreationDelta.class,
 			"activity"),
 	CONDITION(Map.of(
-			"requiredUsageMs", FieldValidator.builder().columnName("required_usage_ms").predicate(StringUtils::isNumeric).build(),
-			"lastDaysToConsider", FieldValidator.builder().columnName("last_days_to_consider").predicate(StringUtils::isNumeric).build(),
-			"conditionalGroup", FieldValidator.builder().columnName("conditional_group").predicate(StringUtils::isAlphanumericSpace).build()
+			"requiredUsageMs", FieldValidator.builder().columnName("required_usage_ms").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build(),
+			"lastDaysToConsider", FieldValidator.builder().columnName("last_days_to_consider").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build(),
+			"conditionalGroup", FieldValidator.builder().columnName("conditional_group").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build()
 			),
 			ConditionCreationDelta.class,
 			"condition"),
 	SETTING(Map.of(
-			"settingValue", FieldValidator.builder().columnName("setting_value").predicate(StringUtils::isAlphanumericSpace).build()
+			"settingValue", FieldValidator.builder().columnName("setting_value").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build()
 			),
 			SettingCreationDelta.class,
 			"setting");

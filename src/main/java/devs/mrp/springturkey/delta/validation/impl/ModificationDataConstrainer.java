@@ -29,7 +29,7 @@ public class ModificationDataConstrainer implements DataConstrainer {
 	private boolean isValid(Delta delta) {
 		return DeltaType.MODIFICATION.equals(delta.getDeltaType())
 				&& getFieldMap(delta).containsKey(delta.getFieldName())
-				&& getFieldMap(delta).get(delta.getFieldName()).isValid(delta.getTextValue());
+				&& getFieldMap(delta).get(delta.getFieldName()).isValidModification(delta.getTextValue());
 	}
 
 	private Delta mapDeltaField(Delta delta) throws WrongDataException {

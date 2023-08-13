@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.With;
 
 @Getter
@@ -16,6 +17,7 @@ import lombok.With;
 @With
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class Delta {
 
 	@NotNull

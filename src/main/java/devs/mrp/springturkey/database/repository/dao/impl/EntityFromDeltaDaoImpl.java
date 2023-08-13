@@ -30,7 +30,7 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 				keys.append(",");
 				values.append(",");
 			}
-			keys.append(entry.getKey());
+			keys.append(delta.getTable().getFieldMap().get(entry.getKey()).getColumnName());
 			values.append(":value"+i);
 		}
 
