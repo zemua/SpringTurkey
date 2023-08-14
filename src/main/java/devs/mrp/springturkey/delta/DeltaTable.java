@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
+import devs.mrp.springturkey.database.entity.enumerable.PlatformType;
 import devs.mrp.springturkey.delta.validation.FieldValidator;
 import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.ConditionCreationDelta;
@@ -24,11 +25,11 @@ public enum DeltaTable {
 			GroupCreationDelta.class,
 			"group"),
 	ACTIVITY(Map.of(
-			"categoryType", FieldValidator.builder().columnName("category_type").predicate(EnumUtils.getEnumPredicate(CategoryType.class)).modifiable(true).creatable(true).build(),
-			"groupId", FieldValidator.builder().columnName("turkey_group").predicate(UuidUtils::isNullableUuid).modifiable(true).creatable(true).build(),
-			"preventClose", FieldValidator.builder().columnName("prevent_closing").predicate(BooleanUtils::isNullableBoolean).modifiable(true).creatable(true).build(),
-			"activityName", FieldValidator.builder().columnName("activity_name").predicate(StringUtils::isAlphanumericSpace).creatable(true).build(),
-			"activityType", FieldValidator.builder().columnName("activity_type").predicate(EnumUtils.getEnumPredicate(ActivityPlatform.class)).creatable(true).build()
+			"categoryType", FieldValidator.builder().columnName("categoryType").predicate(EnumUtils.getEnumPredicate(CategoryType.class)).modifiable(true).creatable(true).build(),
+			"groupId", FieldValidator.builder().columnName("group").predicate(UuidUtils::isNullableUuid).modifiable(true).creatable(true).build(),
+			"preventClose", FieldValidator.builder().columnName("preventClosing").predicate(BooleanUtils::isNullableBoolean).modifiable(true).creatable(true).build(),
+			"activityName", FieldValidator.builder().columnName("activityName").predicate(StringUtils::isAlphanumericSpace).creatable(true).build(),
+			"activityType", FieldValidator.builder().columnName("activityType").predicate(EnumUtils.getEnumPredicate(ActivityPlatform.class)).creatable(true).build()
 			),
 			ActivityCreationDelta.class,
 			"activity"),
@@ -40,7 +41,9 @@ public enum DeltaTable {
 			ConditionCreationDelta.class,
 			"condition"),
 	SETTING(Map.of(
-			"settingValue", FieldValidator.builder().columnName("setting_value").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build()
+			"settingValue", FieldValidator.builder().columnName("settingValue").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build(),
+			"settingKey", FieldValidator.builder().columnName("settingKey").predicate(StringUtils::isAlphanumeric).creatable(true).build(),
+			"platformType", FieldValidator.builder().columnName("platform").predicate(EnumUtils.getEnumPredicate(PlatformType.class)).creatable(true).build()
 			),
 			SettingCreationDelta.class,
 			"setting");

@@ -20,6 +20,12 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 
 	@Override
 	public int save(Delta delta, Map<String,String> entityMap) {
+		// TODO simplify as follows:
+		// objectMapper to Map<String,String>
+		// copy Map to new one changing property names according to DeltaTable.fieldMap
+		// objectMapper to Entity
+		// entityManager.persist(Object entity)
+
 		StringBuilder keys = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		ArrayList<Entry<String,String>> list = new ArrayList<>(entityMap.entrySet());

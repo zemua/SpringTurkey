@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
+import devs.mrp.springturkey.database.entity.enumerable.PlatformType;
 import devs.mrp.springturkey.database.repository.ActivityRepository;
 import devs.mrp.springturkey.database.repository.ConditionRepository;
 import devs.mrp.springturkey.database.repository.DeltaRepository;
@@ -35,6 +36,7 @@ import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaTable;
 import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
+import devs.mrp.springturkey.delta.validation.entity.SettingCreationDelta;
 
 @DataJpaTest
 @EnableJpaRepositories(basePackages = "devs.mrp.springturkey.database.repository")
@@ -84,7 +86,7 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(0, preActivities.size());
 		assertEquals(0, preDeltas.size());
 
-		Delta delta = creationDeltaBuilder().build();
+		Delta delta = activityCreationDeltaBuilder().build();
 		deltaFacadeService.pushCreation(delta);
 
 		var postActivities = activityRepository.findAll();
@@ -94,11 +96,28 @@ class DeltaFacadeServiceImplTest {
 	}
 
 	@Test
+	@DirtiesContext
+	void createOneSetting() throws JsonProcessingException {
+		var preSettings = settingRepository.findAll();
+		var preDeltas = deltaRepository.findAll();
+		assertEquals(0, preSettings.size());
+		assertEquals(0, preDeltas.size());
+
+		Delta delta = settingCreationDeltaBuilder().build();
+		deltaFacadeService.pushCreation(delta);
+
+		var postSettings = settingRepository.findAll();
+		var postDeltas = deltaRepository.findAll();
+		assertEquals(1, postSettings.size());
+		assertEquals(1, postDeltas.size());
+	}
+
+	@Test
 	void test() {
 		fail("Not yet implemented");
 	}
 
-	private Delta.DeltaBuilder creationDeltaBuilder() throws JsonProcessingException {
+	private Delta.DeltaBuilder activityCreationDeltaBuilder() throws JsonProcessingException {
 		return Delta.builder()
 				.timestamp(LocalDateTime.now())
 				.deltaType(DeltaType.CREATION)
@@ -113,6 +132,23 @@ class DeltaFacadeServiceImplTest {
 				.activityName("default name")
 				.activityType(ActivityPlatform.ANDROID_APP)
 				.categoryType(CategoryType.NEGATIVE);
+	}
+
+	private Delta.DeltaBuilder settingCreationDeltaBuilder() throws JsonProcessingException {
+		return Delta.builder()
+				.timestamp(LocalDateTime.now())
+				.deltaType(DeltaType.CREATION)
+				.table(DeltaTable.SETTING)
+				.recordId(UUID.randomUUID())
+				.fieldName("object")
+				.textValue(objectMapper.writeValueAsString(settingBuilder().build()));
+	}
+
+	private SettingCreationDelta.SettingCreationDeltaBuilder settingBuilder() {
+		return SettingCreationDelta.builder()
+				.platformType(PlatformType.ALL)
+				.settingKey("someKey")
+				.settingValue("some value");
 	}
 
 }
