@@ -4,6 +4,10 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import devs.mrp.springturkey.database.entity.Activity;
+import devs.mrp.springturkey.database.entity.Condition;
+import devs.mrp.springturkey.database.entity.Group;
+import devs.mrp.springturkey.database.entity.Setting;
 import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.database.entity.enumerable.PlatformType;
@@ -23,39 +27,39 @@ public enum DeltaTable {
 			"preventClose", FieldValidator.builder().columnName("prevent_close").predicate(BooleanUtils::isBoolean).modifiable(true).creatable(true).build()
 			),
 			GroupCreationDelta.class,
-			"group"),
+			Group.class),
 	ACTIVITY(Map.of(
 			"categoryType", FieldValidator.builder().columnName("categoryType").predicate(EnumUtils.getEnumPredicate(CategoryType.class)).modifiable(true).creatable(true).build(),
-			"groupId", FieldValidator.builder().columnName("group").predicate(UuidUtils::isNullableUuid).modifiable(true).creatable(true).build(),
+			"groupId", FieldValidator.builder().columnName("group").predicate(UuidUtils::isNullableUuid).referenzable(Group.class).modifiable(true).creatable(true).build(),
 			"preventClose", FieldValidator.builder().columnName("preventClosing").predicate(BooleanUtils::isNullableBoolean).modifiable(true).creatable(true).build(),
 			"activityName", FieldValidator.builder().columnName("activityName").predicate(StringUtils::isAlphanumericSpace).creatable(true).build(),
 			"activityType", FieldValidator.builder().columnName("activityType").predicate(EnumUtils.getEnumPredicate(ActivityPlatform.class)).creatable(true).build()
 			),
 			ActivityCreationDelta.class,
-			"activity"),
+			Activity.class),
 	CONDITION(Map.of(
 			"requiredUsageMs", FieldValidator.builder().columnName("required_usage_ms").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build(),
 			"lastDaysToConsider", FieldValidator.builder().columnName("last_days_to_consider").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build(),
 			"conditionalGroup", FieldValidator.builder().columnName("conditional_group").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build()
 			),
 			ConditionCreationDelta.class,
-			"condition"),
+			Condition.class),
 	SETTING(Map.of(
 			"settingValue", FieldValidator.builder().columnName("settingValue").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build(),
 			"settingKey", FieldValidator.builder().columnName("settingKey").predicate(StringUtils::isAlphanumeric).creatable(true).build(),
 			"platformType", FieldValidator.builder().columnName("platform").predicate(EnumUtils.getEnumPredicate(PlatformType.class)).creatable(true).build()
 			),
 			SettingCreationDelta.class,
-			"setting");
+			Setting.class);
 
 	private Map<String,FieldValidator> fieldMap;
 	private Class<?> entityDtoClass;
-	private String entityName;
+	private Class<?> entity;
 
-	DeltaTable(Map<String,FieldValidator> fieldMap, Class<?> dto, String entity) {
+	DeltaTable(Map<String,FieldValidator> fieldMap, Class<?> dto, Class<?> entity) {
 		this.fieldMap = fieldMap;
 		this.entityDtoClass = dto;
-		this.entityName = entity;
+		this.entity = entity;
 	}
 
 	public Map<String,FieldValidator> getFieldMap() {
@@ -66,8 +70,8 @@ public enum DeltaTable {
 		return entityDtoClass;
 	}
 
-	public String getEntityName() {
-		return entityName;
+	public Class<?> getEntityClass() {
+		return entity;
 	}
 
 }

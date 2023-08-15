@@ -23,6 +23,9 @@ public class FieldValidator {
 
 	private boolean canCreate;
 
+	@Getter
+	private Class<?> referenzable;
+
 	public boolean isValidModification(String value) {
 		return canModify && predicate.test(value);
 	}
@@ -45,6 +48,8 @@ public class FieldValidator {
 
 		private boolean canCreate = false;
 
+		private Class<?> referenzable;
+
 		public FieldValidatorBuilder columnName(String name) {
 			this.columnName = name;
 			return this;
@@ -65,11 +70,16 @@ public class FieldValidator {
 			return this;
 		}
 
+		public FieldValidatorBuilder referenzable(Class<?> referenzable) {
+			this.referenzable = referenzable;
+			return this;
+		}
+
 		public FieldValidator build() {
 			if (Objects.isNull(this.columnName) || Objects.isNull(this.predicate)) {
 				throw new TurkeySurpriseException("No fields were expected to be null");
 			}
-			return new FieldValidator(this.columnName, this.predicate, this.canModify, this.canCreate);
+			return new FieldValidator(this.columnName, this.predicate, this.canModify, this.canCreate, this.referenzable);
 		}
 
 	}

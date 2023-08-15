@@ -14,15 +14,19 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
+import devs.mrp.springturkey.database.entity.Group;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
+import devs.mrp.springturkey.database.entity.enumerable.GroupType;
 import devs.mrp.springturkey.database.entity.enumerable.PlatformType;
 import devs.mrp.springturkey.database.repository.ActivityRepository;
 import devs.mrp.springturkey.database.repository.ConditionRepository;
@@ -43,7 +47,7 @@ import devs.mrp.springturkey.delta.validation.entity.SettingCreationDelta;
 @EnableJpaAuditing
 @EntityScan("devs.mrp.springturkey.database.*")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(classes = {DeltaFacadeServiceImpl.class, EntityFromDeltaDaoImpl.class})
+@ContextConfiguration(classes = {DeltaFacadeServiceImpl.class, EntityFromDeltaDaoImpl.class, UserServiceImpl.class, LoginDetailsReaderImpl.class})
 class DeltaFacadeServiceImplTest {
 
 	@Autowired
@@ -79,6 +83,25 @@ class DeltaFacadeServiceImplTest {
 	}
 
 	@Test
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
+	void createOneSetting() throws JsonProcessingException {
+		var preSettings = settingRepository.findAll();
+		var preDeltas = deltaRepository.findAll();
+		assertEquals(0, preSettings.size());
+		assertEquals(0, preDeltas.size());
+
+		Delta delta = settingCreationDeltaBuilder().build();
+		deltaFacadeService.pushCreation(delta);
+
+		var postSettings = settingRepository.findAll();
+		var postDeltas = deltaRepository.findAll();
+		assertEquals(1, postSettings.size());
+		assertEquals(1, postDeltas.size());
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
 	@DirtiesContext
 	void createOneActivity() throws JsonProcessingException {
 		var preActivities = activityRepository.findAll();
@@ -96,20 +119,44 @@ class DeltaFacadeServiceImplTest {
 	}
 
 	@Test
+	@WithMockUser("some@mail.com")
 	@DirtiesContext
-	void createOneSetting() throws JsonProcessingException {
-		var preSettings = settingRepository.findAll();
+	void createOneActivityWithGroup() throws JsonProcessingException {
+		var preActivities = activityRepository.findAll();
 		var preDeltas = deltaRepository.findAll();
-		assertEquals(0, preSettings.size());
+		assertEquals(0, preActivities.size());
 		assertEquals(0, preDeltas.size());
 
-		Delta delta = settingCreationDeltaBuilder().build();
+		Group group = groupBuilder().build();
+		groupRepository.save(group);
+		Group fetchedGroup = groupRepository.findAll().get(0);
+
+		Delta delta = activityCreationDeltaBuilder()
+				.textValue(objectMapper.writeValueAsString(activityBuilder()
+						.groupId(fetchedGroup.getId())
+						.build()))
+				.build();
 		deltaFacadeService.pushCreation(delta);
 
-		var postSettings = settingRepository.findAll();
+		var postActivities = activityRepository.findAll();
 		var postDeltas = deltaRepository.findAll();
-		assertEquals(1, postSettings.size());
+		assertEquals(1, postActivities.size());
 		assertEquals(1, postDeltas.size());
+	}
+
+	@Test
+	void createOneGroup() {
+		fail("not yet implemented");
+	}
+
+	@Test
+	void createOneCondition() {
+		fail("not yet implemented");
+	}
+
+	@Test
+	void testSavedWithExistingIdPreservesId() {
+		fail("not yet implemented");
 	}
 
 	@Test
@@ -149,6 +196,14 @@ class DeltaFacadeServiceImplTest {
 				.platformType(PlatformType.ALL)
 				.settingKey("someKey")
 				.settingValue("some value");
+	}
+
+	private Group.GroupBuilder groupBuilder() {
+		return Group.builder()
+				.id(UUID.randomUUID())
+				.name("some group name")
+				.type(GroupType.NEGATIVE)
+				.user(user);
 	}
 
 }
