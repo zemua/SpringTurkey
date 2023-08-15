@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -44,6 +45,7 @@ import devs.mrp.springturkey.delta.validation.entity.SettingCreationDelta;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import reactor.core.publisher.Mono;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {CreationDataConstrainer.class})
@@ -88,13 +90,11 @@ class CreationDataConstrainerTest {
 				.textValue(jsonValue)
 				.build();
 
-		when(deltaFacade.pushCreation(ArgumentMatchers.refEq(delta))).thenReturn(1);
+		when(deltaFacade.pushCreation(ArgumentMatchers.refEq(delta))).thenReturn(Mono.just(1));
 
-		int result = dataConstrainer.pushDelta(delta);
+		int result = dataConstrainer.pushDelta(delta).block();
 		assertEquals(1, result);
 		verify(deltaFacade, times(1)).pushCreation(ArgumentMatchers.refEq(delta));
-
-		fail("implement random checks and blocks");
 	}
 
 	private static Stream<Arguments> provideIncorrectValues() throws JsonProcessingException {
@@ -139,8 +139,11 @@ class CreationDataConstrainerTest {
 
 		assertThrows(WrongDataException.class, () -> dataConstrainer.pushDelta(delta));
 		verifyNoInteractions(deltaFacade);
+	}
 
-		fail("implement random checks and blocks");
+	@Test
+	void test() {
+		fail("to implement random checks and random blocks");
 	}
 
 	private static GroupCreationDelta.GroupCreationDeltaBuilder validGroup() {

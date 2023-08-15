@@ -11,6 +11,7 @@ import devs.mrp.springturkey.database.repository.dao.EntityFromDeltaDao;
 import devs.mrp.springturkey.database.service.DeltaFacadeService;
 import devs.mrp.springturkey.delta.Delta;
 import jakarta.transaction.Transactional;
+import reactor.core.publisher.Mono;
 
 @Service
 public class DeltaFacadeServiceImpl implements DeltaFacadeService {
@@ -25,7 +26,7 @@ public class DeltaFacadeServiceImpl implements DeltaFacadeService {
 
 	@Override
 	@Transactional
-	public int pushCreation(Delta delta) {
+	public Mono<Integer> pushCreation(Delta delta) {
 		deltaRepository.save(DeltaEntity.from(delta));
 		return entityFromDeltaDao.save(delta);
 	}

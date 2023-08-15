@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -72,11 +73,9 @@ class ModificationDataConstrainerTest {
 
 		when(deltaFacade.pushModification(ArgumentMatchers.refEq(modifiedDelta))).thenReturn(1);
 
-		int result = dataConstrainer.pushDelta(delta);
+		int result = dataConstrainer.pushDelta(delta).block();
 		assertEquals(1, result);
 		verify(deltaFacade, times(1)).pushModification(ArgumentMatchers.refEq(modifiedDelta));
-
-		fail("implement random checks and blocks");
 	}
 
 	private static Stream<Arguments> provideIncorrectValues() {
@@ -123,8 +122,11 @@ class ModificationDataConstrainerTest {
 
 		assertThrows(WrongDataException.class, () -> dataConstrainer.pushDelta(delta));
 		verifyNoInteractions(deltaFacade);
+	}
 
-		fail("implement random checks and blocks");
+	@Test
+	void test() {
+		fail("to implement random checks and random blocks");
 	}
 
 }

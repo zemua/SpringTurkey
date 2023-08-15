@@ -92,12 +92,13 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(0, preDeltas.size());
 
 		Delta delta = settingCreationDeltaBuilder().build();
-		deltaFacadeService.pushCreation(delta);
+		Integer result = deltaFacadeService.pushCreation(delta).block();
 
 		var postSettings = settingRepository.findAll();
 		var postDeltas = deltaRepository.findAll();
 		assertEquals(1, postSettings.size());
 		assertEquals(1, postDeltas.size());
+		assertEquals(1, result);
 	}
 
 	@Test
@@ -110,18 +111,19 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(0, preDeltas.size());
 
 		Delta delta = activityCreationDeltaBuilder().build();
-		deltaFacadeService.pushCreation(delta);
+		Integer result = deltaFacadeService.pushCreation(delta).block();
 
 		var postActivities = activityRepository.findAll();
 		var postDeltas = deltaRepository.findAll();
 		assertEquals(1, postActivities.size());
 		assertEquals(1, postDeltas.size());
+		assertEquals(1, result);
 	}
 
 	@Test
 	@WithMockUser("some@mail.com")
 	@DirtiesContext
-	void createOneActivityWithGroup() throws JsonProcessingException {
+	void createOneActivityWithGroup() throws JsonProcessingException, InterruptedException {
 		var preActivities = activityRepository.findAll();
 		var preDeltas = deltaRepository.findAll();
 		assertEquals(0, preActivities.size());
@@ -136,12 +138,13 @@ class DeltaFacadeServiceImplTest {
 						.groupId(fetchedGroup.getId())
 						.build()))
 				.build();
-		deltaFacadeService.pushCreation(delta);
+		Integer result = deltaFacadeService.pushCreation(delta).block();
 
 		var postActivities = activityRepository.findAll();
 		var postDeltas = deltaRepository.findAll();
 		assertEquals(1, postActivities.size());
 		assertEquals(1, postDeltas.size());
+		assertEquals(1, result);
 	}
 
 	@Test

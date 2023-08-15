@@ -11,6 +11,7 @@ import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.DataConstrainer;
 import devs.mrp.springturkey.delta.validation.FieldValidator;
+import reactor.core.publisher.Mono;
 
 @Service("modificationConstraints")
 public class ModificationDataConstrainer implements DataConstrainer {
@@ -19,11 +20,11 @@ public class ModificationDataConstrainer implements DataConstrainer {
 	private DeltaFacadeService deltaFacadeService;
 
 	@Override
-	public int pushDelta(Delta delta) throws WrongDataException {
+	public Mono<Integer> pushDelta(Delta delta) throws WrongDataException {
 		if (!isValid(delta)) {
 			throw new WrongDataException("Incorrect field name");
 		}
-		return deltaFacadeService.pushModification(mapDeltaField(delta));
+		return Mono.just(deltaFacadeService.pushModification(mapDeltaField(delta)));
 	}
 
 	private boolean isValid(Delta delta) {
