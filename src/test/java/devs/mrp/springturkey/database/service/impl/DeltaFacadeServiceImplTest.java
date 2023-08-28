@@ -1,6 +1,8 @@
 package devs.mrp.springturkey.database.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -22,9 +24,11 @@ import org.springframework.test.context.ContextConfiguration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
+import devs.mrp.springturkey.database.entity.Activity;
 import devs.mrp.springturkey.database.entity.Group;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
@@ -83,6 +87,7 @@ class DeltaFacadeServiceImplTest {
 		userRepository.save(user);
 		alternativeUser = TurkeyUser.builder().email("other@mail.com").build();
 		userRepository.save(alternativeUser);
+		objectMapper.registerModule(new JavaTimeModule());
 	}
 
 	@Test
@@ -121,6 +126,15 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(1, postActivities.size());
 		assertEquals(1, postDeltas.size());
 		assertEquals(1, result);
+
+		Map<String,String> expected = objectMapper.readValue(delta.getTextValue(), Map.class);
+		Activity saved = postActivities.get(0);
+		assertEquals(expected.get("activityName"), saved.getActivityName());
+		assertNotNull(saved.getUser());
+		assertEquals(expected.get("activityType"), saved.getActivityType().name());
+		assertEquals(expected.get("categoryType"), saved.getCategoryType().name());
+		assertNull(saved.getGroup());
+		assertEquals(expected.get("preventClosing"), saved.getPreventClosing());
 	}
 
 	@Test
@@ -148,6 +162,15 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(1, postActivities.size());
 		assertEquals(1, postDeltas.size());
 		assertEquals(1, result);
+
+		Map<String,String> expected = objectMapper.readValue(delta.getTextValue(), Map.class);
+		Activity saved = postActivities.get(0);
+		assertEquals(expected.get("activityName"), saved.getActivityName());
+		assertNotNull(saved.getUser());
+		assertEquals(expected.get("activityType"), saved.getActivityType().name());
+		assertEquals(expected.get("categoryType"), saved.getCategoryType().name());
+		assertEquals(expected.get("groupId"), saved.getGroup().getId().toString());
+		assertEquals(expected.get("preventClosing"), saved.getPreventClosing());
 	}
 
 	@Test
