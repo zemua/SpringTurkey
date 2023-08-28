@@ -58,8 +58,13 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 	private void addToEntityMap(Map<String,Object> entityMap, Map<String,FieldValidator> validators, String key, String value) {
 		String columnName = validators.get(key).getColumnName();
 		Class<?> referenzable = validators.get(key).getReferenzable();
-		if (referenzable != null) {
-			UUID id = UUID.fromString(value); // TODO handle IllegalArgumentException
+		if (referenzable != null && value != null) {
+			UUID id;
+			try {
+				id = UUID.fromString(value);
+			} catch (IllegalArgumentException e) {
+				throw new TurkeySurpriseException("Invalid UUID value provided", e);
+			}
 			Object reference = entityManager.getReference(validators.get(key).getReferenzable(), id);
 			entityMap.put(columnName, reference);
 		} else {

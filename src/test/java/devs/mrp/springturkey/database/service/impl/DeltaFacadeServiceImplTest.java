@@ -1,9 +1,11 @@
 package devs.mrp.springturkey.database.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +23,7 @@ import org.springframework.test.context.ContextConfiguration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
 import devs.mrp.springturkey.database.entity.Group;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
@@ -145,6 +148,24 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(1, postActivities.size());
 		assertEquals(1, postDeltas.size());
 		assertEquals(1, result);
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
+	void createOneActivityWithWrongUuid() throws JsonProcessingException, InterruptedException {
+		var preActivities = activityRepository.findAll();
+		var preDeltas = deltaRepository.findAll();
+		assertEquals(0, preActivities.size());
+		assertEquals(0, preDeltas.size());
+
+		Map<String,String> deltaMap = objectMapper.convertValue(activityBuilder().build(), Map.class);
+		deltaMap.put("groupId", "invalid");
+		Delta delta = activityCreationDeltaBuilder()
+				.textValue(objectMapper.writeValueAsString(deltaMap))
+				.build();
+
+		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta).block());
 	}
 
 	@Test
