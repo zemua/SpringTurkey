@@ -28,6 +28,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
 import devs.mrp.springturkey.database.entity.Activity;
+import devs.mrp.springturkey.database.entity.DeltaEntity;
 import devs.mrp.springturkey.database.entity.Group;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
@@ -264,8 +265,26 @@ class DeltaFacadeServiceImplTest {
 	}
 
 	@Test
-	void testCreatedDeltaMatches() {
-		fail("Not yet implemented");
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
+	void createdDeltaMatches() throws JsonProcessingException {
+		var preSettings = settingRepository.findAll();
+		var preDeltas = deltaRepository.findAll();
+		assertEquals(0, preSettings.size());
+		assertEquals(0, preDeltas.size());
+
+		Delta delta = settingCreationDeltaBuilder().build();
+		Integer result = deltaFacadeService.pushCreation(delta).block();
+
+		var postSettings = settingRepository.findAll();
+		var postDeltas = deltaRepository.findAll();
+		DeltaEntity storedDelta = postDeltas.get(0);
+
+		assertEquals(delta.getDeltaType(), storedDelta.getDeltaType());
+		assertEquals(delta.getTable(), storedDelta.getDeltaTable());
+		assertEquals(delta.getRecordId(), storedDelta.getRecordId());
+		assertEquals(delta.getFieldName(), storedDelta.getFieldName());
+		assertEquals(delta.getTextValue(), storedDelta.getTextValue());
 	}
 
 	private Delta.DeltaBuilder activityCreationDeltaBuilder() throws JsonProcessingException {
