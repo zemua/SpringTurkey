@@ -3,11 +3,13 @@ package devs.mrp.springturkey.database.repository.dao.impl;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -44,7 +46,7 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 	@Override
 	public Mono<Integer> save(Delta delta) {
 		try {
-			Map<String,String> dtoMap = objectMapper.readValue(delta.getTextValue(), Map.class);
+			Map<String,String> dtoMap = dtoMapFromJson(delta.getTextValue());
 			Map<String,FieldValidator> validators = delta.getTable().getFieldMap();
 			Map<String,Object> entityMap = new HashMap<>();
 			dtoMap.forEach((k,v) -> addToEntityMap(entityMap, validators, k, v));
@@ -53,6 +55,11 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 		} catch (JsonProcessingException e) {
 			throw new TurkeySurpriseException("Json error, delta should have been validated previously", e);
 		}
+	}
+
+	private Map<String,String> dtoMapFromJson(String json) throws JsonMappingException, JsonProcessingException {
+		Map<Object,Object> rawMap = objectMapper.readValue(json, Map.class);
+		return rawMap.entrySet().stream().collect(Collectors.toMap(e -> String.valueOf(e.getKey()), e -> String.valueOf(e.getValue())));
 	}
 
 	private void addToEntityMap(Map<String,Object> entityMap, Map<String,FieldValidator> validators, String key, String value) {

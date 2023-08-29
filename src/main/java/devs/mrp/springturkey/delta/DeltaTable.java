@@ -10,6 +10,7 @@ import devs.mrp.springturkey.database.entity.Group;
 import devs.mrp.springturkey.database.entity.Setting;
 import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
+import devs.mrp.springturkey.database.entity.enumerable.GroupType;
 import devs.mrp.springturkey.database.entity.enumerable.PlatformType;
 import devs.mrp.springturkey.delta.validation.FieldValidator;
 import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
@@ -24,7 +25,8 @@ public enum DeltaTable {
 
 	GROUP(Map.of(
 			"name", FieldValidator.builder().columnName("name").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build(),
-			"preventClose", FieldValidator.builder().columnName("prevent_close").predicate(BooleanUtils::isBoolean).modifiable(true).creatable(true).build()
+			"type", FieldValidator.builder().columnName("type").predicate(EnumUtils.getEnumPredicate(GroupType.class)).creatable(true).modifiable(false).build(),
+			"preventClose", FieldValidator.builder().columnName("preventClose").predicate(BooleanUtils::isNullableBoolean).modifiable(true).creatable(true).build()
 			),
 			GroupCreationDelta.class,
 			Group.class),

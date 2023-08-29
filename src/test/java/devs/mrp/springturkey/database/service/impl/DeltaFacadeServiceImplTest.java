@@ -1,7 +1,6 @@
 package devs.mrp.springturkey.database.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -47,6 +46,7 @@ import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaTable;
 import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
+import devs.mrp.springturkey.delta.validation.entity.GroupCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.SettingCreationDelta;
 
 @DataJpaTest
@@ -130,7 +130,7 @@ class DeltaFacadeServiceImplTest {
 		Map<String,String> expected = objectMapper.readValue(delta.getTextValue(), Map.class);
 		Activity saved = postActivities.get(0);
 		assertEquals(expected.get("activityName"), saved.getActivityName());
-		assertNotNull(saved.getUser());
+		assertEquals("some@mail.com", saved.getUser().getEmail());
 		assertEquals(expected.get("activityType"), saved.getActivityType().name());
 		assertEquals(expected.get("categoryType"), saved.getCategoryType().name());
 		assertNull(saved.getGroup());
@@ -166,7 +166,7 @@ class DeltaFacadeServiceImplTest {
 		Map<String,String> expected = objectMapper.readValue(delta.getTextValue(), Map.class);
 		Activity saved = postActivities.get(0);
 		assertEquals(expected.get("activityName"), saved.getActivityName());
-		assertNotNull(saved.getUser());
+		assertEquals("some@mail.com", saved.getUser().getEmail());
 		assertEquals(expected.get("activityType"), saved.getActivityType().name());
 		assertEquals(expected.get("categoryType"), saved.getCategoryType().name());
 		assertEquals(expected.get("groupId"), saved.getGroup().getId().toString());
@@ -192,8 +192,65 @@ class DeltaFacadeServiceImplTest {
 	}
 
 	@Test
-	void createOneGroup() {
-		fail("not yet implemented");
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
+	void createOneGroup() throws JsonProcessingException {
+		var preSettings = groupRepository.findAll();
+		var preDeltas = deltaRepository.findAll();
+		assertEquals(0, preSettings.size());
+		assertEquals(0, preDeltas.size());
+
+		Delta delta = groupCreationDeltaBuilder().build();
+		Integer result = deltaFacadeService.pushCreation(delta).block();
+
+		var postSettings = groupRepository.findAll();
+		var postDeltas = deltaRepository.findAll();
+		assertEquals(1, postSettings.size());
+		assertEquals(1, postDeltas.size());
+		assertEquals(1, result);
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
+	void createWithBooleanValue() throws JsonProcessingException {
+		var preSettings = groupRepository.findAll();
+		var preDeltas = deltaRepository.findAll();
+		assertEquals(0, preSettings.size());
+		assertEquals(0, preDeltas.size());
+
+		Delta delta = groupCreationDeltaBuilder()
+				.textValue(objectMapper.writeValueAsString(groupCreationBuilder().preventClose(true).build()))
+				.build();
+		Integer result = deltaFacadeService.pushCreation(delta).block();
+
+		var postSettings = groupRepository.findAll();
+		var postDeltas = deltaRepository.findAll();
+		assertEquals(1, postSettings.size());
+		assertEquals(1, postDeltas.size());
+		assertEquals(1, result);
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
+	void createWithNumberValue() throws JsonProcessingException {
+		var preSettings = groupRepository.findAll();
+		var preDeltas = deltaRepository.findAll();
+		assertEquals(0, preSettings.size());
+		assertEquals(0, preDeltas.size());
+
+		Map<Object,Object> groupAsMap = objectMapper.convertValue(groupCreationBuilder().build(), Map.class);
+		groupAsMap.put("name", 123);
+
+		Delta delta = groupCreationDeltaBuilder().textValue(objectMapper.writeValueAsString(groupAsMap)).build();
+		Integer result = deltaFacadeService.pushCreation(delta).block();
+
+		var postSettings = groupRepository.findAll();
+		var postDeltas = deltaRepository.findAll();
+		assertEquals(1, postSettings.size());
+		assertEquals(1, postDeltas.size());
+		assertEquals(1, result);
 	}
 
 	@Test
@@ -207,7 +264,7 @@ class DeltaFacadeServiceImplTest {
 	}
 
 	@Test
-	void test() {
+	void testCreatedDeltaMatches() {
 		fail("Not yet implemented");
 	}
 
@@ -243,6 +300,22 @@ class DeltaFacadeServiceImplTest {
 				.platformType(PlatformType.ALL)
 				.settingKey("someKey")
 				.settingValue("some value");
+	}
+
+	private Delta.DeltaBuilder groupCreationDeltaBuilder() throws JsonProcessingException {
+		return Delta.builder()
+				.timestamp(LocalDateTime.now())
+				.deltaType(DeltaType.CREATION)
+				.table(DeltaTable.GROUP)
+				.recordId(UUID.randomUUID())
+				.fieldName("object")
+				.textValue(objectMapper.writeValueAsString(groupCreationBuilder().build()));
+	}
+
+	private GroupCreationDelta.GroupCreationDeltaBuilder groupCreationBuilder() {
+		return GroupCreationDelta.builder()
+				.name("delta name")
+				.type(GroupType.NEGATIVE);
 	}
 
 	private Group.GroupBuilder groupBuilder() {
