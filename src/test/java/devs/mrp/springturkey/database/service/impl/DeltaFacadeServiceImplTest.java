@@ -290,9 +290,45 @@ class DeltaFacadeServiceImplTest {
 	}
 
 	@Test
-	void testSavedWithExistingIdPreservesId() {
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
+	void testWrongTable() throws JsonProcessingException {
+		var preGroups = activityRepository.findAll();
+		var preDeltas = deltaRepository.findAll();
+		var preConditions = conditionRepository.findAll();
+		assertEquals(0, preGroups.size());
+		assertEquals(0, preDeltas.size());
+		assertEquals(0, preConditions.size());
+
+		Group group1 = groupBuilder().build();
+		groupRepository.save(group1);
+		Group group2 = groupBuilder().build();
+		groupRepository.save(group2);
+		List<Group> fetchedGroups = groupRepository.findAll();
+		Group fetchedGroup1 = fetchedGroups.get(0);
+		Group fetchedGroup2 = fetchedGroups.get(1);
+
+		Delta delta = conditionCreationDeltaBuilder()
+				.table(DeltaTable.ACTIVITY)
+				.textValue(objectMapper.writeValueAsString(conditionCreationBuilder(fetchedGroup1.getId(), fetchedGroup2.getId()).build()))
+				.build();
+		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta).block());
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
+	void testCreateWithExistingId() throws JsonProcessingException {
+		Group group = groupBuilder().build();
+		groupRepository.save(group);
+		Group fetchedGroup = groupRepository.findAll().get(0);
+
+		Delta delta = groupCreationDeltaBuilder().recordId(fetchedGroup.getId()).build();
+		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta).block());
 		fail("not yet implemented");
 	}
+
+
 
 	@Test
 	@WithMockUser("some@mail.com")

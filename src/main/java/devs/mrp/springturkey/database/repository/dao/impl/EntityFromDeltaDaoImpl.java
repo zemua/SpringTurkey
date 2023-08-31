@@ -49,6 +49,7 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 			Map<String,String> dtoMap = dtoMapFromJson(delta.getTextValue());
 			Map<String,FieldValidator> validators = delta.getTable().getFieldMap();
 			Map<String,Object> entityMap = new HashMap<>();
+			entityMap.put("id", delta.getRecordId());
 			dtoMap.forEach((k,v) -> addToEntityMap(entityMap, validators, k, v));
 			Class<?> entityClass = delta.getTable().getEntityClass();
 			return userService.getUser().map(user -> saveEntityToUser(entityMap, user, entityClass));
@@ -63,7 +64,11 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 	}
 
 	private void addToEntityMap(Map<String,Object> entityMap, Map<String,FieldValidator> validators, String key, String value) {
-		String columnName = validators.get(key).getColumnName();
+		FieldValidator validator = validators.get(key);
+		if (validator == null) {
+			throw new TurkeySurpriseException("Delta content has not been properly validated, no validator for " + key);
+		}
+		String columnName = validator.getColumnName();
 		Class<?> referenzable = validators.get(key).getReferenzable();
 		if (referenzable != null && value != null) {
 			UUID id;
@@ -83,7 +88,7 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 		entityMap.put("user", user);
 		Object entity = objectMapper.convertValue(entityMap, entityClass);
 		try {
-			entityManager.persist(entity);
+			entityManager.merge(entity);
 		} catch (EntityExistsException | IllegalArgumentException | TransactionRequiredException e) {
 			throw new TurkeySurpriseException("Error persisting entity from delta", e);
 		}
