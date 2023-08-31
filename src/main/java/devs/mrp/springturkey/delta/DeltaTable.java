@@ -40,9 +40,10 @@ public enum DeltaTable {
 			ActivityCreationDelta.class,
 			Activity.class),
 	CONDITION(Map.of(
-			"requiredUsageMs", FieldValidator.builder().columnName("required_usage_ms").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build(),
-			"lastDaysToConsider", FieldValidator.builder().columnName("last_days_to_consider").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build(),
-			"conditionalGroup", FieldValidator.builder().columnName("conditional_group").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build()
+			"requiredUsageMs", FieldValidator.builder().columnName("requiredUsageMs").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build(),
+			"lastDaysToConsider", FieldValidator.builder().columnName("lastDaysToConsider").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build(),
+			"conditionalGroup", FieldValidator.builder().columnName("conditionalGroup").predicate(UuidUtils::isNullableUuid).referenzable(Group.class).modifiable(true).creatable(true).build(),
+			"targetGroup", FieldValidator.builder().columnName("targetGroup").predicate(UuidUtils::isNullableUuid).referenzable(Group.class).modifiable(true).creatable(true).build()
 			),
 			ConditionCreationDelta.class,
 			Condition.class),

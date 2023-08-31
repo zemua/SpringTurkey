@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -47,6 +48,7 @@ import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaTable;
 import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
+import devs.mrp.springturkey.delta.validation.entity.ConditionCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.GroupCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.SettingCreationDelta;
 
@@ -85,9 +87,9 @@ class DeltaFacadeServiceImplTest {
 	@BeforeEach
 	void setup() {
 		user = TurkeyUser.builder().email("some@mail.com").build();
-		userRepository.save(user);
+		user = userRepository.save(user);
 		alternativeUser = TurkeyUser.builder().email("other@mail.com").build();
-		userRepository.save(alternativeUser);
+		alternativeUser = userRepository.save(alternativeUser);
 		objectMapper.registerModule(new JavaTimeModule());
 	}
 
@@ -255,8 +257,36 @@ class DeltaFacadeServiceImplTest {
 	}
 
 	@Test
-	void createOneCondition() {
-		fail("not yet implemented");
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
+	void createOneCondition() throws JsonProcessingException {
+		var preGroups = activityRepository.findAll();
+		var preDeltas = deltaRepository.findAll();
+		var preConditions = conditionRepository.findAll();
+		assertEquals(0, preGroups.size());
+		assertEquals(0, preDeltas.size());
+		assertEquals(0, preConditions.size());
+
+		Group group1 = groupBuilder().build();
+		groupRepository.save(group1);
+		Group group2 = groupBuilder().build();
+		groupRepository.save(group2);
+		List<Group> fetchedGroups = groupRepository.findAll();
+		Group fetchedGroup1 = fetchedGroups.get(0);
+		Group fetchedGroup2 = fetchedGroups.get(1);
+
+		Delta delta = conditionCreationDeltaBuilder()
+				.textValue(objectMapper.writeValueAsString(conditionCreationBuilder(fetchedGroup1.getId(), fetchedGroup2.getId()).build()))
+				.build();
+		Integer result = deltaFacadeService.pushCreation(delta).block();
+
+		var postGroups = groupRepository.findAll();
+		var postConditions = conditionRepository.findAll();
+		var postDeltas = deltaRepository.findAll();
+		assertEquals(2, postGroups.size());
+		assertEquals(1, postConditions.size());
+		assertEquals(1, postDeltas.size());
+		assertEquals(1, result);
 	}
 
 	@Test
@@ -343,6 +373,23 @@ class DeltaFacadeServiceImplTest {
 				.name("some group name")
 				.type(GroupType.NEGATIVE)
 				.user(user);
+	}
+
+	private Delta.DeltaBuilder conditionCreationDeltaBuilder() {
+		return Delta.builder()
+				.timestamp(LocalDateTime.now())
+				.deltaType(DeltaType.CREATION)
+				.table(DeltaTable.CONDITION)
+				.recordId(UUID.randomUUID())
+				.fieldName("object");
+	}
+
+	private ConditionCreationDelta.ConditionCreationDeltaBuilder conditionCreationBuilder(UUID conditional, UUID target) {
+		return ConditionCreationDelta.builder()
+				.conditionalGroup(conditional)
+				.targetGroup(target)
+				.requiredUsageMs(60000L)
+				.lastDaysToConsider(1);
 	}
 
 }
