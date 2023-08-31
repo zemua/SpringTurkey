@@ -88,6 +88,10 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 		entityMap.put("user", user);
 		Object entity = objectMapper.convertValue(entityMap, entityClass);
 		try {
+			Object object = entityManager.find(entityClass, entityMap.get("id"));
+			if (object != null) {
+				throw new TurkeySurpriseException("Trying to create an object with already existing id " + entityMap.toString());
+			}
 			entityManager.merge(entity);
 		} catch (EntityExistsException | IllegalArgumentException | TransactionRequiredException e) {
 			throw new TurkeySurpriseException("Error persisting entity from delta", e);
