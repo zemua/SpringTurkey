@@ -23,6 +23,8 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TransactionRequiredException;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
@@ -50,7 +52,7 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 			Map<String,FieldValidator> validators = delta.getTable().getFieldMap();
 			Map<String,Object> entityMap = new HashMap<>();
 			entityMap.put("id", delta.getRecordId());
-			dtoMap.forEach((k,v) -> addToEntityMap(entityMap, validators, k, v));
+			dtoMap.forEach((k,v) -> addToEntityMap(EntityDtoDataWrapper.builder().entityMap(entityMap).validator(validators.get(k)).key(k).value(v).build()));
 			Class<?> entityClass = delta.getTable().getEntityClass();
 			return userService.getUser().map(user -> saveEntityToUser(entityMap, user, entityClass));
 		} catch (JsonProcessingException e) {
@@ -63,25 +65,26 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 		return rawMap.entrySet().stream().collect(Collectors.toMap(e -> String.valueOf(e.getKey()), e -> String.valueOf(e.getValue())));
 	}
 
-	private void addToEntityMap(Map<String,Object> entityMap, Map<String,FieldValidator> validators, String key, String value) {
-		FieldValidator validator = validators.get(key);
-		if (validator == null) {
-			throw new TurkeySurpriseException("Delta content has not been properly validated, no validator for " + key);
+	private void addToEntityMap(EntityDtoDataWrapper data) {
+		if (data.getValidator() == null) {
+			throw new TurkeySurpriseException("Delta content has not been properly validated, no validator for " + data.getKey());
 		}
-		String columnName = validator.getColumnName();
-		Class<?> referenzable = validators.get(key).getReferenzable();
-		if (referenzable != null && value != null) {
-			UUID id;
-			try {
-				id = UUID.fromString(value);
-			} catch (IllegalArgumentException e) {
-				throw new TurkeySurpriseException("Invalid UUID value provided", e);
-			}
-			Object reference = entityManager.getReference(validators.get(key).getReferenzable(), id);
-			entityMap.put(columnName, reference);
+		if (data.getReferenzable() != null && data.getValue() != null) {
+			addToEntityMapWithReferenzable(data);
 		} else {
-			entityMap.put(columnName, value);
+			data.getEntityMap().put(data.getColumnName(), data.getValue());
 		}
+	}
+
+	private void addToEntityMapWithReferenzable(EntityDtoDataWrapper data) {
+		UUID id;
+		try {
+			id = UUID.fromString(data.getValue());
+		} catch (IllegalArgumentException e) {
+			throw new TurkeySurpriseException("Invalid UUID value provided", e);
+		}
+		Object reference = entityManager.getReference(data.getReferenzable(), id);
+		data.getEntityMap().put(data.getColumnName(), reference);
 	}
 
 	private int saveEntityToUser(Map<String,Object> entityMap, TurkeyUser user, Class<?> entityClass) {
@@ -97,6 +100,34 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 			throw new TurkeySurpriseException("Error persisting entity from delta", e);
 		}
 		return 1;
+	}
+
+	@Getter
+	@Builder
+	private static class EntityDtoDataWrapper {
+		Map<String,Object> entityMap;
+		FieldValidator validator;
+		String key;
+		String value;
+
+		public EntityDtoDataWrapper(Map<String,Object> entityMap, FieldValidator validator, String key, String value) {
+			this.entityMap = entityMap;
+			this.validator = validator;
+			this.key = key;
+			this.value = valueObjectFromJson(value);
+		}
+
+		public Class<?> getReferenzable() {
+			return validator.getReferenzable();
+		}
+
+		public String getColumnName() {
+			return validator.getColumnName();
+		}
+	}
+
+	private static String valueObjectFromJson(String val) {
+		return val != null && !val.equals("null") ? val : null;
 	}
 
 }

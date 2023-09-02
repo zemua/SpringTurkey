@@ -3,7 +3,6 @@ package devs.mrp.springturkey.database.service.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -115,7 +114,7 @@ class DeltaFacadeServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	@DirtiesContext
-	void createOneActivity() throws JsonProcessingException {
+	void createOneActivityWithNullGroup() throws JsonProcessingException {
 		var preActivities = activityRepository.findAll();
 		var preDeltas = deltaRepository.findAll();
 		assertEquals(0, preActivities.size());
@@ -325,7 +324,6 @@ class DeltaFacadeServiceImplTest {
 
 		Delta delta = groupCreationDeltaBuilder().recordId(fetchedGroup.getId()).build();
 		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta).block());
-		fail("not yet implemented");
 	}
 
 
