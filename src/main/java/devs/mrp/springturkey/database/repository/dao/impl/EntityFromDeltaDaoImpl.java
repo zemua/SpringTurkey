@@ -3,7 +3,6 @@ package devs.mrp.springturkey.database.repository.dao.impl;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -48,21 +47,29 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 	@Override
 	public Mono<Integer> save(Delta delta) {
 		try {
-			Map<String,String> dtoMap = dtoMapFromJson(delta.getTextValue());
 			Map<String,FieldValidator> validators = delta.getTable().getFieldMap();
+
 			Map<String,Object> entityMap = new HashMap<>();
 			entityMap.put("id", delta.getRecordId());
-			dtoMap.forEach((k,v) -> addToEntityMap(EntityDtoDataWrapper.builder().entityMap(entityMap).validator(validators.get(k)).key(k).value(v).build()));
+
+			dtoMap(delta).forEach((k,v) -> addToEntityMap(
+					EntityDtoDataWrapper.builder()
+					.entityMap(entityMap)
+					.validator(validators.get(k))
+					.key(k)
+					.value(v)
+					.build()));
+
 			Class<?> entityClass = delta.getTable().getEntityClass();
-			return userService.getUser().map(user -> saveEntityToUser(entityMap, user, entityClass));
+
+			return userService.getUser().map(user -> saveEntityMapToUser(entityMap, user, entityClass));
 		} catch (JsonProcessingException e) {
 			throw new TurkeySurpriseException("Json error, delta should have been validated previously", e);
 		}
 	}
 
-	private Map<String,String> dtoMapFromJson(String json) throws JsonMappingException, JsonProcessingException {
-		Map<Object,Object> rawMap = objectMapper.readValue(json, Map.class);
-		return rawMap.entrySet().stream().collect(Collectors.toMap(e -> String.valueOf(e.getKey()), e -> String.valueOf(e.getValue())));
+	private Map<Object,Object> dtoMap(Delta delta) throws JsonMappingException, JsonProcessingException {
+		return objectMapper.readValue(delta.getTextValue(), Map.class);
 	}
 
 	private void addToEntityMap(EntityDtoDataWrapper data) {
@@ -87,19 +94,24 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 		data.getEntityMap().put(data.getColumnName(), reference);
 	}
 
-	private int saveEntityToUser(Map<String,Object> entityMap, TurkeyUser user, Class<?> entityClass) {
-		entityMap.put("user", user);
-		Object entity = objectMapper.convertValue(entityMap, entityClass);
+	private int saveEntityMapToUser(Map<String,Object> entityMap, TurkeyUser user, Class<?> entityClass) {
 		try {
-			Object object = entityManager.find(entityClass, entityMap.get("id"));
-			if (object != null) {
-				throw new TurkeySurpriseException("Trying to create an object with already existing id " + entityMap.toString());
-			}
-			entityManager.merge(entity);
+			persistIfNewId(entityMap, user, entityClass);
 		} catch (EntityExistsException | IllegalArgumentException | TransactionRequiredException e) {
 			throw new TurkeySurpriseException("Error persisting entity from delta", e);
 		}
 		return 1;
+	}
+
+	private void persistIfNewId(Map<String,Object> entityMap, TurkeyUser user, Class<?> entityClass) {
+		entityMap.put("user", user);
+		Object entity = objectMapper.convertValue(entityMap, entityClass);
+		Object object = entityManager.find(entityClass, entityMap.get("id"));
+		if (object != null) {
+			throw new TurkeySurpriseException("Trying to create an object with already existing id " + entityMap.toString());
+		} else {
+			entityManager.merge(entity);
+		}
 	}
 
 	@Getter
@@ -107,14 +119,14 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 	private static class EntityDtoDataWrapper {
 		Map<String,Object> entityMap;
 		FieldValidator validator;
-		String key;
-		String value;
+		Object key;
+		Object value;
 
-		public EntityDtoDataWrapper(Map<String,Object> entityMap, FieldValidator validator, String key, String value) {
+		public EntityDtoDataWrapper(Map<String,Object> entityMap, FieldValidator validator, Object key, Object value) {
 			this.entityMap = entityMap;
 			this.validator = validator;
 			this.key = key;
-			this.value = valueObjectFromJson(value);
+			this.value = value;
 		}
 
 		public Class<?> getReferenzable() {
@@ -124,10 +136,10 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 		public String getColumnName() {
 			return validator.getColumnName();
 		}
-	}
 
-	private static String valueObjectFromJson(String val) {
-		return val != null && !val.equals("null") ? val : null;
+		public String getValue() {
+			return value == null ? null : String.valueOf(value);
+		}
 	}
 
 }

@@ -216,9 +216,9 @@ class DeltaFacadeServiceImplTest {
 	@WithMockUser("some@mail.com")
 	@DirtiesContext
 	void createWithBooleanValue() throws JsonProcessingException {
-		var preSettings = groupRepository.findAll();
+		var preGroups = groupRepository.findAll();
 		var preDeltas = deltaRepository.findAll();
-		assertEquals(0, preSettings.size());
+		assertEquals(0, preGroups.size());
 		assertEquals(0, preDeltas.size());
 
 		Delta delta = groupCreationDeltaBuilder()
@@ -226,9 +226,9 @@ class DeltaFacadeServiceImplTest {
 				.build();
 		Integer result = deltaFacadeService.pushCreation(delta).block();
 
-		var postSettings = groupRepository.findAll();
+		var postGroups = groupRepository.findAll();
 		var postDeltas = deltaRepository.findAll();
-		assertEquals(1, postSettings.size());
+		assertEquals(1, postGroups.size());
 		assertEquals(1, postDeltas.size());
 		assertEquals(1, result);
 	}
