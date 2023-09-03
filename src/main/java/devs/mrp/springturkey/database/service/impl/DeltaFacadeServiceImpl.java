@@ -2,15 +2,16 @@ package devs.mrp.springturkey.database.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.database.entity.DeltaEntity;
 import devs.mrp.springturkey.database.repository.DeltaRepository;
 import devs.mrp.springturkey.database.repository.dao.EntityFromDeltaDao;
 import devs.mrp.springturkey.database.service.DeltaFacadeService;
 import devs.mrp.springturkey.delta.Delta;
-import jakarta.transaction.Transactional;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -27,8 +28,13 @@ public class DeltaFacadeServiceImpl implements DeltaFacadeService {
 	@Override
 	@Transactional
 	public Mono<Integer> pushCreation(Delta delta) {
-		deltaRepository.save(DeltaEntity.from(delta));
-		return entityFromDeltaDao.save(delta);
+		return entityFromDeltaDao.save(delta)
+				.map(i -> {
+					if (i > 0) {
+						deltaRepository.save(DeltaEntity.from(delta));
+					}
+					return i;
+				}).doOnError(TurkeySurpriseException.class, e -> Mono.error(new TurkeySurpriseException("Error persisting delta", e)));
 	}
 
 	@Override

@@ -49,17 +49,9 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 	public Mono<Integer> save(Delta delta) {
 		try {
 			Map<String,Object> modifiableEntityMap = new HashMap<>();
-			modifiableEntityMap.put("id", delta.getRecordId());
+			addFieldsToEntityMap(delta, modifiableEntityMap);
 
-			dtoMap(delta).forEach((k,v) -> addToEntityMap(
-					EntityDtoDataWrapper.builder()
-					.entityMap(modifiableEntityMap)
-					.validator(delta.getValidator(String.valueOf(k)))
-					.key(k)
-					.value(v)
-					.build()));
-
-			return userService.getUser().map(user -> saveEntityMapToUser(
+			return userService.getUser().map(user -> persistEntityMapToDb(
 					StorableEntityWrapper.builder()
 					.entityMap(modifiableEntityMap)
 					.user(user)
@@ -71,12 +63,23 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 		}
 	}
 
+	private void addFieldsToEntityMap(Delta delta, Map<String,Object> modifiableEntityMap) throws JsonMappingException, JsonProcessingException {
+		modifiableEntityMap.put("id", delta.getRecordId());
+		dtoMap(delta).forEach((k,v) -> addFieldToEntityMap(
+				EntityDtoFieldWrapper.builder()
+				.entityMap(modifiableEntityMap)
+				.validator(delta.getValidator(String.valueOf(k)))
+				.key(k)
+				.value(v)
+				.build()));
+	}
+
 	@SuppressWarnings("unchecked")
 	private Map<Object,Object> dtoMap(Delta delta) throws JsonMappingException, JsonProcessingException {
 		return objectMapper.readValue(delta.getTextValue(), Map.class);
 	}
 
-	private void addToEntityMap(EntityDtoDataWrapper data) {
+	private void addFieldToEntityMap(EntityDtoFieldWrapper data) {
 		if (data.getValidator() == null) {
 			throw new TurkeySurpriseException("Delta content has not been properly validated, no validator for " + data.getKey());
 		}
@@ -87,7 +90,7 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 		}
 	}
 
-	private void addToEntityMapWithReferenzable(EntityDtoDataWrapper data) {
+	private void addToEntityMapWithReferenzable(EntityDtoFieldWrapper data) {
 		UUID id;
 		try {
 			id = UUID.fromString(data.getValue());
@@ -98,7 +101,7 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 		data.getEntityMap().put(data.getColumnName(), reference);
 	}
 
-	private int saveEntityMapToUser(StorableEntityWrapper data) {
+	private int persistEntityMapToDb(StorableEntityWrapper data) {
 		try {
 			persistIfNewId(data);
 		} catch (EntityExistsException | IllegalArgumentException | TransactionRequiredException e) {
@@ -120,13 +123,13 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 
 	@Getter
 	@Builder
-	private static class EntityDtoDataWrapper {
+	private static class EntityDtoFieldWrapper {
 		Map<String,Object> entityMap;
 		FieldValidator validator;
 		Object key;
 		Object value;
 
-		public EntityDtoDataWrapper(Map<String,Object> entityMap, FieldValidator validator, Object key, Object value) {
+		public EntityDtoFieldWrapper(Map<String,Object> entityMap, FieldValidator validator, Object key, Object value) {
 			this.entityMap = entityMap;
 			this.validator = validator;
 			this.key = key;

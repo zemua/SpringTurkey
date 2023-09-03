@@ -351,6 +351,29 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(delta.getTextValue(), storedDelta.getTextValue());
 	}
 
+	@Test
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
+	void persistingEntityErrorCancelsPersistOfDelta() throws JsonProcessingException, InterruptedException {
+		Map<String,String> deltaMap = objectMapper.convertValue(activityBuilder().build(), Map.class);
+		deltaMap.put("groupId", "invalid");
+		Delta delta = activityCreationDeltaBuilder()
+				.textValue(objectMapper.writeValueAsString(deltaMap))
+				.build();
+
+		var preActivities = activityRepository.findAll();
+		var preDeltas = deltaRepository.findAll();
+		assertEquals(0, preActivities.size());
+		assertEquals(0, preDeltas.size());
+
+		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta).block());
+
+		var postActivities = activityRepository.findAll();
+		var postDeltas = deltaRepository.findAll();
+		assertEquals(0, postActivities.size());
+		assertEquals(0, postDeltas.size());
+	}
+
 	private Delta.DeltaBuilder activityCreationDeltaBuilder() throws JsonProcessingException {
 		return Delta.builder()
 				.timestamp(LocalDateTime.now())
