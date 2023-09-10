@@ -17,6 +17,7 @@ import devs.mrp.springturkey.delta.validation.DataConstrainer;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @Service("creationConstraints")
 @Slf4j
@@ -33,7 +34,7 @@ public class CreationDataConstrainer implements DataConstrainer {
 	private ObjectMapper objectMapper = new ObjectMapper();
 
 	@Override
-	public int pushDelta(Delta delta) throws WrongDataException {
+	public Mono<Integer> pushDelta(Delta delta) throws WrongDataException {
 		if (!DeltaType.CREATION.equals(delta.getDeltaType())) {
 			throw new WrongDataException("Delta is not of type 'CREATION'");
 		}
@@ -48,7 +49,7 @@ public class CreationDataConstrainer implements DataConstrainer {
 	}
 
 	private Set<ConstraintViolation<Object>> resolveViolations(Delta delta) {
-		Class<?> clazz = delta.getTable().getEntityClass();
+		Class<?> clazz = delta.getTable().getDtoClass();
 		Object creationEntity = null;
 		try {
 			creationEntity = objectMapper.readValue(delta.getTextValue(), clazz);

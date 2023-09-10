@@ -8,6 +8,7 @@ import devs.mrp.springturkey.database.service.DeltaFacadeService;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.DataConstrainer;
+import reactor.core.publisher.Mono;
 
 @Service("deletionConstraints")
 public class DeletionDataConstrainer implements DataConstrainer {
@@ -19,7 +20,7 @@ public class DeletionDataConstrainer implements DataConstrainer {
 	private static final String textValue = "deletion";
 
 	@Override
-	public int pushDelta(Delta delta) throws WrongDataException {
+	public Mono<Integer> pushDelta(Delta delta) throws WrongDataException {
 		if (!DeltaType.DELETION.equals(delta.getDeltaType())) {
 			throw new WrongDataException("Wrong delta type " + delta.getDeltaType());
 		}
@@ -29,7 +30,7 @@ public class DeletionDataConstrainer implements DataConstrainer {
 		if (!textValue.equals(delta.getTextValue())) {
 			throw new WrongDataException("Wrong field name, should be 'deletion': " + delta.getFieldName());
 		}
-		return deltaFacadeService.pushDeletion(delta);
+		return Mono.just(deltaFacadeService.pushDeletion(delta));
 	}
 
 }

@@ -1,6 +1,7 @@
 package devs.mrp.springturkey.utils;
 
 import java.util.List;
+import java.util.Objects;
 
 public class UuidUtils {
 
@@ -18,6 +19,10 @@ public class UuidUtils {
 			}
 		}
 		return true;
+	}
+
+	public static boolean isNullableUuid(String s) {
+		return Objects.isNull(s) || isUuid(s);
 	}
 
 	private static boolean isUuidChar(int position, char character) {

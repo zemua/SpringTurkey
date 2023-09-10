@@ -2,6 +2,7 @@ package devs.mrp.springturkey.delta.validation.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -12,6 +13,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -81,7 +83,7 @@ class DeletionDataConstrainerTest {
 
 		when(deltaFacade.pushDeletion(ArgumentMatchers.refEq(delta))).thenReturn(1);
 
-		int result = dataConstrainer.pushDelta(delta);
+		int result = dataConstrainer.pushDelta(delta).block();
 		assertEquals(1, result);
 		verify(deltaFacade, times(1)).pushDeletion(ArgumentMatchers.refEq(delta));
 	}
@@ -120,6 +122,11 @@ class DeletionDataConstrainerTest {
 
 		assertThrows(WrongDataException.class, () -> dataConstrainer.pushDelta(delta));
 		verifyNoInteractions(deltaFacade);
+	}
+
+	@Test
+	void test() {
+		fail("to implement random checks and random blocks");
 	}
 
 }

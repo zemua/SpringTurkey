@@ -61,6 +61,7 @@ public class Group {
 	@NotNull
 	private GroupType type;
 
+	@Nullable
 	@Column(name = "prevent_close")
 	private Boolean preventClose;
 
