@@ -11,9 +11,11 @@ import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.DataConstrainer;
 import devs.mrp.springturkey.delta.validation.FieldValidator;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Service("modificationConstraints")
+@Slf4j
 public class ModificationDataConstrainer implements DataConstrainer {
 
 	@Autowired
@@ -22,15 +24,25 @@ public class ModificationDataConstrainer implements DataConstrainer {
 	@Override
 	public Mono<Integer> pushDelta(Delta delta) throws WrongDataException {
 		if (!isValid(delta)) {
-			throw new WrongDataException("Incorrect field name");
+			throw new WrongDataException("Incorrect delta data" + delta);
 		}
 		return Mono.just(deltaFacadeService.pushModification(mapDeltaField(delta)));
 	}
 
 	private boolean isValid(Delta delta) {
-		return DeltaType.MODIFICATION.equals(delta.getDeltaType())
-				&& getFieldMap(delta).containsKey(delta.getFieldName())
-				&& getFieldMap(delta).get(delta.getFieldName()).isValidModification(delta.getTextValue());
+		if (! DeltaType.MODIFICATION.equals(delta.getDeltaType())) {
+			log.error("Invalid action type {}", delta.getDeltaType());
+			return false;
+		}
+		if (!getFieldMap(delta).containsKey(delta.getFieldName())) {
+			log.error("Invalid field name {}", delta.getFieldName());
+			return false;
+		}
+		if (!getFieldMap(delta).get(delta.getFieldName()).isValidModification(delta.getTextValue())) {
+			log.error("Invalid modification in field {} for value {}", delta.getFieldName(), delta.getTextValue());
+			return false;
+		}
+		return true;
 	}
 
 	private Delta mapDeltaField(Delta delta) throws WrongDataException {
