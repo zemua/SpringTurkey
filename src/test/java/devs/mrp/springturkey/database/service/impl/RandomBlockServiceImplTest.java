@@ -1,6 +1,7 @@
 package devs.mrp.springturkey.database.service.impl;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 
+import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
+import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
 import devs.mrp.springturkey.database.entity.RandomBlock;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
@@ -20,6 +23,7 @@ import devs.mrp.springturkey.database.entity.enumerable.RandomBlockType;
 import devs.mrp.springturkey.database.repository.RandomBlockRepository;
 import devs.mrp.springturkey.database.repository.UserRepository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @DataJpaTest
@@ -66,15 +70,198 @@ class RandomBlockServiceImplTest {
 				.multiplier(1)
 				.build();
 
-		randomBlockRepository.save(block1);
+		RandomBlock block2 = RandomBlock.builder()
+				.user(user)
+				.type(RandomBlockType.NEGATIVE)
+				.name("another name")
+				.question("another question to evaluate")
+				.frequency(2)
+				.multiplier(1)
+				.build();
+
+		RandomBlock block3 = RandomBlock.builder()
+				.user(otherUser)
+				.type(RandomBlockType.POSITIVE)
+				.name("yet any other name")
+				.question("yet any other question to evaluate")
+				.frequency(2)
+				.multiplier(1)
+				.build();
+
+		randomBlockRepository.saveAll(List.of(block1, block2, block3));
 
 		Flux<RandomBlock> fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
 
 		StepVerifier.create(fluxBlocks)
 		.expectNextMatches(b -> b.getUser().getId().equals(user.getId()) && b.getName().equals("some name") && b.getCreated() != null && b.getEdited() != null)
+		.expectNextMatches(b -> b.getUser().getId().equals(user.getId()))
+		.verifyComplete();
+	}
+
+	@Test
+	@WithMockUser("wrong@mail.com")
+	void findAllUserWithWrongUser() {
+		RandomBlock block1 = RandomBlock.builder()
+				.user(user)
+				.type(RandomBlockType.POSITIVE)
+				.name("some name")
+				.question("question to evaluate")
+				.frequency(2)
+				.multiplier(1)
+				.build();
+
+		RandomBlock block2 = RandomBlock.builder()
+				.user(user)
+				.type(RandomBlockType.NEGATIVE)
+				.name("another name")
+				.question("another question to evaluate")
+				.frequency(2)
+				.multiplier(1)
+				.build();
+
+		RandomBlock block3 = RandomBlock.builder()
+				.user(otherUser)
+				.type(RandomBlockType.POSITIVE)
+				.name("yet any other name")
+				.question("yet any other question to evaluate")
+				.frequency(2)
+				.multiplier(1)
+				.build();
+
+		randomBlockRepository.saveAll(List.of(block1, block2, block3));
+
+		Flux<RandomBlock> fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
+
+		StepVerifier.create(fluxBlocks)
+		.verifyComplete();
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	void insertNewBlock() {
+		RandomBlock block1 = RandomBlock.builder()
+				.id(UUID.randomUUID())
+				.user(user)
+				.type(RandomBlockType.POSITIVE)
+				.name("some name")
+				.question("question to evaluate")
+				.frequency(2)
+				.multiplier(1)
+				.build();
+
+		Flux<RandomBlock> fluxBlocks;
+
+		fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
+		StepVerifier.create(fluxBlocks)
 		.verifyComplete();
 
-		fail("not yet implemented");
+		Mono<Integer> monoAdded = randomBlockServiceImpl.addNewBlock(block1);
+		StepVerifier.create(monoAdded)
+		.expectNext(1)
+		.verifyComplete();
+
+		fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
+		StepVerifier.create(fluxBlocks)
+		.expectNextMatches(b -> b.getUser().getId().equals(user.getId()) && b.getName().equals("some name") && b.getCreated() != null && b.getEdited() != null)
+		.verifyComplete();
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	void insertNewBlockEmptyId() {
+		RandomBlock block1 = RandomBlock.builder()
+				.user(user)
+				.type(RandomBlockType.POSITIVE)
+				.name("some name")
+				.question("question to evaluate")
+				.frequency(2)
+				.multiplier(1)
+				.build();
+
+		Flux<RandomBlock> fluxBlocks;
+
+		fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
+		StepVerifier.create(fluxBlocks)
+		.verifyComplete();
+
+		Mono<Integer> monoAdded = randomBlockServiceImpl.addNewBlock(block1);
+		StepVerifier.create(monoAdded)
+		.expectNext(1)
+		.verifyComplete();
+
+		fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
+		StepVerifier.create(fluxBlocks)
+		.expectNextMatches(b -> b.getUser().getId().equals(user.getId()) && b.getName().equals("some name") && b.getCreated() != null && b.getEdited() != null)
+		.verifyComplete();
+	}
+
+	@Test
+	@WithMockUser("wrong@mail.com")
+	void insertNewBlockWrongUser() {
+		RandomBlock block1 = RandomBlock.builder()
+				.id(UUID.randomUUID())
+				.user(user)
+				.type(RandomBlockType.POSITIVE)
+				.name("some name")
+				.question("question to evaluate")
+				.frequency(2)
+				.multiplier(1)
+				.build();
+
+		Flux<RandomBlock> fluxBlocks;
+
+		fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
+		StepVerifier.create(fluxBlocks)
+		.verifyComplete();
+
+		Mono<Integer> monoAdded = randomBlockServiceImpl.addNewBlock(block1);
+		StepVerifier.create(monoAdded)
+		.expectError(DoesNotBelongToUserException.class)
+		.verify();
+
+		fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
+		StepVerifier.create(fluxBlocks)
+		.verifyComplete();
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	void insertDuplicated() {
+		RandomBlock block1 = RandomBlock.builder()
+				.id(UUID.randomUUID())
+				.user(user)
+				.type(RandomBlockType.POSITIVE)
+				.name("some name")
+				.question("question to evaluate")
+				.frequency(2)
+				.multiplier(1)
+				.build();
+
+		Flux<RandomBlock> fluxBlocks;
+
+		fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
+		StepVerifier.create(fluxBlocks)
+		.verifyComplete();
+
+		Mono<Integer> monoAdded = randomBlockServiceImpl.addNewBlock(block1);
+		StepVerifier.create(monoAdded)
+		.expectNext(1)
+		.verifyComplete();
+
+		fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
+		StepVerifier.create(fluxBlocks)
+		.expectNextMatches(b -> b.getUser().getId().equals(user.getId()) && b.getName().equals("some name") && b.getCreated() != null && b.getEdited() != null)
+		.verifyComplete();
+
+		Mono<Integer> monoAdded2 = randomBlockServiceImpl.addNewBlock(block1);
+		StepVerifier.create(monoAdded2)
+		.expectError(AlreadyExistsException.class)
+		.verify();
+
+		fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
+		StepVerifier.create(fluxBlocks)
+		.expectNextMatches(b -> b.getUser().getId().equals(user.getId()) && b.getName().equals("some name") && b.getCreated() != null && b.getEdited() != null)
+		.verifyComplete();
 	}
 
 }
