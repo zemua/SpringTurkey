@@ -34,8 +34,6 @@ import reactor.test.StepVerifier;
 @EnableJpaAuditing
 class RandomBlockServiceImplTest {
 
-	// TODO implement tests
-
 	@Autowired
 	private RandomBlockRepository randomBlockRepository;
 	@Autowired
