@@ -154,7 +154,10 @@ class SettingServiceImplTest {
 		Flux<Setting> fluxSetting = settingService.findAllUserSettings();
 
 		StepVerifier.create(fluxSetting)
-		.expectNextMatches(s -> s.getUser().getId().equals(userResult.getId()) && s.getId().equals(setting1.getId()) && s.getCreated() != null && s.getEdited() != null)
+		.expectNextMatches(s -> s.getUser().getId().equals(userResult.getId())
+				&& s.getId().equals(setting1.getId())
+				&& s.getCreated() != null
+				&& s.getEdited() != null)
 		.expectComplete()
 		.verify();
 	}

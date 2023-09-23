@@ -18,6 +18,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 
+import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
+import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
 import devs.mrp.springturkey.database.entity.RandomBlock;
 import devs.mrp.springturkey.database.entity.RandomCheck;
@@ -37,8 +39,6 @@ import reactor.test.StepVerifier;
 @ContextConfiguration(classes = {LoginDetailsReaderImpl.class, RandomCheckServiceImpl.class})
 @EnableJpaAuditing
 class RandomCheckServiceImplTest {
-
-	// TODO implement
 
 	@Autowired
 	private UserRepository userRepository;
@@ -228,7 +228,6 @@ class RandomCheckServiceImplTest {
 		.verifyComplete();
 	}
 
-	// TODO insert new random check with a given id
 	@Test
 	@WithMockUser("some@mail.com")
 	void insertNewCheck() {
@@ -259,10 +258,122 @@ class RandomCheckServiceImplTest {
 
 		fluxChecks = randomCheckServiceImpl.findAllUserChecks();
 		StepVerifier.create(fluxChecks)
+		.expectNextMatches(c -> c.getUser().getId().equals(user.getId())
+				&& c.getName().equals("some name")
+				&& c.getId().equals(randomCheck1.getId())
+				&& c.getCreated() != null
+				&& c.getEdited() != null)
+		.verifyComplete();
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	void insertNewCheckWithEmptyId() {
+		RandomCheck randomCheck1 = RandomCheck.builder()
+				.user(user)
+				.name("some name")
+				.startActive(LocalTime.NOON)
+				.endActive(LocalTime.MIDNIGHT)
+				.minCheckLapse(LocalTime.of(0, 15))
+				.maxCheckLapse(LocalTime.of(1, 0))
+				.reward(LocalTime.of(0, 30))
+				.activeDays(Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))
+				.negativeControls(Set.of(positiveBlock1, positiveBlock2))
+				.positiveControls(Set.of(negativeBlock1, negativeBlock2))
+				.build();
+
+		Flux<RandomCheck> fluxChecks;
+
+		fluxChecks = randomCheckServiceImpl.findAllUserChecks();
+		StepVerifier.create(fluxChecks)
+		.verifyComplete();
+
+		Mono<Integer> monoAdded = randomCheckServiceImpl.addNewCheck(randomCheck1);
+		StepVerifier.create(monoAdded)
+		.expectNext(1)
+		.verifyComplete();
+
+		fluxChecks = randomCheckServiceImpl.findAllUserChecks();
+		StepVerifier.create(fluxChecks)
 		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getName().equals("some name") && c.getCreated() != null && c.getEdited() != null)
 		.verifyComplete();
 	}
 
-	// TODO finish remaining testing
+	@Test
+	@WithMockUser("wrong@mail.com")
+	void insertNewCheckWrongUser() {
+		RandomCheck randomCheck1 = RandomCheck.builder()
+				.id(UUID.randomUUID())
+				.user(user)
+				.name("some name")
+				.startActive(LocalTime.NOON)
+				.endActive(LocalTime.MIDNIGHT)
+				.minCheckLapse(LocalTime.of(0, 15))
+				.maxCheckLapse(LocalTime.of(1, 0))
+				.reward(LocalTime.of(0, 30))
+				.activeDays(Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))
+				.negativeControls(Set.of(positiveBlock1, positiveBlock2))
+				.positiveControls(Set.of(negativeBlock1, negativeBlock2))
+				.build();
+
+		Flux<RandomCheck> fluxChecks;
+
+		fluxChecks = randomCheckServiceImpl.findAllUserChecks();
+		StepVerifier.create(fluxChecks)
+		.verifyComplete();
+
+		Mono<Integer> monoAdded = randomCheckServiceImpl.addNewCheck(randomCheck1);
+		StepVerifier.create(monoAdded)
+		.expectError(DoesNotBelongToUserException.class);
+
+		fluxChecks = randomCheckServiceImpl.findAllUserChecks();
+		StepVerifier.create(fluxChecks)
+		.verifyComplete();
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	void insertDuplicatedCheck() {
+		RandomCheck randomCheck1 = RandomCheck.builder()
+				.id(UUID.randomUUID())
+				.user(user)
+				.name("some name")
+				.startActive(LocalTime.NOON)
+				.endActive(LocalTime.MIDNIGHT)
+				.minCheckLapse(LocalTime.of(0, 15))
+				.maxCheckLapse(LocalTime.of(1, 0))
+				.reward(LocalTime.of(0, 30))
+				.activeDays(Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))
+				.negativeControls(Set.of(positiveBlock1, positiveBlock2))
+				.positiveControls(Set.of(negativeBlock1, negativeBlock2))
+				.build();
+
+		Flux<RandomCheck> fluxChecks;
+
+		fluxChecks = randomCheckServiceImpl.findAllUserChecks();
+		StepVerifier.create(fluxChecks)
+		.verifyComplete();
+
+		Mono<Integer> monoAdded;
+
+		monoAdded = randomCheckServiceImpl.addNewCheck(randomCheck1);
+		StepVerifier.create(monoAdded)
+		.expectNext(1)
+		.verifyComplete();
+
+		fluxChecks = randomCheckServiceImpl.findAllUserChecks();
+		StepVerifier.create(fluxChecks)
+		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getName().equals("some name") && c.getCreated() != null && c.getEdited() != null)
+		.verifyComplete();
+
+		monoAdded = randomCheckServiceImpl.addNewCheck(randomCheck1);
+		StepVerifier.create(monoAdded)
+		.expectError(AlreadyExistsException.class);
+
+		fluxChecks = randomCheckServiceImpl.findAllUserChecks();
+		StepVerifier.create(fluxChecks)
+		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getName().equals("some name") && c.getCreated() != null && c.getEdited() != null)
+		.verifyComplete();
+	}
 
 }

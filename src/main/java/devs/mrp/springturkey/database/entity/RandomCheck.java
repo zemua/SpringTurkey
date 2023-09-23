@@ -3,6 +3,7 @@ package devs.mrp.springturkey.database.entity;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -10,18 +11,19 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.uuid.Generators;
+
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -42,8 +44,9 @@ indexes = {
 @EqualsAndHashCode
 public class RandomCheck {
 
+	// TODO all entities to keep uuid if provided when saving
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "id")
 	private UUID id;
 
@@ -97,5 +100,12 @@ public class RandomCheck {
 
 	@Nullable
 	private LocalDateTime deleted;
+
+	@PrePersist
+	protected void onCreate() {
+		if (Objects.isNull(this.id)) {
+			this.id = Generators.timeBasedGenerator().generate();
+		}
+	}
 
 }

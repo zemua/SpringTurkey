@@ -199,7 +199,10 @@ class ConditionServiceImplTest {
 		Flux<Condition> fluxCondition = conditionService.findAllUserConditions();
 
 		StepVerifier.create(fluxCondition)
-		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getId().equals(condition1.getId()) && c.getCreated() != null && c.getEdited() != null)
+		.expectNextMatches(c -> c.getUser().getId().equals(user.getId())
+				&& c.getId().equals(condition1.getId())
+				&& c.getCreated() != null
+				&& c.getEdited() != null)
 		.expectComplete()
 		.verify();
 	}

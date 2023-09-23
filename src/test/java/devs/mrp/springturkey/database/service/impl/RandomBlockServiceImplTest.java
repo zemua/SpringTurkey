@@ -160,7 +160,11 @@ class RandomBlockServiceImplTest {
 
 		fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
 		StepVerifier.create(fluxBlocks)
-		.expectNextMatches(b -> b.getUser().getId().equals(user.getId()) && b.getName().equals("some name") && b.getCreated() != null && b.getEdited() != null)
+		.expectNextMatches(b -> b.getUser().getId().equals(user.getId())
+				&& b.getId().equals(block1.getId())
+				&& b.getName().equals("some name")
+				&& b.getCreated() != null
+				&& b.getEdited() != null)
 		.verifyComplete();
 	}
 

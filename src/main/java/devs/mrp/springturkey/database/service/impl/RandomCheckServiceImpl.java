@@ -1,8 +1,11 @@
 package devs.mrp.springturkey.database.service.impl;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.RandomCheck;
 import devs.mrp.springturkey.database.repository.RandomCheckRepository;
@@ -27,8 +30,7 @@ public class RandomCheckServiceImpl implements RandomCheckService {
 
 	@Override
 	public Mono<Integer> addNewCheck(RandomCheck check) {
-		// TODO Auto-generated method stub
-		return Mono.just(1);
+		return insert(check);
 	}
 
 	public Mono<Integer> insert(RandomCheck check) {
@@ -36,8 +38,12 @@ public class RandomCheckServiceImpl implements RandomCheckService {
 			return Mono.just(randomCheckRepository.save(check))
 					.map(chk -> chk != null ? 1 : 0);
 		} else {
-			// TODO check how to do insert without update and don't mess up the many-to-many
-			return Mono.just(randomCheckRepository.insert(check.getId(), check.getUser(), check.getName(), check.getStartActive(), check.getEndActive(), check.getMinCheckLapse(), check.getMaxCheckLapse(), check.getReward(), check.getActiveDays()));
+			Optional<RandomCheck> existing = randomCheckRepository.findById(check.getId());
+			if (existing.isPresent()) {
+				return Mono.error(new AlreadyExistsException());
+			}
+			return Mono.just(randomCheckRepository.save(check))
+					.map(chk -> chk != null ? 1 : 0);
 		}
 	}
 

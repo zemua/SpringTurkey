@@ -52,6 +52,8 @@ import devs.mrp.springturkey.database.repository.dao.impl.EntityFromDeltaDaoImpl
 @EnableJpaAuditing
 class FullUserDumpFacadeImplTest {
 
+	// TODO add test for getting random blocks and random checks in the payload
+
 	@Autowired
 	private FullUserDumpFacadeImpl fullUserDumpFacade;
 
