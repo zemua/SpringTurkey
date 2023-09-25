@@ -27,7 +27,7 @@ class AlphaNumericSpaceValidatorTest {
 	void testValid() {
 		var validable = new Validable();
 		validable.field = "something valid 123";
-		Set<ConstraintViolation<AlphaNumericSpaceValidatorTest.Validable>> violations = validator.validate(validable);
+		Set<ConstraintViolation<Validable>> violations = validator.validate(validable);
 		assertTrue(violations.isEmpty());
 	}
 
@@ -35,7 +35,7 @@ class AlphaNumericSpaceValidatorTest {
 	void testInvalid() {
 		var validable = new Validable();
 		validable.field = "something invalid 123 $";
-		Set<ConstraintViolation<AlphaNumericSpaceValidatorTest.Validable>> violations = validator.validate(validable);
+		Set<ConstraintViolation<Validable>> violations = validator.validate(validable);
 		assertFalse(violations.isEmpty());
 	}
 

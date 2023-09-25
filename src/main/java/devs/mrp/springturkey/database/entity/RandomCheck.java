@@ -13,6 +13,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.uuid.Generators;
 
+import devs.mrp.springturkey.validation.MaxBiggerThanMinConstraint;
+import devs.mrp.springturkey.validation.MinTimeConstraint;
+import devs.mrp.springturkey.validation.dtodef.MinMax;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,13 +41,12 @@ indexes = {
 		@Index(name = "check_to_user_index", columnList = "turkey_user")})
 @EntityListeners(AuditingEntityListener.class)
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class RandomCheck {
-
-	// TODO all entities to keep uuid if provided when saving
+@MaxBiggerThanMinConstraint
+public class RandomCheck implements MinMax<LocalTime> {
 
 	@Id
 	@Column(name = "id")
@@ -65,15 +67,14 @@ public class RandomCheck {
 	private LocalTime endActive;
 
 	@NotNull
-	// TODO validate > 00:00
+	@MinTimeConstraint(minutes = 1)
 	private LocalTime minCheckLapse;
 
 	@NotNull
-	// TODO validate >= minCheckLapse
 	private LocalTime maxCheckLapse;
 
 	@NotNull
-	// TODO validate > 00:00
+	@MinTimeConstraint(minutes = 1)
 	private LocalTime reward;
 
 	private Set<DayOfWeek> activeDays;
@@ -106,6 +107,16 @@ public class RandomCheck {
 		if (Objects.isNull(this.id)) {
 			this.id = Generators.timeBasedGenerator().generate();
 		}
+	}
+
+	@Override
+	public LocalTime minConstraint() {
+		return minCheckLapse;
+	}
+
+	@Override
+	public LocalTime maxConstraint() {
+		return maxCheckLapse;
 	}
 
 }
