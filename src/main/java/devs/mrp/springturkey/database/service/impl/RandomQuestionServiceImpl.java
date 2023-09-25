@@ -7,14 +7,14 @@ import org.springframework.stereotype.Service;
 import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
 import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
-import devs.mrp.springturkey.database.entity.RandomBlock;
+import devs.mrp.springturkey.database.entity.RandomQuestion;
 import devs.mrp.springturkey.database.repository.RandomBlockRepository;
 import devs.mrp.springturkey.database.service.RandomBlockService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
-public class RandomBlockServiceImpl implements RandomBlockService {
+public class RandomQuestionServiceImpl implements RandomBlockService {
 
 	@Autowired
 	private LoginDetailsReader loginDetailsReader;
@@ -23,29 +23,29 @@ public class RandomBlockServiceImpl implements RandomBlockService {
 	private RandomBlockRepository randomBlockRepository;
 
 	@Override
-	public Flux<RandomBlock> findAllUserBlocks() {
+	public Flux<RandomQuestion> findAllUserBlocks() {
 		return Flux.fromIterable(randomBlockRepository.findAllByUser(loginDetailsReader.getTurkeyUser()))
 				.filter(block -> loginDetailsReader.isCurrentUser(block.getUser()));
 	}
 
 	@Override
-	public Mono<Integer> addNewBlock(RandomBlock block) {
-		if (!loginDetailsReader.isCurrentUser(block.getUser())) {
+	public Mono<Integer> addNewBlock(RandomQuestion question) {
+		if (!loginDetailsReader.isCurrentUser(question.getUser())) {
 			return Mono.error(new DoesNotBelongToUserException());
 		}
 		try {
-			return insert(block);
+			return insert(question);
 		} catch (DataIntegrityViolationException e) {
 			return Mono.error(new AlreadyExistsException());
 		}
 	}
 
-	public Mono<Integer> insert(RandomBlock block) {
-		if (block.getId() == null) {
-			return Mono.just(randomBlockRepository.save(block))
+	public Mono<Integer> insert(RandomQuestion question) {
+		if (question.getId() == null) {
+			return Mono.just(randomBlockRepository.save(question))
 					.map(blk -> blk != null ? 1 : 0);
 		} else {
-			return Mono.just(randomBlockRepository.insert(block.getId(), block.getUser().getId(), block.getType().name(), block.getName(), block.getQuestion(), block.getFrequency(), block.getMultiplier()));
+			return Mono.just(randomBlockRepository.insert(question.getId(), question.getUser().getId(), question.getType().name(), question.getName(), question.getQuestion(), question.getFrequency(), question.getMultiplier()));
 		}
 	}
 

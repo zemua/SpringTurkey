@@ -17,7 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
 import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
-import devs.mrp.springturkey.database.entity.RandomBlock;
+import devs.mrp.springturkey.database.entity.RandomQuestion;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.entity.enumerable.RandomBlockType;
 import devs.mrp.springturkey.database.repository.RandomBlockRepository;
@@ -30,9 +30,9 @@ import reactor.test.StepVerifier;
 @EnableJpaRepositories(basePackages = "devs.mrp.springturkey.database.repository")
 @EntityScan("devs.mrp.springturkey.database.*")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(classes = {LoginDetailsReaderImpl.class, RandomBlockServiceImpl.class})
+@ContextConfiguration(classes = {LoginDetailsReaderImpl.class, RandomQuestionServiceImpl.class})
 @EnableJpaAuditing
-class RandomBlockServiceImplTest {
+class RandomQuestionServiceImplTest {
 
 	@Autowired
 	private RandomBlockRepository randomBlockRepository;
@@ -40,7 +40,7 @@ class RandomBlockServiceImplTest {
 	private UserRepository userRepository;
 
 	@Autowired
-	private RandomBlockServiceImpl randomBlockServiceImpl;
+	private RandomQuestionServiceImpl randomBlockServiceImpl;
 
 	private TurkeyUser user;
 	private TurkeyUser savedUser;
@@ -59,7 +59,7 @@ class RandomBlockServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void findAllUserRandomBlocks() {
-		RandomBlock block1 = RandomBlock.builder()
+		RandomQuestion block1 = RandomQuestion.builder()
 				.user(user)
 				.type(RandomBlockType.POSITIVE)
 				.name("some name")
@@ -68,7 +68,7 @@ class RandomBlockServiceImplTest {
 				.multiplier(1)
 				.build();
 
-		RandomBlock block2 = RandomBlock.builder()
+		RandomQuestion block2 = RandomQuestion.builder()
 				.user(user)
 				.type(RandomBlockType.NEGATIVE)
 				.name("another name")
@@ -77,7 +77,7 @@ class RandomBlockServiceImplTest {
 				.multiplier(1)
 				.build();
 
-		RandomBlock block3 = RandomBlock.builder()
+		RandomQuestion block3 = RandomQuestion.builder()
 				.user(otherUser)
 				.type(RandomBlockType.POSITIVE)
 				.name("yet any other name")
@@ -88,7 +88,7 @@ class RandomBlockServiceImplTest {
 
 		randomBlockRepository.saveAll(List.of(block1, block2, block3));
 
-		Flux<RandomBlock> fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
+		Flux<RandomQuestion> fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
 
 		StepVerifier.create(fluxBlocks)
 		.expectNextMatches(b -> b.getUser().getId().equals(user.getId()) && b.getName().equals("some name") && b.getCreated() != null && b.getEdited() != null)
@@ -99,7 +99,7 @@ class RandomBlockServiceImplTest {
 	@Test
 	@WithMockUser("wrong@mail.com")
 	void findAllUserWithWrongUser() {
-		RandomBlock block1 = RandomBlock.builder()
+		RandomQuestion block1 = RandomQuestion.builder()
 				.user(user)
 				.type(RandomBlockType.POSITIVE)
 				.name("some name")
@@ -108,7 +108,7 @@ class RandomBlockServiceImplTest {
 				.multiplier(1)
 				.build();
 
-		RandomBlock block2 = RandomBlock.builder()
+		RandomQuestion block2 = RandomQuestion.builder()
 				.user(user)
 				.type(RandomBlockType.NEGATIVE)
 				.name("another name")
@@ -117,7 +117,7 @@ class RandomBlockServiceImplTest {
 				.multiplier(1)
 				.build();
 
-		RandomBlock block3 = RandomBlock.builder()
+		RandomQuestion block3 = RandomQuestion.builder()
 				.user(otherUser)
 				.type(RandomBlockType.POSITIVE)
 				.name("yet any other name")
@@ -128,7 +128,7 @@ class RandomBlockServiceImplTest {
 
 		randomBlockRepository.saveAll(List.of(block1, block2, block3));
 
-		Flux<RandomBlock> fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
+		Flux<RandomQuestion> fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
 
 		StepVerifier.create(fluxBlocks)
 		.verifyComplete();
@@ -137,7 +137,7 @@ class RandomBlockServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void insertNewBlock() {
-		RandomBlock block1 = RandomBlock.builder()
+		RandomQuestion block1 = RandomQuestion.builder()
 				.id(UUID.randomUUID())
 				.user(user)
 				.type(RandomBlockType.POSITIVE)
@@ -147,7 +147,7 @@ class RandomBlockServiceImplTest {
 				.multiplier(1)
 				.build();
 
-		Flux<RandomBlock> fluxBlocks;
+		Flux<RandomQuestion> fluxBlocks;
 
 		fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
 		StepVerifier.create(fluxBlocks)
@@ -171,7 +171,7 @@ class RandomBlockServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void insertNewBlockEmptyId() {
-		RandomBlock block1 = RandomBlock.builder()
+		RandomQuestion block1 = RandomQuestion.builder()
 				.user(user)
 				.type(RandomBlockType.POSITIVE)
 				.name("some name")
@@ -180,7 +180,7 @@ class RandomBlockServiceImplTest {
 				.multiplier(1)
 				.build();
 
-		Flux<RandomBlock> fluxBlocks;
+		Flux<RandomQuestion> fluxBlocks;
 
 		fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
 		StepVerifier.create(fluxBlocks)
@@ -200,7 +200,7 @@ class RandomBlockServiceImplTest {
 	@Test
 	@WithMockUser("wrong@mail.com")
 	void insertNewBlockWrongUser() {
-		RandomBlock block1 = RandomBlock.builder()
+		RandomQuestion block1 = RandomQuestion.builder()
 				.id(UUID.randomUUID())
 				.user(user)
 				.type(RandomBlockType.POSITIVE)
@@ -210,7 +210,7 @@ class RandomBlockServiceImplTest {
 				.multiplier(1)
 				.build();
 
-		Flux<RandomBlock> fluxBlocks;
+		Flux<RandomQuestion> fluxBlocks;
 
 		fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
 		StepVerifier.create(fluxBlocks)
@@ -229,7 +229,7 @@ class RandomBlockServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void insertDuplicated() {
-		RandomBlock block1 = RandomBlock.builder()
+		RandomQuestion block1 = RandomQuestion.builder()
 				.id(UUID.randomUUID())
 				.user(user)
 				.type(RandomBlockType.POSITIVE)
@@ -239,7 +239,7 @@ class RandomBlockServiceImplTest {
 				.multiplier(1)
 				.build();
 
-		Flux<RandomBlock> fluxBlocks;
+		Flux<RandomQuestion> fluxBlocks;
 
 		fluxBlocks = randomBlockServiceImpl.findAllUserBlocks();
 		StepVerifier.create(fluxBlocks)

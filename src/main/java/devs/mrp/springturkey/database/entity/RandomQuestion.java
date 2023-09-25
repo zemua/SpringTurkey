@@ -32,8 +32,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "randomblock")
-@Table(name = "random_block",
+@Entity(name = "randomquestion")
+@Table(name = "random_question",
 indexes = {
 		@Index(name = "block_to_user_index", columnList = "turkey_user")})
 @EntityListeners(AuditingEntityListener.class)
@@ -42,7 +42,7 @@ indexes = {
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class RandomBlock {
+public class RandomQuestion {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)

@@ -21,7 +21,7 @@ import org.springframework.test.context.ContextConfiguration;
 import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
 import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
-import devs.mrp.springturkey.database.entity.RandomBlock;
+import devs.mrp.springturkey.database.entity.RandomQuestion;
 import devs.mrp.springturkey.database.entity.RandomCheck;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.entity.enumerable.RandomBlockType;
@@ -55,11 +55,11 @@ class RandomCheckServiceImplTest {
 	private TurkeyUser otherUser;
 	private TurkeyUser savedOtherUser;
 
-	private RandomBlock positiveBlock1;
-	private RandomBlock positiveBlock2;
-	private RandomBlock negativeBlock1;
-	private RandomBlock negativeBlock2;
-	private RandomBlock wrongUserBlock;
+	private RandomQuestion positiveBlock1;
+	private RandomQuestion positiveBlock2;
+	private RandomQuestion negativeBlock1;
+	private RandomQuestion negativeBlock2;
+	private RandomQuestion wrongUserBlock;
 
 	@BeforeEach
 	void setup() {
@@ -69,7 +69,7 @@ class RandomCheckServiceImplTest {
 		otherUser = TurkeyUser.builder().email("other@mail.com").build();
 		savedOtherUser = userRepository.save(otherUser);
 
-		positiveBlock1 = RandomBlock.builder()
+		positiveBlock1 = RandomQuestion.builder()
 				.user(savedUser)
 				.type(RandomBlockType.POSITIVE)
 				.name("positive one")
@@ -79,7 +79,7 @@ class RandomCheckServiceImplTest {
 				.build();
 		randomBlockRepository.save(positiveBlock1);
 
-		positiveBlock2 = RandomBlock.builder()
+		positiveBlock2 = RandomQuestion.builder()
 				.user(savedUser)
 				.type(RandomBlockType.POSITIVE)
 				.name("positive two")
@@ -89,7 +89,7 @@ class RandomCheckServiceImplTest {
 				.build();
 		randomBlockRepository.save(positiveBlock2);
 
-		negativeBlock1 = RandomBlock.builder()
+		negativeBlock1 = RandomQuestion.builder()
 				.user(savedUser)
 				.type(RandomBlockType.NEGATIVE)
 				.name("negative one")
@@ -99,7 +99,7 @@ class RandomCheckServiceImplTest {
 				.build();
 		randomBlockRepository.save(negativeBlock1);
 
-		negativeBlock2 = RandomBlock.builder()
+		negativeBlock2 = RandomQuestion.builder()
 				.user(savedUser)
 				.type(RandomBlockType.NEGATIVE)
 				.name("negative two")
@@ -109,7 +109,7 @@ class RandomCheckServiceImplTest {
 				.build();
 		randomBlockRepository.save(negativeBlock2);
 
-		wrongUserBlock = RandomBlock.builder()
+		wrongUserBlock = RandomQuestion.builder()
 				.user(savedOtherUser)
 				.type(RandomBlockType.POSITIVE)
 				.name("wrong user")
