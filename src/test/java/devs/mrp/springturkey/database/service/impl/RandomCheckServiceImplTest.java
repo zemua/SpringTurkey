@@ -25,7 +25,7 @@ import devs.mrp.springturkey.database.entity.RandomQuestion;
 import devs.mrp.springturkey.database.entity.RandomCheck;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.entity.enumerable.RandomBlockType;
-import devs.mrp.springturkey.database.repository.RandomBlockRepository;
+import devs.mrp.springturkey.database.repository.RandomQuestionRepository;
 import devs.mrp.springturkey.database.repository.RandomCheckRepository;
 import devs.mrp.springturkey.database.repository.UserRepository;
 import reactor.core.publisher.Flux;
@@ -43,7 +43,7 @@ class RandomCheckServiceImplTest {
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
-	private RandomBlockRepository randomBlockRepository;
+	private RandomQuestionRepository randomBlockRepository;
 	@Autowired
 	private RandomCheckRepository randomCheckRepository;
 

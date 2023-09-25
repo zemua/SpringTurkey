@@ -4,10 +4,10 @@ import devs.mrp.springturkey.database.entity.RandomQuestion;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface RandomBlockService {
+public interface RandomQuestionService {
 
-	public Flux<RandomQuestion> findAllUserBlocks();
+	public Flux<RandomQuestion> findAllUserQuestions();
 
-	public Mono<Integer> addNewBlock(RandomQuestion block);
+	public Mono<Integer> addNewQuestion(RandomQuestion block);
 
 }

@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import devs.mrp.springturkey.database.entity.RandomQuestion;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 
-public interface RandomBlockRepository extends JpaRepository<RandomQuestion, UUID>{
+public interface RandomQuestionRepository extends JpaRepository<RandomQuestion, UUID>{
 
 	public List<RandomQuestion> findAllByUser(TurkeyUser user);
 

@@ -8,28 +8,28 @@ import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
 import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.RandomQuestion;
-import devs.mrp.springturkey.database.repository.RandomBlockRepository;
-import devs.mrp.springturkey.database.service.RandomBlockService;
+import devs.mrp.springturkey.database.repository.RandomQuestionRepository;
+import devs.mrp.springturkey.database.service.RandomQuestionService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
-public class RandomQuestionServiceImpl implements RandomBlockService {
+public class RandomQuestionServiceImpl implements RandomQuestionService {
 
 	@Autowired
 	private LoginDetailsReader loginDetailsReader;
 
 	@Autowired
-	private RandomBlockRepository randomBlockRepository;
+	private RandomQuestionRepository randomBlockRepository;
 
 	@Override
-	public Flux<RandomQuestion> findAllUserBlocks() {
+	public Flux<RandomQuestion> findAllUserQuestions() {
 		return Flux.fromIterable(randomBlockRepository.findAllByUser(loginDetailsReader.getTurkeyUser()))
 				.filter(block -> loginDetailsReader.isCurrentUser(block.getUser()));
 	}
 
 	@Override
-	public Mono<Integer> addNewBlock(RandomQuestion question) {
+	public Mono<Integer> addNewQuestion(RandomQuestion question) {
 		if (!loginDetailsReader.isCurrentUser(question.getUser())) {
 			return Mono.error(new DoesNotBelongToUserException());
 		}
