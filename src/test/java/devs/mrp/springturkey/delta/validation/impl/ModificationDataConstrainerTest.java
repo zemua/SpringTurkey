@@ -33,6 +33,28 @@ import devs.mrp.springturkey.delta.validation.DataConstrainer;
 @ContextConfiguration(classes = {ModificationDataConstrainer.class})
 class ModificationDataConstrainerTest {
 
+	/* TODO implement pass tests
+	 * modify random check activedays
+	 * modify random check negative questions
+	 * modify random check positive questions
+	 */
+
+	/* TODO implement failing tests
+	 * modify random question name
+	 * modify random question question
+	 * modify random question frequency
+	 * modify random question multiplier
+	 * modify random check name
+	 * modify random check start active
+	 * modify random check end active
+	 * modify random check min check lapse
+	 * modify random check max check lapse
+	 * modify random check reward
+	 * modify random check activedays
+	 * modify random check negative questions
+	 * modify random check positive questions
+	 */
+
 	@MockBean
 	private DeltaFacadeService deltaFacade;
 
@@ -51,7 +73,18 @@ class ModificationDataConstrainerTest {
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "categoryType", "categoryType", "NEGATIVE"),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", "group", UUID.randomUUID().toString()),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "preventClose", "preventClosing", "true"),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.SETTING, "settingValue", "settingValue", "some setting value 123")
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.SETTING, "settingValue", "settingValue", "some setting value 123"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, "name", "name", "updated name"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, "question", "question", "updated question"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, "frequency", "frequency", "3"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, "multiplier", "multiplier", "2"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "name", "name", "modified name"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "startActive", "startActive", "11:22"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "endActive", "endActive", "11:22"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "minCheckLapse", "minCheckLapse", "11:22"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "maxCheckLapse", "maxCheckLapse", "11:22"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "reward", "reward", "11:22"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "activeDays", "activeDays", "[\"MONDAY\",\"TUESDAY\",\"WEDNESDAY\"]")
 				);
 	}
 
@@ -78,8 +111,6 @@ class ModificationDataConstrainerTest {
 	}
 
 	private static Stream<Arguments> provideIncorrectValues() {
-		// this doesn't throw exception
-		// Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "requiredUsageMs", "12345")
 		String uuid = UUID.randomUUID().toString();
 		return Stream.of(
 				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "requiredUsageMs", "12345"),
@@ -122,7 +153,5 @@ class ModificationDataConstrainerTest {
 		assertThrows(WrongDataException.class, () -> dataConstrainer.pushDelta(delta));
 		verifyNoInteractions(deltaFacade);
 	}
-
-	// TODO implement random checks and random blocks
 
 }

@@ -1,5 +1,7 @@
 package devs.mrp.springturkey.delta;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -7,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import devs.mrp.springturkey.database.entity.Activity;
 import devs.mrp.springturkey.database.entity.Condition;
 import devs.mrp.springturkey.database.entity.Group;
+import devs.mrp.springturkey.database.entity.RandomCheck;
+import devs.mrp.springturkey.database.entity.RandomQuestion;
 import devs.mrp.springturkey.database.entity.Setting;
 import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
@@ -53,7 +57,26 @@ public enum DeltaTable {
 			"platformType", FieldValidator.builder().columnName("platform").predicate(EnumUtils.getEnumPredicate(PlatformType.class)).creatable(true).build()
 			),
 			SettingCreationDelta.class,
-			Setting.class);
+			Setting.class),
+	RANDOM_QUESTION(Map.of(
+			"name", FieldValidator.builder().columnName("name").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build(),
+			"question", FieldValidator.builder().columnName("question").predicate(StringUtils::isNotBlank).modifiable(true).creatable(true).build(),
+			"frequency", FieldValidator.builder().columnName("frequency").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build(),
+			"multiplier", FieldValidator.builder().columnName("multiplier").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build()
+			),
+			null,
+			RandomQuestion.class),
+	RANDOM_CHECK(Map.of(
+			"name", FieldValidator.builder().columnName("name").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build(),
+			"startActive", FieldValidator.builder().columnName("startActive").predicate(DeltaTable::parseableTime).modifiable(true).creatable(true).build(),
+			"endActive", FieldValidator.builder().columnName("endActive").predicate(DeltaTable::parseableTime).modifiable(true).creatable(true).build(),
+			"minCheckLapse", FieldValidator.builder().columnName("minCheckLapse").predicate(DeltaTable::parseableTime).modifiable(true).creatable(true).build(),
+			"maxCheckLapse", FieldValidator.builder().columnName("maxCheckLapse").predicate(DeltaTable::parseableTime).modifiable(true).creatable(true).build(),
+			"reward", FieldValidator.builder().columnName("reward").predicate(DeltaTable::parseableTime).modifiable(true).creatable(true).build(),
+			"activeDays", FieldValidator.builder().columnName("activeDays").modifiable(true).creatable(true).build()
+			),
+			null,
+			RandomCheck.class);
 
 	private Map<String,FieldValidator> fieldMap;
 	private Class<?> entityDtoClass;
@@ -75,6 +98,16 @@ public enum DeltaTable {
 
 	public Class<?> getEntityClass() {
 		return entity;
+	}
+
+	private static boolean parseableTime(String time) { // TODO refactor, take this outside of the enum
+		// TODO refactor using logic instead of catching an exception
+		try {
+			LocalTime.parse(time);
+		} catch (DateTimeParseException | NullPointerException e) {
+			return false;
+		}
+		return true;
 	}
 
 }

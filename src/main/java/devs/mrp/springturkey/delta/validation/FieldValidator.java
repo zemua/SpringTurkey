@@ -26,7 +26,7 @@ public class FieldValidator {
 	@Getter
 	private Class<?> referenzable;
 
-	public boolean isValidModification(String value) {
+	public boolean isValidModification(String value) { // TODO change to generic thing as we can receive in the json numbers and other stuff
 		return canModify && predicate.test(value);
 	}
 

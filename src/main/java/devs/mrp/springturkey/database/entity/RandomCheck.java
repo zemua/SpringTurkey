@@ -83,15 +83,15 @@ public class RandomCheck implements MinMax<LocalTime> {
 	@JoinTable(
 			name = "negative_controls",
 			joinColumns = @JoinColumn(name = "check_id"),
-			inverseJoinColumns = @JoinColumn(name = "block_id"))
-	private Set<RandomQuestion> negativeControls;
+			inverseJoinColumns = @JoinColumn(name = "question_id"))
+	private Set<RandomQuestion> negativeQuestions;
 
 	@ManyToMany
 	@JoinTable(
 			name = "positive_controls",
 			joinColumns = @JoinColumn(name = "check_id"),
-			inverseJoinColumns = @JoinColumn(name = "block_id"))
-	private Set<RandomQuestion> positiveControls;
+			inverseJoinColumns = @JoinColumn(name = "question_id"))
+	private Set<RandomQuestion> positiveQuestions;
 
 	@CreatedDate
 	private LocalDateTime created;

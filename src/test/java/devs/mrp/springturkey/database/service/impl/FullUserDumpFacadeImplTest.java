@@ -154,8 +154,8 @@ class FullUserDumpFacadeImplTest {
 				.maxCheckLapse(LocalTime.of(1, 30))
 				.reward(LocalTime.of(1, 0))
 				.activeDays(Set.of(DayOfWeek.MONDAY))
-				.positiveControls(Set.of(randomQuestion1))
-				.negativeControls(Set.of(randomQuestion2))
+				.positiveQuestions(Set.of(randomQuestion1))
+				.negativeQuestions(Set.of(randomQuestion2))
 				.build());
 		randomCheck2 = randomCheckRepository.save(RandomCheck.builder()
 				.user(user)
@@ -166,8 +166,8 @@ class FullUserDumpFacadeImplTest {
 				.maxCheckLapse(LocalTime.of(1, 30))
 				.reward(LocalTime.of(1, 0))
 				.activeDays(Set.of(DayOfWeek.MONDAY))
-				.positiveControls(Set.of(randomQuestion1))
-				.negativeControls(Set.of(randomQuestion2))
+				.positiveQuestions(Set.of(randomQuestion1))
+				.negativeQuestions(Set.of(randomQuestion2))
 				.build());
 	}
 

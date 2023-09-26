@@ -21,12 +21,12 @@ import org.springframework.test.context.ContextConfiguration;
 import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
 import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
-import devs.mrp.springturkey.database.entity.RandomQuestion;
 import devs.mrp.springturkey.database.entity.RandomCheck;
+import devs.mrp.springturkey.database.entity.RandomQuestion;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.entity.enumerable.RandomBlockType;
-import devs.mrp.springturkey.database.repository.RandomQuestionRepository;
 import devs.mrp.springturkey.database.repository.RandomCheckRepository;
+import devs.mrp.springturkey.database.repository.RandomQuestionRepository;
 import devs.mrp.springturkey.database.repository.UserRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -133,8 +133,8 @@ class RandomCheckServiceImplTest {
 				.maxCheckLapse(LocalTime.of(1, 0))
 				.reward(LocalTime.of(0, 30))
 				.activeDays(Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))
-				.negativeControls(Set.of(positiveBlock1, positiveBlock2))
-				.positiveControls(Set.of(negativeBlock1, negativeBlock2))
+				.negativeQuestions(Set.of(positiveBlock1, positiveBlock2))
+				.positiveQuestions(Set.of(negativeBlock1, negativeBlock2))
 				.build();
 
 		RandomCheck randomCheck2 = RandomCheck.builder()
@@ -147,8 +147,8 @@ class RandomCheckServiceImplTest {
 				.maxCheckLapse(LocalTime.of(1, 0))
 				.reward(LocalTime.of(0, 30))
 				.activeDays(Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))
-				.negativeControls(Set.of(positiveBlock1))
-				.positiveControls(Collections.emptySet())
+				.negativeQuestions(Set.of(positiveBlock1))
+				.positiveQuestions(Collections.emptySet())
 				.build();
 
 		RandomCheck randomCheck3 = RandomCheck.builder()
@@ -161,8 +161,8 @@ class RandomCheckServiceImplTest {
 				.maxCheckLapse(LocalTime.of(1, 0))
 				.reward(LocalTime.of(0, 30))
 				.activeDays(Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))
-				.negativeControls(Set.of(positiveBlock1, positiveBlock2))
-				.positiveControls(Set.of(negativeBlock1, negativeBlock2))
+				.negativeQuestions(Set.of(positiveBlock1, positiveBlock2))
+				.positiveQuestions(Set.of(negativeBlock1, negativeBlock2))
 				.build();
 
 		randomCheckRepository.saveAll(List.of(randomCheck1, randomCheck2, randomCheck3));
@@ -188,8 +188,8 @@ class RandomCheckServiceImplTest {
 				.maxCheckLapse(LocalTime.of(1, 0))
 				.reward(LocalTime.of(0, 30))
 				.activeDays(Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))
-				.negativeControls(Set.of(positiveBlock1, positiveBlock2))
-				.positiveControls(Set.of(negativeBlock1, negativeBlock2))
+				.negativeQuestions(Set.of(positiveBlock1, positiveBlock2))
+				.positiveQuestions(Set.of(negativeBlock1, negativeBlock2))
 				.build();
 
 		RandomCheck randomCheck2 = RandomCheck.builder()
@@ -202,8 +202,8 @@ class RandomCheckServiceImplTest {
 				.maxCheckLapse(LocalTime.of(1, 0))
 				.reward(LocalTime.of(0, 30))
 				.activeDays(Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))
-				.negativeControls(Set.of(positiveBlock1))
-				.positiveControls(Collections.emptySet())
+				.negativeQuestions(Set.of(positiveBlock1))
+				.positiveQuestions(Collections.emptySet())
 				.build();
 
 		RandomCheck randomCheck3 = RandomCheck.builder()
@@ -216,8 +216,8 @@ class RandomCheckServiceImplTest {
 				.maxCheckLapse(LocalTime.of(1, 0))
 				.reward(LocalTime.of(0, 30))
 				.activeDays(Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))
-				.negativeControls(Set.of(positiveBlock1, positiveBlock2))
-				.positiveControls(Set.of(negativeBlock1, negativeBlock2))
+				.negativeQuestions(Set.of(positiveBlock1, positiveBlock2))
+				.positiveQuestions(Set.of(negativeBlock1, negativeBlock2))
 				.build();
 
 		randomCheckRepository.saveAll(List.of(randomCheck1, randomCheck2, randomCheck3));
@@ -241,8 +241,8 @@ class RandomCheckServiceImplTest {
 				.maxCheckLapse(LocalTime.of(1, 0))
 				.reward(LocalTime.of(0, 30))
 				.activeDays(Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))
-				.negativeControls(Set.of(positiveBlock1, positiveBlock2))
-				.positiveControls(Set.of(negativeBlock1, negativeBlock2))
+				.negativeQuestions(Set.of(positiveBlock1, positiveBlock2))
+				.positiveQuestions(Set.of(negativeBlock1, negativeBlock2))
 				.build();
 
 		Flux<RandomCheck> fluxChecks;
@@ -278,8 +278,8 @@ class RandomCheckServiceImplTest {
 				.maxCheckLapse(LocalTime.of(1, 0))
 				.reward(LocalTime.of(0, 30))
 				.activeDays(Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))
-				.negativeControls(Set.of(positiveBlock1, positiveBlock2))
-				.positiveControls(Set.of(negativeBlock1, negativeBlock2))
+				.negativeQuestions(Set.of(positiveBlock1, positiveBlock2))
+				.positiveQuestions(Set.of(negativeBlock1, negativeBlock2))
 				.build();
 
 		Flux<RandomCheck> fluxChecks;
@@ -312,8 +312,8 @@ class RandomCheckServiceImplTest {
 				.maxCheckLapse(LocalTime.of(1, 0))
 				.reward(LocalTime.of(0, 30))
 				.activeDays(Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))
-				.negativeControls(Set.of(positiveBlock1, positiveBlock2))
-				.positiveControls(Set.of(negativeBlock1, negativeBlock2))
+				.negativeQuestions(Set.of(positiveBlock1, positiveBlock2))
+				.positiveQuestions(Set.of(negativeBlock1, negativeBlock2))
 				.build();
 
 		Flux<RandomCheck> fluxChecks;
@@ -344,8 +344,8 @@ class RandomCheckServiceImplTest {
 				.maxCheckLapse(LocalTime.of(1, 0))
 				.reward(LocalTime.of(0, 30))
 				.activeDays(Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))
-				.negativeControls(Set.of(positiveBlock1, positiveBlock2))
-				.positiveControls(Set.of(negativeBlock1, negativeBlock2))
+				.negativeQuestions(Set.of(positiveBlock1, positiveBlock2))
+				.positiveQuestions(Set.of(negativeBlock1, negativeBlock2))
 				.build();
 
 		Flux<RandomCheck> fluxChecks;
