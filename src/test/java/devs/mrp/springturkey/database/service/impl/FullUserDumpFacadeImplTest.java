@@ -1,6 +1,7 @@
 package devs.mrp.springturkey.database.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -59,8 +60,6 @@ import devs.mrp.springturkey.database.repository.dao.impl.EntityFromDeltaDaoImpl
 @Import({ServiceBeansConfig.class})
 @EnableJpaAuditing
 class FullUserDumpFacadeImplTest {
-
-	// TODO add test for getting random blocks and random checks in the payload
 
 	@Autowired
 	private FullUserDumpFacadeImpl fullUserDumpFacade;
@@ -184,6 +183,8 @@ class FullUserDumpFacadeImplTest {
 		Map<Object,Object> mapResult = mapper.convertValue(result, Map.class);
 
 		assertEquals(expected, mapResult);
+		assertNotNull(mapResult.get("randomChecks"));
+		assertNotNull(mapResult.get("randomQuestions"));
 	}
 
 	private ExportData expectedData() {
