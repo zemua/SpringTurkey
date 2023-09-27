@@ -10,11 +10,11 @@ import org.junit.jupiter.api.Test;
 
 import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
 
-class FieldValidatorTest {
+class FieldDataTest {
 
 	@Test
 	void testModification() {
-		FieldValidator validator = FieldValidator.builder()
+		FieldData validator = FieldData.builder()
 				.columnName("some name")
 				.modifiable(true)
 				.predicate(s -> Pattern.compile("^hello.+").matcher(s).matches())
@@ -23,7 +23,7 @@ class FieldValidatorTest {
 		assertTrue(validator.isValidModification("hello world!"));
 		assertFalse(validator.isValidModification("bye world!"));
 
-		validator = FieldValidator.builder()
+		validator = FieldData.builder()
 				.columnName("some name")
 				.modifiable(true)
 				.predicate(s -> Pattern.compile("^hello").matcher(s).matches())
@@ -31,7 +31,7 @@ class FieldValidatorTest {
 		assertFalse(validator.isValidModification("hello world!"));
 		assertFalse(validator.isValidModification("bye world!"));
 
-		validator = FieldValidator.builder()
+		validator = FieldData.builder()
 				.columnName("some name")
 				.modifiable(false)
 				.predicate(s -> Pattern.compile("^hello.+").matcher(s).matches())
@@ -43,7 +43,7 @@ class FieldValidatorTest {
 
 	@Test
 	void testCreation() {
-		FieldValidator validator = FieldValidator.builder()
+		FieldData validator = FieldData.builder()
 				.columnName("some name")
 				.creatable(true)
 				.predicate(s -> Pattern.compile("^hello.+").matcher(s).matches())
@@ -52,7 +52,7 @@ class FieldValidatorTest {
 		assertTrue(validator.isValidCreation("hello world!"));
 		assertFalse(validator.isValidCreation("bye world!"));
 
-		validator = FieldValidator.builder()
+		validator = FieldData.builder()
 				.columnName("some name")
 				.creatable(true)
 				.predicate(s -> Pattern.compile("^hello").matcher(s).matches())
@@ -60,7 +60,7 @@ class FieldValidatorTest {
 		assertFalse(validator.isValidCreation("hello world!"));
 		assertFalse(validator.isValidCreation("bye world!"));
 
-		validator = FieldValidator.builder()
+		validator = FieldData.builder()
 				.columnName("some name")
 				.creatable(false)
 				.predicate(s -> Pattern.compile("^hello.+").matcher(s).matches())
@@ -72,21 +72,21 @@ class FieldValidatorTest {
 
 	@Test
 	void testNotNullFields() {
-		assertThrows(TurkeySurpriseException.class, () -> FieldValidator.builder()
+		assertThrows(TurkeySurpriseException.class, () -> FieldData.builder()
 				.columnName(null)
 				.predicate(s -> Pattern.compile("^hello").matcher(s).matches())
 				.build());
 
-		assertThrows(TurkeySurpriseException.class, () -> FieldValidator.builder()
+		assertThrows(TurkeySurpriseException.class, () -> FieldData.builder()
 				.columnName("some name")
 				.predicate(null)
 				.build());
 
-		assertThrows(TurkeySurpriseException.class, () -> FieldValidator.builder()
+		assertThrows(TurkeySurpriseException.class, () -> FieldData.builder()
 				.columnName("some name")
 				.build());
 
-		assertThrows(TurkeySurpriseException.class, () -> FieldValidator.builder()
+		assertThrows(TurkeySurpriseException.class, () -> FieldData.builder()
 				.predicate(s -> Pattern.compile("^hello").matcher(s).matches())
 				.build());
 	}

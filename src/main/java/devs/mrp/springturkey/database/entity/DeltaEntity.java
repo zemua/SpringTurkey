@@ -68,7 +68,7 @@ public class DeltaEntity {
 				.deltaTable(delta.getTable())
 				.recordId(delta.getRecordId())
 				.fieldName(delta.getFieldName())
-				.textValue(delta.getTextValue())
+				.textValue(delta.getJsonValue())
 				.build();
 	}
 
@@ -79,7 +79,7 @@ public class DeltaEntity {
 				.table(getDeltaTable())
 				.recordId(getRecordId())
 				.fieldName(getFieldName())
-				.textValue(getTextValue())
+				.jsonValue(getTextValue())
 				.build();
 	}
 

@@ -16,7 +16,7 @@ import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.database.entity.enumerable.GroupType;
 import devs.mrp.springturkey.database.entity.enumerable.PlatformType;
-import devs.mrp.springturkey.delta.validation.FieldValidator;
+import devs.mrp.springturkey.delta.validation.FieldData;
 import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.ConditionCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.GroupCreationDelta;
@@ -28,67 +28,66 @@ import devs.mrp.springturkey.utils.UuidUtils;
 public enum DeltaTable {
 
 	GROUP(Map.of(
-			"name", FieldValidator.builder().columnName("name").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build(),
-			"type", FieldValidator.builder().columnName("type").predicate(EnumUtils.getEnumPredicate(GroupType.class)).creatable(true).modifiable(false).build(),
-			"preventClose", FieldValidator.builder().columnName("preventClose").predicate(BooleanUtils::isNullableBoolean).modifiable(true).creatable(true).build()
+			"name", FieldData.builder().columnName("name").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build(),
+			"type", FieldData.builder().columnName("type").predicate(EnumUtils.getEnumPredicate(GroupType.class)).creatable(true).modifiable(false).build(),
+			"preventClose", FieldData.builder().columnName("preventClose").predicate(BooleanUtils::isNullableBoolean).modifiable(true).creatable(true).build()
 			),
 			GroupCreationDelta.class,
 			Group.class),
 	ACTIVITY(Map.of(
-			"categoryType", FieldValidator.builder().columnName("categoryType").predicate(EnumUtils.getEnumPredicate(CategoryType.class)).modifiable(true).creatable(true).build(),
-			"groupId", FieldValidator.builder().columnName("group").predicate(UuidUtils::isNullableUuid).referenzable(Group.class).modifiable(true).creatable(true).build(),
-			"preventClose", FieldValidator.builder().columnName("preventClosing").predicate(BooleanUtils::isNullableBoolean).modifiable(true).creatable(true).build(),
-			"activityName", FieldValidator.builder().columnName("activityName").predicate(StringUtils::isAlphanumericSpace).creatable(true).build(),
-			"activityType", FieldValidator.builder().columnName("activityType").predicate(EnumUtils.getEnumPredicate(ActivityPlatform.class)).creatable(true).build()
+			"categoryType", FieldData.builder().columnName("categoryType").predicate(EnumUtils.getEnumPredicate(CategoryType.class)).modifiable(true).creatable(true).build(),
+			"groupId", FieldData.builder().columnName("group").predicate(UuidUtils::isNullableUuid).referenzable(Group.class).modifiable(true).creatable(true).build(),
+			"preventClose", FieldData.builder().columnName("preventClosing").predicate(BooleanUtils::isNullableBoolean).modifiable(true).creatable(true).build(),
+			"activityName", FieldData.builder().columnName("activityName").predicate(StringUtils::isAlphanumericSpace).creatable(true).build(),
+			"activityType", FieldData.builder().columnName("activityType").predicate(EnumUtils.getEnumPredicate(ActivityPlatform.class)).creatable(true).build()
 			),
 			ActivityCreationDelta.class,
 			Activity.class),
 	CONDITION(Map.of(
-			"requiredUsageMs", FieldValidator.builder().columnName("requiredUsageMs").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build(),
-			"lastDaysToConsider", FieldValidator.builder().columnName("lastDaysToConsider").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build(),
-			"conditionalGroup", FieldValidator.builder().columnName("conditionalGroup").predicate(UuidUtils::isNullableUuid).referenzable(Group.class).modifiable(true).creatable(true).build(),
-			"targetGroup", FieldValidator.builder().columnName("targetGroup").predicate(UuidUtils::isNullableUuid).referenzable(Group.class).modifiable(true).creatable(true).build()
+			"requiredUsageMs", FieldData.builder().columnName("requiredUsageMs").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build(),
+			"lastDaysToConsider", FieldData.builder().columnName("lastDaysToConsider").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build(),
+			"conditionalGroup", FieldData.builder().columnName("conditionalGroup").predicate(UuidUtils::isNullableUuid).referenzable(Group.class).modifiable(true).creatable(true).build(),
+			"targetGroup", FieldData.builder().columnName("targetGroup").predicate(UuidUtils::isNullableUuid).referenzable(Group.class).modifiable(true).creatable(true).build()
 			),
 			ConditionCreationDelta.class,
 			Condition.class),
 	SETTING(Map.of(
-			"settingValue", FieldValidator.builder().columnName("settingValue").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build(),
-			"settingKey", FieldValidator.builder().columnName("settingKey").predicate(StringUtils::isAlphanumeric).creatable(true).build(),
-			"platformType", FieldValidator.builder().columnName("platform").predicate(EnumUtils.getEnumPredicate(PlatformType.class)).creatable(true).build()
+			"settingValue", FieldData.builder().columnName("settingValue").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build(),
+			"settingKey", FieldData.builder().columnName("settingKey").predicate(StringUtils::isAlphanumeric).creatable(true).build(),
+			"platformType", FieldData.builder().columnName("platform").predicate(EnumUtils.getEnumPredicate(PlatformType.class)).creatable(true).build()
 			),
 			SettingCreationDelta.class,
 			Setting.class),
 	RANDOM_QUESTION(Map.of(
-			"name", FieldValidator.builder().columnName("name").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build(),
-			"question", FieldValidator.builder().columnName("question").predicate(StringUtils::isNotBlank).modifiable(true).creatable(true).build(),
-			"frequency", FieldValidator.builder().columnName("frequency").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build(),
-			"multiplier", FieldValidator.builder().columnName("multiplier").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build()
+			"name", FieldData.builder().columnName("name").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build(),
+			"question", FieldData.builder().columnName("question").predicate(StringUtils::isNotBlank).modifiable(true).creatable(true).build(),
+			"frequency", FieldData.builder().columnName("frequency").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build(),
+			"multiplier", FieldData.builder().columnName("multiplier").predicate(StringUtils::isNumeric).modifiable(true).creatable(true).build()
 			),
 			null,
 			RandomQuestion.class),
 	RANDOM_CHECK(Map.of(
-			"name", FieldValidator.builder().columnName("name").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build(),
-			"startActive", FieldValidator.builder().columnName("startActive").predicate(DeltaTable::parseableTime).modifiable(true).creatable(true).build(),
-			"endActive", FieldValidator.builder().columnName("endActive").predicate(DeltaTable::parseableTime).modifiable(true).creatable(true).build(),
-			"minCheckLapse", FieldValidator.builder().columnName("minCheckLapse").predicate(DeltaTable::parseableTime).modifiable(true).creatable(true).build(),
-			"maxCheckLapse", FieldValidator.builder().columnName("maxCheckLapse").predicate(DeltaTable::parseableTime).modifiable(true).creatable(true).build(),
-			"reward", FieldValidator.builder().columnName("reward").predicate(DeltaTable::parseableTime).modifiable(true).creatable(true).build(),
-			"activeDays", FieldValidator.builder().columnName("activeDays").modifiable(true).creatable(true).build()
+			"name", FieldData.builder().columnName("name").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build(),
+			"startActive", FieldData.builder().columnName("startActive").predicate(DeltaTable::parseableTime).modifiable(true).creatable(true).build(),
+			"endActive", FieldData.builder().columnName("endActive").predicate(DeltaTable::parseableTime).modifiable(true).creatable(true).build(),
+			"minCheckLapse", FieldData.builder().columnName("minCheckLapse").predicate(DeltaTable::parseableTime).modifiable(true).creatable(true).build(),
+			"maxCheckLapse", FieldData.builder().columnName("maxCheckLapse").predicate(DeltaTable::parseableTime).modifiable(true).creatable(true).build(),
+			"reward", FieldData.builder().columnName("reward").predicate(DeltaTable::parseableTime).modifiable(true).creatable(true).build()
 			),
 			null,
 			RandomCheck.class);
 
-	private Map<String,FieldValidator> fieldMap;
+	private Map<String,FieldData> fieldMap;
 	private Class<?> entityDtoClass;
 	private Class<?> entity;
 
-	DeltaTable(Map<String,FieldValidator> fieldMap, Class<?> dto, Class<?> entity) {
+	DeltaTable(Map<String,FieldData> fieldMap, Class<?> dto, Class<?> entity) {
 		this.fieldMap = fieldMap;
 		this.entityDtoClass = dto;
 		this.entity = entity;
 	}
 
-	public Map<String,FieldValidator> getFieldMap() {
+	public Map<String,FieldData> getFieldMap() {
 		return fieldMap;
 	}
 

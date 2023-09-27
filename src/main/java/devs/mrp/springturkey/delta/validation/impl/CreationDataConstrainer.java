@@ -52,9 +52,9 @@ public class CreationDataConstrainer implements DataConstrainer {
 		Class<?> clazz = delta.getTable().getDtoClass();
 		Object creationEntity = null;
 		try {
-			creationEntity = objectMapper.readValue(delta.getTextValue(), clazz);
+			creationEntity = objectMapper.readValue(delta.getJsonValue(), clazz);
 		} catch (JsonProcessingException e) {
-			log.error("Invalid creation entity for {} with json {}", clazz, delta.getTextValue(), e);
+			log.error("Invalid creation entity for {} with json {}", clazz, delta.getJsonValue(), e);
 		}
 		Set<ConstraintViolation<Object>> violations = new HashSet<>();
 		violations.addAll(validator.validate(creationEntity));

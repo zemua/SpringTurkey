@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
-import devs.mrp.springturkey.delta.validation.FieldValidator;
+import devs.mrp.springturkey.delta.validation.FieldData;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -33,13 +33,13 @@ public class Delta {
 	@NotBlank
 	private String fieldName;
 	@NotBlank
-	private String textValue;
+	private String jsonValue;
 
-	public Map<String,FieldValidator> getValidators() {
+	public Map<String,FieldData> getValidators() {
 		return table.getFieldMap();
 	}
 
-	public FieldValidator getValidator(String key) {
+	public FieldData getFieldData(String key) {
 		return getValidators().get(key);
 	}
 

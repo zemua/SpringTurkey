@@ -76,7 +76,7 @@ class DeletionDataConstrainerTest {
 				.table(table)
 				.recordId(UUID.randomUUID())
 				.fieldName(fieldName)
-				.textValue(textValue)
+				.jsonValue(textValue)
 				.build();
 
 		when(deltaFacade.pushDeletion(ArgumentMatchers.refEq(delta))).thenReturn(1);
@@ -115,7 +115,7 @@ class DeletionDataConstrainerTest {
 				.table(table)
 				.recordId(UUID.randomUUID())
 				.fieldName(fieldName)
-				.textValue(jsonValue)
+				.jsonValue(jsonValue)
 				.build();
 
 		assertThrows(WrongDataException.class, () -> dataConstrainer.pushDelta(delta));

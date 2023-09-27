@@ -10,7 +10,7 @@ import devs.mrp.springturkey.database.service.DeltaFacadeService;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.DataConstrainer;
-import devs.mrp.springturkey.delta.validation.FieldValidator;
+import devs.mrp.springturkey.delta.validation.FieldData;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
@@ -34,8 +34,8 @@ public class ModificationDataConstrainer implements DataConstrainer {
 		if (!getFieldMap(delta).containsKey(delta.getFieldName())) {
 			throw new WrongDataException("Invalid field name: " + delta.getFieldName());
 		}
-		if (!getFieldMap(delta).get(delta.getFieldName()).isValidModification(delta.getTextValue())) {
-			throw new WrongDataException("Invalid modification in field {" +  delta.getFieldName() + "} for value {" + delta.getTextValue() + "}");
+		if (!getFieldMap(delta).get(delta.getFieldName()).isValidModification(delta.getJsonValue())) {
+			throw new WrongDataException("Invalid modification in field {" +  delta.getFieldName() + "} for value {" + delta.getJsonValue() + "}");
 		}
 	}
 
@@ -51,7 +51,7 @@ public class ModificationDataConstrainer implements DataConstrainer {
 		return getFieldMap(delta).get(name).getColumnName();
 	}
 
-	private Map<String,FieldValidator> getFieldMap(Delta delta) {
+	private Map<String,FieldData> getFieldMap(Delta delta) {
 		return delta.getTable().getFieldMap();
 	}
 

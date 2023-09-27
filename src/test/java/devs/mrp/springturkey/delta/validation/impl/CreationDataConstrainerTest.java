@@ -85,7 +85,7 @@ class CreationDataConstrainerTest {
 				.table(table)
 				.recordId(UUID.randomUUID())
 				.fieldName(fieldName)
-				.textValue(jsonValue)
+				.jsonValue(jsonValue)
 				.build();
 
 		when(deltaFacade.pushCreation(ArgumentMatchers.refEq(delta))).thenReturn(Mono.just(1));
@@ -132,7 +132,7 @@ class CreationDataConstrainerTest {
 				.table(table)
 				.recordId(UUID.randomUUID())
 				.fieldName(fieldName)
-				.textValue(jsonValue)
+				.jsonValue(jsonValue)
 				.build();
 
 		assertThrows(WrongDataException.class, () -> dataConstrainer.pushDelta(delta));

@@ -27,7 +27,7 @@ public class DeletionDataConstrainer implements DataConstrainer {
 		if (!fieldName.equals(delta.getFieldName())) {
 			throw new WrongDataException("Wrong field name, should be 'object': " + delta.getFieldName());
 		}
-		if (!textValue.equals(delta.getTextValue())) {
+		if (!textValue.equals(delta.getJsonValue())) {
 			throw new WrongDataException("Wrong field name, should be 'deletion': " + delta.getFieldName());
 		}
 		return Mono.just(deltaFacadeService.pushDeletion(delta));

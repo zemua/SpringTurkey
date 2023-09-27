@@ -129,7 +129,7 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(1, postDeltas.size());
 		assertEquals(1, result);
 
-		Map<String,String> expected = objectMapper.readValue(delta.getTextValue(), Map.class);
+		Map<String,String> expected = objectMapper.readValue(delta.getJsonValue(), Map.class);
 		Activity saved = postActivities.get(0);
 		assertEquals(expected.get("activityName"), saved.getActivityName());
 		assertEquals("some@mail.com", saved.getUser().getEmail());
@@ -153,7 +153,7 @@ class DeltaFacadeServiceImplTest {
 		Group fetchedGroup = groupRepository.findAll().get(0);
 
 		Delta delta = activityCreationDeltaBuilder()
-				.textValue(objectMapper.writeValueAsString(activityBuilder()
+				.jsonValue(objectMapper.writeValueAsString(activityBuilder()
 						.groupId(fetchedGroup.getId())
 						.build()))
 				.build();
@@ -165,7 +165,7 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(1, postDeltas.size());
 		assertEquals(1, result);
 
-		Map<String,String> expected = objectMapper.readValue(delta.getTextValue(), Map.class);
+		Map<String,String> expected = objectMapper.readValue(delta.getJsonValue(), Map.class);
 		Activity saved = postActivities.get(0);
 		assertEquals(expected.get("activityName"), saved.getActivityName());
 		assertEquals("some@mail.com", saved.getUser().getEmail());
@@ -187,7 +187,7 @@ class DeltaFacadeServiceImplTest {
 		Map<String,String> deltaMap = objectMapper.convertValue(activityBuilder().build(), Map.class);
 		deltaMap.put("groupId", "invalid");
 		Delta delta = activityCreationDeltaBuilder()
-				.textValue(objectMapper.writeValueAsString(deltaMap))
+				.jsonValue(objectMapper.writeValueAsString(deltaMap))
 				.build();
 
 		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta).block());
@@ -222,7 +222,7 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(0, preDeltas.size());
 
 		Delta delta = groupCreationDeltaBuilder()
-				.textValue(objectMapper.writeValueAsString(groupCreationBuilder().preventClose(true).build()))
+				.jsonValue(objectMapper.writeValueAsString(groupCreationBuilder().preventClose(true).build()))
 				.build();
 		Integer result = deltaFacadeService.pushCreation(delta).block();
 
@@ -245,7 +245,7 @@ class DeltaFacadeServiceImplTest {
 		Map<Object,Object> groupAsMap = objectMapper.convertValue(groupCreationBuilder().build(), Map.class);
 		groupAsMap.put("name", 123);
 
-		Delta delta = groupCreationDeltaBuilder().textValue(objectMapper.writeValueAsString(groupAsMap)).build();
+		Delta delta = groupCreationDeltaBuilder().jsonValue(objectMapper.writeValueAsString(groupAsMap)).build();
 		Integer result = deltaFacadeService.pushCreation(delta).block();
 
 		var postSettings = groupRepository.findAll();
@@ -275,7 +275,7 @@ class DeltaFacadeServiceImplTest {
 		Group fetchedGroup2 = fetchedGroups.get(1);
 
 		Delta delta = conditionCreationDeltaBuilder()
-				.textValue(objectMapper.writeValueAsString(conditionCreationBuilder(fetchedGroup1.getId(), fetchedGroup2.getId()).build()))
+				.jsonValue(objectMapper.writeValueAsString(conditionCreationBuilder(fetchedGroup1.getId(), fetchedGroup2.getId()).build()))
 				.build();
 		Integer result = deltaFacadeService.pushCreation(delta).block();
 
@@ -309,7 +309,7 @@ class DeltaFacadeServiceImplTest {
 
 		Delta delta = conditionCreationDeltaBuilder()
 				.table(DeltaTable.ACTIVITY)
-				.textValue(objectMapper.writeValueAsString(conditionCreationBuilder(fetchedGroup1.getId(), fetchedGroup2.getId()).build()))
+				.jsonValue(objectMapper.writeValueAsString(conditionCreationBuilder(fetchedGroup1.getId(), fetchedGroup2.getId()).build()))
 				.build();
 		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta).block());
 	}
@@ -348,7 +348,7 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(delta.getTable(), storedDelta.getDeltaTable());
 		assertEquals(delta.getRecordId(), storedDelta.getRecordId());
 		assertEquals(delta.getFieldName(), storedDelta.getFieldName());
-		assertEquals(delta.getTextValue(), storedDelta.getTextValue());
+		assertEquals(delta.getJsonValue(), storedDelta.getTextValue());
 	}
 
 	@Test
@@ -358,7 +358,7 @@ class DeltaFacadeServiceImplTest {
 		Map<String,String> deltaMap = objectMapper.convertValue(activityBuilder().build(), Map.class);
 		deltaMap.put("groupId", "invalid");
 		Delta delta = activityCreationDeltaBuilder()
-				.textValue(objectMapper.writeValueAsString(deltaMap))
+				.jsonValue(objectMapper.writeValueAsString(deltaMap))
 				.build();
 
 		var preActivities = activityRepository.findAll();
@@ -381,7 +381,7 @@ class DeltaFacadeServiceImplTest {
 				.table(DeltaTable.ACTIVITY)
 				.recordId(UUID.randomUUID())
 				.fieldName("object")
-				.textValue(objectMapper.writeValueAsString(activityBuilder().build()));
+				.jsonValue(objectMapper.writeValueAsString(activityBuilder().build()));
 	}
 
 	private ActivityCreationDelta.ActivityCreationDeltaBuilder activityBuilder() {
@@ -398,7 +398,7 @@ class DeltaFacadeServiceImplTest {
 				.table(DeltaTable.SETTING)
 				.recordId(UUID.randomUUID())
 				.fieldName("object")
-				.textValue(objectMapper.writeValueAsString(settingBuilder().build()));
+				.jsonValue(objectMapper.writeValueAsString(settingBuilder().build()));
 	}
 
 	private SettingCreationDelta.SettingCreationDeltaBuilder settingBuilder() {
@@ -415,7 +415,7 @@ class DeltaFacadeServiceImplTest {
 				.table(DeltaTable.GROUP)
 				.recordId(UUID.randomUUID())
 				.fieldName("object")
-				.textValue(objectMapper.writeValueAsString(groupCreationBuilder().build()));
+				.jsonValue(objectMapper.writeValueAsString(groupCreationBuilder().build()));
 	}
 
 	private GroupCreationDelta.GroupCreationDeltaBuilder groupCreationBuilder() {

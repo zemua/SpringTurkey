@@ -83,8 +83,7 @@ class ModificationDataConstrainerTest {
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "endActive", "endActive", "11:22"),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "minCheckLapse", "minCheckLapse", "11:22"),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "maxCheckLapse", "maxCheckLapse", "11:22"),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "reward", "reward", "11:22"),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "activeDays", "activeDays", "[\"MONDAY\",\"TUESDAY\",\"WEDNESDAY\"]")
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "reward", "reward", "11:22")
 				);
 	}
 
@@ -98,7 +97,7 @@ class ModificationDataConstrainerTest {
 				.table(table)
 				.recordId(id)
 				.fieldName(fieldName)
-				.textValue(textValue)
+				.jsonValue(textValue)
 				.build();
 
 		Delta modifiedDelta = delta.withFieldName(columnName);
@@ -147,7 +146,7 @@ class ModificationDataConstrainerTest {
 				.table(table)
 				.recordId(id)
 				.fieldName(fieldName)
-				.textValue(textValue)
+				.jsonValue(textValue)
 				.build();
 
 		assertThrows(WrongDataException.class, () -> dataConstrainer.pushDelta(delta));

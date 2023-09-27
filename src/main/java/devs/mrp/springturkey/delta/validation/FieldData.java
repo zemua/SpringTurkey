@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-public class FieldValidator {
+public class FieldData {
 
 	@Getter
 	@NotEmpty
@@ -30,15 +30,15 @@ public class FieldValidator {
 		return canModify && predicate.test(value);
 	}
 
-	public boolean isValidCreation(String value) {
+	public boolean isValidCreation(String value) { // TODO change to generic thing as we can receive in the json numbers and other stuff
 		return canCreate && predicate.test(value);
 	}
 
-	public static FieldValidatorBuilder builder() {
-		return new FieldValidatorBuilder();
+	public static FieldDataBuilder builder() {
+		return new FieldDataBuilder();
 	}
 
-	public static class FieldValidatorBuilder {
+	public static class FieldDataBuilder {
 
 		private String columnName;
 
@@ -50,36 +50,36 @@ public class FieldValidator {
 
 		private Class<?> referenzable;
 
-		public FieldValidatorBuilder columnName(String name) {
+		public FieldDataBuilder columnName(String name) {
 			this.columnName = name;
 			return this;
 		}
 
-		public FieldValidatorBuilder predicate(Predicate<String> p) {
+		public FieldDataBuilder predicate(Predicate<String> p) {
 			this.predicate = p;
 			return this;
 		}
 
-		public FieldValidatorBuilder modifiable(boolean b) {
+		public FieldDataBuilder modifiable(boolean b) {
 			this.canModify = b;
 			return this;
 		}
 
-		public FieldValidatorBuilder creatable(boolean b) {
+		public FieldDataBuilder creatable(boolean b) {
 			this.canCreate = b;
 			return this;
 		}
 
-		public FieldValidatorBuilder referenzable(Class<?> referenzable) {
+		public FieldDataBuilder referenzable(Class<?> referenzable) {
 			this.referenzable = referenzable;
 			return this;
 		}
 
-		public FieldValidator build() {
+		public FieldData build() {
 			if (Objects.isNull(this.columnName) || Objects.isNull(this.predicate)) {
 				throw new TurkeySurpriseException("No fields were expected to be null");
 			}
-			return new FieldValidator(this.columnName, this.predicate, this.canModify, this.canCreate, this.referenzable);
+			return new FieldData(this.columnName, this.predicate, this.canModify, this.canCreate, this.referenzable);
 		}
 
 	}
