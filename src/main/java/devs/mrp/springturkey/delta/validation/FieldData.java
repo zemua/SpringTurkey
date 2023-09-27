@@ -1,9 +1,13 @@
 package devs.mrp.springturkey.delta.validation;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
+import jakarta.validation.Validator;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -16,8 +20,10 @@ public class FieldData {
 	@NotEmpty
 	private String columnName;
 
+	private Predicate<String> predicate; // TODO remove
+
 	@NotNull
-	private Predicate<String> predicate;
+	private Class<?> mapeable;
 
 	private boolean canModify;
 
@@ -26,8 +32,14 @@ public class FieldData {
 	@Getter
 	private Class<?> referenzable;
 
-	public boolean isValidModification(String value) { // TODO change to generic thing as we can receive in the json numbers and other stuff
-		return canModify && predicate.test(value);
+	@NotNull
+	private Validator validator;
+
+	@NotNull
+	private ObjectMapper objectMapper;
+
+	public boolean isValidModification(Map<String,Object> value) { // TODO change to generic thing as we can receive in the json numbers and other stuff
+		return canModify && isValid(value);
 	}
 
 	public boolean isValidCreation(String value) { // TODO change to generic thing as we can receive in the json numbers and other stuff
@@ -38,17 +50,29 @@ public class FieldData {
 		return new FieldDataBuilder();
 	}
 
+	private boolean isValid(Map<String,Object> value) {
+		return validator.validate(convertedObject(value), mapeable).isEmpty();
+	}
+
+	private Object convertedObject(Map<String,Object> value) {
+		return objectMapper.convertValue(value, mapeable);
+	}
+
 	public static class FieldDataBuilder {
 
 		private String columnName;
 
 		private Predicate<String> predicate;
 
+		private Class<?> mapeable;
+
 		private boolean canModify = false;
 
 		private boolean canCreate = false;
 
 		private Class<?> referenzable;
+
+		private Validator validator;
 
 		public FieldDataBuilder columnName(String name) {
 			this.columnName = name;
@@ -57,6 +81,11 @@ public class FieldData {
 
 		public FieldDataBuilder predicate(Predicate<String> p) {
 			this.predicate = p;
+			return this;
+		}
+
+		public FieldDataBuilder mapeable(Class<?> clazz) {
+			this.mapeable = clazz;
 			return this;
 		}
 
@@ -75,11 +104,16 @@ public class FieldData {
 			return this;
 		}
 
+		public FieldDataBuilder validator(Validator v) {
+			this.validator = v;
+			return this;
+		}
+
 		public FieldData build() {
-			if (Objects.isNull(this.columnName) || Objects.isNull(this.predicate)) {
+			if (Objects.isNull(this.columnName) || Objects.isNull(this.mapeable) || Objects.isNull(this.validator)) {
 				throw new TurkeySurpriseException("No fields were expected to be null");
 			}
-			return new FieldData(this.columnName, this.predicate, this.canModify, this.canCreate, this.referenzable);
+			return new FieldData(this.columnName, this.predicate, this.mapeable, this.canModify, this.canCreate, this.referenzable, this.validator, new ObjectMapper());
 		}
 
 	}

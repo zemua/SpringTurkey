@@ -76,7 +76,7 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 
 	@SuppressWarnings("unchecked")
 	private Map<Object,Object> dtoMap(Delta delta) throws JsonMappingException, JsonProcessingException {
-		return objectMapper.readValue(delta.getJsonValue(), Map.class);
+		return objectMapper.convertValue(delta.getJsonValue(), Map.class); // TODO make it right
 	}
 
 	private void addFieldToEntityMap(EntityDtoFieldWrapper data) {

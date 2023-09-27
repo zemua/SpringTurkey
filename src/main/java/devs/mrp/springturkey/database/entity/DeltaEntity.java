@@ -1,6 +1,7 @@
 package devs.mrp.springturkey.database.entity;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -52,7 +53,7 @@ public class DeltaEntity {
 	@NotBlank
 	private String fieldName;
 	@NotBlank
-	private String textValue;
+	private Map<String,Object> jsonValue;
 
 	@CreatedDate
 	private LocalDateTime created;
@@ -68,7 +69,7 @@ public class DeltaEntity {
 				.deltaTable(delta.getTable())
 				.recordId(delta.getRecordId())
 				.fieldName(delta.getFieldName())
-				.textValue(delta.getJsonValue())
+				.jsonValue(delta.getJsonValue())
 				.build();
 	}
 
@@ -79,7 +80,7 @@ public class DeltaEntity {
 				.table(getDeltaTable())
 				.recordId(getRecordId())
 				.fieldName(getFieldName())
-				.jsonValue(getTextValue())
+				.jsonValue(getJsonValue())
 				.build();
 	}
 

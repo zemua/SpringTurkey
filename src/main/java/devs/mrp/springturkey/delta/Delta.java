@@ -31,9 +31,9 @@ public class Delta {
 	@NotNull
 	private UUID recordId;
 	@NotBlank
-	private String fieldName;
+	private String fieldName; // TODO remove this field
 	@NotBlank
-	private String jsonValue;
+	private Map<String,Object> jsonValue; // TODO make it a Map<FieldName,Value>
 
 	public Map<String,FieldData> getValidators() {
 		return table.getFieldMap();

@@ -6,7 +6,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import devs.mrp.springturkey.Exceptions.WrongDataException;
@@ -51,11 +50,7 @@ public class CreationDataConstrainer implements DataConstrainer {
 	private Set<ConstraintViolation<Object>> resolveViolations(Delta delta) {
 		Class<?> clazz = delta.getTable().getDtoClass();
 		Object creationEntity = null;
-		try {
-			creationEntity = objectMapper.readValue(delta.getJsonValue(), clazz);
-		} catch (JsonProcessingException e) {
-			log.error("Invalid creation entity for {} with json {}", clazz, delta.getJsonValue(), e);
-		}
+		creationEntity = objectMapper.convertValue(delta.getJsonValue(), clazz);
 		Set<ConstraintViolation<Object>> violations = new HashSet<>();
 		violations.addAll(validator.validate(creationEntity));
 		violations.addAll(validator.validate(delta));

@@ -129,7 +129,7 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(1, postDeltas.size());
 		assertEquals(1, result);
 
-		Map<String,String> expected = objectMapper.readValue(delta.getJsonValue(), Map.class);
+		Map<String,Object> expected = delta.getJsonValue();
 		Activity saved = postActivities.get(0);
 		assertEquals(expected.get("activityName"), saved.getActivityName());
 		assertEquals("some@mail.com", saved.getUser().getEmail());
@@ -153,9 +153,9 @@ class DeltaFacadeServiceImplTest {
 		Group fetchedGroup = groupRepository.findAll().get(0);
 
 		Delta delta = activityCreationDeltaBuilder()
-				.jsonValue(objectMapper.writeValueAsString(activityBuilder()
+				.jsonValue(objectMapper.convertValue(activityBuilder()
 						.groupId(fetchedGroup.getId())
-						.build()))
+						.build(), Map.class))
 				.build();
 		Integer result = deltaFacadeService.pushCreation(delta).block();
 
@@ -165,7 +165,7 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(1, postDeltas.size());
 		assertEquals(1, result);
 
-		Map<String,String> expected = objectMapper.readValue(delta.getJsonValue(), Map.class);
+		Map<String,Object> expected = delta.getJsonValue();
 		Activity saved = postActivities.get(0);
 		assertEquals(expected.get("activityName"), saved.getActivityName());
 		assertEquals("some@mail.com", saved.getUser().getEmail());
@@ -184,10 +184,10 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(0, preActivities.size());
 		assertEquals(0, preDeltas.size());
 
-		Map<String,String> deltaMap = objectMapper.convertValue(activityBuilder().build(), Map.class);
+		Map<String,Object> deltaMap = objectMapper.convertValue(activityBuilder().build(), Map.class);
 		deltaMap.put("groupId", "invalid");
 		Delta delta = activityCreationDeltaBuilder()
-				.jsonValue(objectMapper.writeValueAsString(deltaMap))
+				.jsonValue(deltaMap)
 				.build();
 
 		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta).block());
@@ -222,7 +222,7 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(0, preDeltas.size());
 
 		Delta delta = groupCreationDeltaBuilder()
-				.jsonValue(objectMapper.writeValueAsString(groupCreationBuilder().preventClose(true).build()))
+				.jsonValue(objectMapper.convertValue(groupCreationBuilder().preventClose(true).build(), Map.class))
 				.build();
 		Integer result = deltaFacadeService.pushCreation(delta).block();
 
@@ -242,10 +242,10 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(0, preSettings.size());
 		assertEquals(0, preDeltas.size());
 
-		Map<Object,Object> groupAsMap = objectMapper.convertValue(groupCreationBuilder().build(), Map.class);
+		Map<String,Object> groupAsMap = objectMapper.convertValue(groupCreationBuilder().build(), Map.class);
 		groupAsMap.put("name", 123);
 
-		Delta delta = groupCreationDeltaBuilder().jsonValue(objectMapper.writeValueAsString(groupAsMap)).build();
+		Delta delta = groupCreationDeltaBuilder().jsonValue(groupAsMap).build();
 		Integer result = deltaFacadeService.pushCreation(delta).block();
 
 		var postSettings = groupRepository.findAll();
@@ -275,7 +275,7 @@ class DeltaFacadeServiceImplTest {
 		Group fetchedGroup2 = fetchedGroups.get(1);
 
 		Delta delta = conditionCreationDeltaBuilder()
-				.jsonValue(objectMapper.writeValueAsString(conditionCreationBuilder(fetchedGroup1.getId(), fetchedGroup2.getId()).build()))
+				.jsonValue(objectMapper.convertValue(conditionCreationBuilder(fetchedGroup1.getId(), fetchedGroup2.getId()).build(), Map.class))
 				.build();
 		Integer result = deltaFacadeService.pushCreation(delta).block();
 
@@ -309,7 +309,7 @@ class DeltaFacadeServiceImplTest {
 
 		Delta delta = conditionCreationDeltaBuilder()
 				.table(DeltaTable.ACTIVITY)
-				.jsonValue(objectMapper.writeValueAsString(conditionCreationBuilder(fetchedGroup1.getId(), fetchedGroup2.getId()).build()))
+				.jsonValue(objectMapper.convertValue(conditionCreationBuilder(fetchedGroup1.getId(), fetchedGroup2.getId()).build(), Map.class))
 				.build();
 		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta).block());
 	}
@@ -348,17 +348,17 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(delta.getTable(), storedDelta.getDeltaTable());
 		assertEquals(delta.getRecordId(), storedDelta.getRecordId());
 		assertEquals(delta.getFieldName(), storedDelta.getFieldName());
-		assertEquals(delta.getJsonValue(), storedDelta.getTextValue());
+		assertEquals(delta.getJsonValue(), storedDelta.getJsonValue());
 	}
 
 	@Test
 	@WithMockUser("some@mail.com")
 	@DirtiesContext
 	void persistingEntityErrorCancelsPersistOfDelta() throws JsonProcessingException, InterruptedException {
-		Map<String,String> deltaMap = objectMapper.convertValue(activityBuilder().build(), Map.class);
+		Map<String,Object> deltaMap = objectMapper.convertValue(activityBuilder().build(), Map.class);
 		deltaMap.put("groupId", "invalid");
 		Delta delta = activityCreationDeltaBuilder()
-				.jsonValue(objectMapper.writeValueAsString(deltaMap))
+				.jsonValue(deltaMap)
 				.build();
 
 		var preActivities = activityRepository.findAll();
@@ -381,7 +381,7 @@ class DeltaFacadeServiceImplTest {
 				.table(DeltaTable.ACTIVITY)
 				.recordId(UUID.randomUUID())
 				.fieldName("object")
-				.jsonValue(objectMapper.writeValueAsString(activityBuilder().build()));
+				.jsonValue(objectMapper.convertValue(activityBuilder().build(), Map.class));
 	}
 
 	private ActivityCreationDelta.ActivityCreationDeltaBuilder activityBuilder() {
@@ -398,7 +398,7 @@ class DeltaFacadeServiceImplTest {
 				.table(DeltaTable.SETTING)
 				.recordId(UUID.randomUUID())
 				.fieldName("object")
-				.jsonValue(objectMapper.writeValueAsString(settingBuilder().build()));
+				.jsonValue(objectMapper.convertValue(settingBuilder().build(), Map.class));
 	}
 
 	private SettingCreationDelta.SettingCreationDeltaBuilder settingBuilder() {
@@ -415,7 +415,7 @@ class DeltaFacadeServiceImplTest {
 				.table(DeltaTable.GROUP)
 				.recordId(UUID.randomUUID())
 				.fieldName("object")
-				.jsonValue(objectMapper.writeValueAsString(groupCreationBuilder().build()));
+				.jsonValue(objectMapper.convertValue(groupCreationBuilder().build(), Map.class));
 	}
 
 	private GroupCreationDelta.GroupCreationDeltaBuilder groupCreationBuilder() {
