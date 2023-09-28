@@ -58,7 +58,12 @@ public class FieldData {
 	}
 
 	private boolean isValid(Map<String,Object> value) throws WrongDataException {
-		Object converted = convertedObject(value);
+		Object converted;
+		try {
+			converted = convertedObject(value);
+		} catch (IllegalArgumentException e) {
+			throw new WrongDataException("Validation failed", e);
+		}
 		Set<ConstraintViolation<Object>> violations = validator.validate(converted);
 		if (violations.isEmpty()) {
 			return true;
