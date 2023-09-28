@@ -42,8 +42,6 @@ import jakarta.validation.ValidatorFactory;
 @ContextConfiguration(classes = {DeletionDataConstrainer.class})
 class DeletionDataConstrainerTest {
 
-	// TODO implement random checks and random blocks
-
 	@MockBean
 	Validator validator;
 
@@ -68,7 +66,10 @@ class DeletionDataConstrainerTest {
 				Arguments.of(DeltaType.DELETION, DeltaTable.ACTIVITY, "object", fieldOf("deletion", UUID.randomUUID())),
 				Arguments.of(DeltaType.DELETION, DeltaTable.CONDITION, "object", fieldOf("deletion", UUID.randomUUID())),
 				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", UUID.randomUUID())),
-				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", UUID.randomUUID().toString()))
+				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", UUID.randomUUID().toString())),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_QUESTION, "", fieldOf("deletion", UUID.randomUUID())),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_CHECK, "", fieldOf("deletion", UUID.randomUUID())),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_CHECK, "", fieldOf("deletion", UUID.randomUUID().toString()))
 				);
 	}
 
@@ -102,13 +103,17 @@ class DeletionDataConstrainerTest {
 				Arguments.of(DeltaType.DELETION, DeltaTable.CONDITION, "othervalue", fieldOf("otherValue", UUID.randomUUID())),
 				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "othervalue", fieldOf("otherValue", UUID.randomUUID())),
 				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, null, fieldOf(null, UUID.randomUUID())),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_QUESTION, "", fieldOf("otherValue", UUID.randomUUID())),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_CHECK, "", fieldOf("otherValue", UUID.randomUUID())),
 
 				Arguments.of(DeltaType.DELETION, DeltaTable.GROUP, "object", fieldOf("deletion", "invalid")),
 				Arguments.of(DeltaType.DELETION, DeltaTable.ACTIVITY, "object", fieldOf("deletion", "invalid")),
 				Arguments.of(DeltaType.DELETION, DeltaTable.CONDITION, "object", fieldOf("deletion", "invalid")),
 				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", "invalid")),
 				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", UUID.randomUUID().toString()+"a")),
-				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", null))
+				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", null)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_QUESTION, "", fieldOf("deletion", "invalid")),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_CHECK, "", fieldOf("deletion", "invalid"))
 				);
 	}
 
