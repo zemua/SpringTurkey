@@ -3,8 +3,8 @@ package devs.mrp.springturkey.delta.validation.constraints;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Set;
+import java.util.UUID;
 
-import devs.mrp.springturkey.database.entity.RandomQuestion;
 import devs.mrp.springturkey.validation.NullableAlphaNumericSpaceConstraint;
 import devs.mrp.springturkey.validation.NullableBeforeAndAfterConstraint;
 import devs.mrp.springturkey.validation.NullableMinTimeConstraint;
@@ -34,9 +34,9 @@ public class RandomCheckModificationConstraints implements MinMax<LocalTime> {
 
 	private Set<DayOfWeek> activeDays;
 
-	private Set<RandomQuestion> negativeQuestions;
+	private Set<UUID> negativeQuestions;
 
-	private Set<RandomQuestion> positiveQuestions;
+	private Set<UUID> positiveQuestions;
 
 	@Override
 	public LocalTime minConstraint() {

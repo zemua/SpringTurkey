@@ -7,10 +7,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -36,28 +38,6 @@ import devs.mrp.springturkey.delta.validation.DataConstrainer;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {ModificationDataConstrainer.class})
 class ModificationDataConstrainerTest {
-
-	/* TODO implement pass tests
-	 * modify random check activedays
-	 * modify random check negative questions
-	 * modify random check positive questions
-	 */
-
-	/* TODO implement failing tests
-	 * modify random question name
-	 * modify random question question
-	 * modify random question frequency
-	 * modify random question multiplier
-	 * modify random check name
-	 * modify random check start active
-	 * modify random check end active
-	 * modify random check min check lapse
-	 * modify random check max check lapse
-	 * modify random check reward
-	 * modify random check activedays
-	 * modify random check negative questions
-	 * modify random check positive questions
-	 */
 
 	@MockBean
 	private DeltaFacadeService deltaFacade;
@@ -87,7 +67,10 @@ class ModificationDataConstrainerTest {
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "endActive", "endActive", fieldOf("endActive", LocalTime.of(11, 22))),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "minCheckLapse", "minCheckLapse", fieldOf("minCheckLapse", LocalTime.of(11, 22))),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "maxCheckLapse", "maxCheckLapse", fieldOf("maxCheckLapse", LocalTime.of(11, 22))),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "reward", "reward", fieldOf("reward", LocalTime.of(11, 22)))
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "reward", "reward", fieldOf("reward", LocalTime.of(11, 22))),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "activeDays", "activeDays", fieldOf("activeDays", Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "negativeQuestions", "negativeQuestions", fieldOf("negativeQuestions", Set.of(UUID.randomUUID(), UUID.randomUUID()))),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "positiveQuestions", "positiveQuestions", fieldOf("positiveQuestions", Set.of(UUID.randomUUID(), UUID.randomUUID())))
 				);
 	}
 
@@ -112,6 +95,22 @@ class ModificationDataConstrainerTest {
 		assertEquals(1, result);
 		verify(deltaFacade, times(1)).pushModification(ArgumentMatchers.refEq(modifiedDelta));
 	}
+
+	/* TODO implement failing tests
+	 * modify random question name
+	 * modify random question question
+	 * modify random question frequency
+	 * modify random question multiplier
+	 * modify random check name
+	 * modify random check start active
+	 * modify random check end active
+	 * modify random check min check lapse
+	 * modify random check max check lapse
+	 * modify random check reward
+	 * modify random check activedays
+	 * modify random check negative questions
+	 * modify random check positive questions
+	 */
 
 	private static Stream<Arguments> provideIncorrectValues() {
 		String uuid = UUID.randomUUID().toString();

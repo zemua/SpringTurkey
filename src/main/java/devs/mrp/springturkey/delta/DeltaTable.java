@@ -80,7 +80,10 @@ public enum DeltaTable {
 			"endActive", FieldData.builder().columnName("endActive").predicate(DeltaTable::parseableTime).mapeable(RandomCheckModificationConstraints.class).modifiable(true).creatable(true).build(),
 			"minCheckLapse", FieldData.builder().columnName("minCheckLapse").predicate(DeltaTable::parseableTime).mapeable(RandomCheckModificationConstraints.class).modifiable(true).creatable(true).build(),
 			"maxCheckLapse", FieldData.builder().columnName("maxCheckLapse").predicate(DeltaTable::parseableTime).mapeable(RandomCheckModificationConstraints.class).modifiable(true).creatable(true).build(),
-			"reward", FieldData.builder().columnName("reward").predicate(DeltaTable::parseableTime).mapeable(RandomCheckModificationConstraints.class).modifiable(true).creatable(true).build()
+			"reward", FieldData.builder().columnName("reward").predicate(DeltaTable::parseableTime).mapeable(RandomCheckModificationConstraints.class).modifiable(true).creatable(true).build(),
+			"activeDays", FieldData.builder().columnName("activeDays").predicate(p -> false).mapeable(RandomCheckModificationConstraints.class).modifiable(true).creatable(true).build(),
+			"negativeQuestions", FieldData.builder().columnName("negativeQuestions").predicate(p -> false).mapeable(RandomCheckModificationConstraints.class).modifiable(true).creatable(true).build(),
+			"positiveQuestions", FieldData.builder().columnName("positiveQuestions").predicate(p -> false).mapeable(RandomCheckModificationConstraints.class).modifiable(true).creatable(true).build()
 			),
 			null,
 			RandomCheck.class);
