@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.uuid.Generators;
 
+import devs.mrp.springturkey.validation.AlphaNumericSpaceConstraint;
 import devs.mrp.springturkey.validation.MaxBiggerThanMinConstraint;
 import devs.mrp.springturkey.validation.MinTimeConstraint;
 import devs.mrp.springturkey.validation.dtodef.MinMax;
@@ -58,6 +59,7 @@ public class RandomCheck implements MinMax<LocalTime> {
 	private TurkeyUser user;
 
 	@NotNull
+	@AlphaNumericSpaceConstraint
 	private String name;
 
 	@NotNull

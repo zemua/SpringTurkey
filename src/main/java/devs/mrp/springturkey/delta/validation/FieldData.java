@@ -2,12 +2,19 @@ package devs.mrp.springturkey.delta.validation;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
+import devs.mrp.springturkey.Exceptions.WrongDataException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -38,7 +45,7 @@ public class FieldData {
 	@NotNull
 	private ObjectMapper objectMapper;
 
-	public boolean isValidModification(Map<String,Object> value) { // TODO change to generic thing as we can receive in the json numbers and other stuff
+	public boolean isValidModification(Map<String,Object> value) throws WrongDataException {
 		return canModify && isValid(value);
 	}
 
@@ -50,8 +57,14 @@ public class FieldData {
 		return new FieldDataBuilder();
 	}
 
-	private boolean isValid(Map<String,Object> value) {
-		return validator.validate(convertedObject(value), mapeable).isEmpty();
+	private boolean isValid(Map<String,Object> value) throws WrongDataException {
+		Object converted = convertedObject(value);
+		Set<ConstraintViolation<Object>> violations = validator.validate(converted);
+		if (violations.isEmpty()) {
+			return true;
+		} else {
+			throw new WrongDataException("Validation failed: " + violations.toString());
+		}
 	}
 
 	private Object convertedObject(Map<String,Object> value) {
@@ -71,8 +84,6 @@ public class FieldData {
 		private boolean canCreate = false;
 
 		private Class<?> referenzable;
-
-		private Validator validator;
 
 		public FieldDataBuilder columnName(String name) {
 			this.columnName = name;
@@ -104,18 +115,24 @@ public class FieldData {
 			return this;
 		}
 
-		public FieldDataBuilder validator(Validator v) {
-			this.validator = v;
-			return this;
-		}
-
 		public FieldData build() {
-			if (Objects.isNull(this.columnName) || Objects.isNull(this.mapeable) || Objects.isNull(this.validator)) {
+			if (Objects.isNull(this.columnName) || Objects.isNull(this.mapeable)) {
 				throw new TurkeySurpriseException("No fields were expected to be null");
 			}
-			return new FieldData(this.columnName, this.predicate, this.mapeable, this.canModify, this.canCreate, this.referenzable, this.validator, new ObjectMapper());
+			return new FieldData(this.columnName, this.predicate, this.mapeable, this.canModify, this.canCreate, this.referenzable, getValidator(), objectMapper());
 		}
 
+	}
+
+	private static Validator getValidator() {
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		return factory.getValidator();
+	}
+
+	private static ObjectMapper objectMapper() {
+		return JsonMapper.builder()
+				.addModule(new JavaTimeModule())
+				.build();
 	}
 
 }
