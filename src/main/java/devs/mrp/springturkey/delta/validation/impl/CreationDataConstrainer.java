@@ -22,8 +22,6 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class CreationDataConstrainer implements DataConstrainer {
 
-	private static final String OBJECT_AS_FIELD_NAME = "object";
-
 	@Autowired
 	private Validator validator;
 
@@ -36,9 +34,6 @@ public class CreationDataConstrainer implements DataConstrainer {
 	public Mono<Integer> pushDelta(Delta delta) throws WrongDataException {
 		if (!DeltaType.CREATION.equals(delta.getDeltaType())) {
 			throw new WrongDataException("Delta is not of type 'CREATION'");
-		}
-		if (!OBJECT_AS_FIELD_NAME.equalsIgnoreCase(delta.getFieldName())) {
-			throw new WrongDataException("Delta field is not 'object'");
 		}
 		var violations = resolveViolations(delta);
 		if (!violations.isEmpty()) {

@@ -26,6 +26,8 @@ import devs.mrp.springturkey.delta.validation.constraints.SettingModificationCon
 import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.ConditionCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.GroupCreationDelta;
+import devs.mrp.springturkey.delta.validation.entity.RandomCheckCreationDelta;
+import devs.mrp.springturkey.delta.validation.entity.RandomQuestionCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.SettingCreationDelta;
 import devs.mrp.springturkey.utils.BooleanUtils;
 import devs.mrp.springturkey.utils.EnumUtils;
@@ -72,7 +74,7 @@ public enum DeltaTable {
 			"frequency", FieldData.builder().columnName("frequency").predicate(StringUtils::isNumeric).mapeable(RandomQuestionModificationConstraints.class).modifiable(true).creatable(true).build(),
 			"multiplier", FieldData.builder().columnName("multiplier").predicate(StringUtils::isNumeric).mapeable(RandomQuestionModificationConstraints.class).modifiable(true).creatable(true).build()
 			),
-			null,
+			RandomQuestionCreationDelta.class,
 			RandomQuestion.class),
 	RANDOM_CHECK(Map.of(
 			"name", FieldData.builder().columnName("name").predicate(StringUtils::isAlphanumericSpace).mapeable(RandomCheckModificationConstraints.class).modifiable(true).creatable(true).build(),
@@ -85,7 +87,7 @@ public enum DeltaTable {
 			"negativeQuestions", FieldData.builder().columnName("negativeQuestions").predicate(p -> false).mapeable(RandomCheckModificationConstraints.class).modifiable(true).creatable(true).build(),
 			"positiveQuestions", FieldData.builder().columnName("positiveQuestions").predicate(p -> false).mapeable(RandomCheckModificationConstraints.class).modifiable(true).creatable(true).build()
 			),
-			null,
+			RandomCheckCreationDelta.class,
 			RandomCheck.class);
 
 	private Map<String,FieldData> fieldMap;

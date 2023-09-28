@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import devs.mrp.springturkey.delta.validation.FieldData;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,10 +30,10 @@ public class Delta {
 	private DeltaTable table;
 	@NotNull
 	private UUID recordId;
-	@NotBlank
+
 	private String fieldName; // TODO remove this field
-	@NotBlank
-	private Map<String,Object> jsonValue; // TODO make it a Map<FieldName,Value>
+	@NotEmpty
+	private Map<String,Object> jsonValue;
 
 	public Map<String,FieldData> getValidators() {
 		return table.getFieldMap();

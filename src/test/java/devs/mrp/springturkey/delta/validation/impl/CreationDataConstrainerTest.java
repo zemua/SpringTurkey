@@ -7,7 +7,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -25,12 +29,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import devs.mrp.springturkey.Exceptions.WrongDataException;
+import devs.mrp.springturkey.database.entity.RandomQuestion;
 import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.database.entity.enumerable.GroupType;
 import devs.mrp.springturkey.database.entity.enumerable.PlatformType;
+import devs.mrp.springturkey.database.entity.enumerable.RandomBlockType;
 import devs.mrp.springturkey.database.service.DeltaFacadeService;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaTable;
@@ -39,6 +47,8 @@ import devs.mrp.springturkey.delta.validation.DataConstrainer;
 import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.ConditionCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.GroupCreationDelta;
+import devs.mrp.springturkey.delta.validation.entity.RandomCheckCreationDelta;
+import devs.mrp.springturkey.delta.validation.entity.RandomQuestionCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.SettingCreationDelta;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -48,6 +58,9 @@ import reactor.core.publisher.Mono;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {CreationDataConstrainer.class})
 class CreationDataConstrainerTest {
+
+	// TODO implement for random questions
+	// TODO implement for random checks
 
 	@MockBean
 	Validator validator;
@@ -67,18 +80,22 @@ class CreationDataConstrainerTest {
 	}
 
 	private static Stream<Arguments> provideCorrectValues() throws JsonProcessingException {
-		ObjectMapper objectMapper = new ObjectMapper();
+		ObjectMapper objectMapper = JsonMapper.builder()
+				.addModule(new JavaTimeModule())
+				.build();
 		return Stream.of(
-				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", objectMapper.writeValueAsString(validGroup().build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.writeValueAsString(validActivity().build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.writeValueAsString(validSetting().build()))
+				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", objectMapper.convertValue(validGroup().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.convertValue(validActivity().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.convertValue(validSetting().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "", objectMapper.convertValue(validQuestion().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "", objectMapper.convertValue(validCheck().build(), Map.class))
 				);
 	}
 
 	@ParameterizedTest
 	@MethodSource("provideCorrectValues")
-	void testSucess(DeltaType deltaType, DeltaTable table, String fieldName, String jsonValue) throws JsonProcessingException, WrongDataException {
+	void testSucess(DeltaType deltaType, DeltaTable table, String fieldName, Map<String,Object> jsonValue) throws JsonProcessingException, WrongDataException {
 		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.now())
 				.deltaType(deltaType)
@@ -98,34 +115,34 @@ class CreationDataConstrainerTest {
 	private static Stream<Arguments> provideIncorrectValues() throws JsonProcessingException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		return Stream.of(
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "object", objectMapper.writeValueAsString(validGroup().build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "invalid", objectMapper.writeValueAsString(validGroup().build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", objectMapper.writeValueAsString(validGroup().name("invalid 123 $").build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", objectMapper.writeValueAsString(validGroup().type(null).build())),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "object", objectMapper.writeValueAsString(validActivity().build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "invalid", objectMapper.writeValueAsString(validActivity().build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.writeValueAsString(validActivity().activityName("invalid 123 $").build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.writeValueAsString(validActivity().activityType(null).build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.writeValueAsString(validActivity().categoryType(null).build())),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "invalid", objectMapper.writeValueAsString(validCondition().build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().conditionalGroup(null).build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().targetGroup(null).build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().requiredUsageMs(25000L).build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().requiredUsageMs(-5L).build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().lastDaysToConsider(35).build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.writeValueAsString(validCondition().lastDaysToConsider(-5).build())),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.SETTING, "object", objectMapper.writeValueAsString(validSetting().build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "invalid", objectMapper.writeValueAsString(validSetting().build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.writeValueAsString(validSetting().platformType(null).build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.writeValueAsString(validSetting().settingKey("invalid 123 $").build())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.writeValueAsString(validSetting().settingValue("invalid 456 &").build()))
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "object", objectMapper.convertValue(validGroup().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "invalid", objectMapper.convertValue(validGroup().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", objectMapper.convertValue(validGroup().name("invalid 123 $").build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", objectMapper.convertValue(validGroup().type(null).build(), Map.class)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "object", objectMapper.convertValue(validActivity().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "invalid", objectMapper.convertValue(validActivity().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.convertValue(validActivity().activityName("invalid 123 $").build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.convertValue(validActivity().activityType(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.convertValue(validActivity().categoryType(null).build(), Map.class)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "invalid", objectMapper.convertValue(validCondition().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().conditionalGroup(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().targetGroup(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().requiredUsageMs(25000L).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().requiredUsageMs(-5L).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().lastDaysToConsider(35).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().lastDaysToConsider(-5).build(), Map.class)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.SETTING, "object", objectMapper.convertValue(validSetting().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "invalid", objectMapper.convertValue(validSetting().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.convertValue(validSetting().platformType(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.convertValue(validSetting().settingKey("invalid 123 $").build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.convertValue(validSetting().settingValue("invalid 456 &").build(), Map.class))
 				);
 	}
 
 	@ParameterizedTest
 	@MethodSource("provideIncorrectValues")
-	void testInvalidDeltaData(DeltaType deltaType, DeltaTable table, String fieldName, String jsonValue) throws JsonProcessingException, WrongDataException {
+	void testInvalidDeltaData(DeltaType deltaType, DeltaTable table, String fieldName, Map<String,Object> jsonValue) throws JsonProcessingException, WrongDataException {
 		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.now())
 				.deltaType(deltaType)
@@ -138,8 +155,6 @@ class CreationDataConstrainerTest {
 		assertThrows(WrongDataException.class, () -> dataConstrainer.pushDelta(delta));
 		verifyNoInteractions(deltaFacade);
 	}
-
-	// TODO implement random checks and random blocks
 
 	private static GroupCreationDelta.GroupCreationDeltaBuilder validGroup() {
 		return GroupCreationDelta.builder()
@@ -170,6 +185,32 @@ class CreationDataConstrainerTest {
 				.platformType(PlatformType.DESKTOP)
 				.settingKey("some setting key 123")
 				.settingValue("some setting value 123");
+	}
+
+	private static RandomQuestionCreationDelta.RandomQuestionCreationDeltaBuilder validQuestion() {
+		return RandomQuestionCreationDelta.builder()
+				.type(RandomBlockType.POSITIVE)
+				.name("some valid name")
+				.question("some random question?")
+				.frequency(1)
+				.multiplier(1);
+	}
+
+	private static RandomQuestion.RandomQuestionBuilder dbQuestion() {
+		return RandomQuestion.builder().build();
+	}
+
+	private static RandomCheckCreationDelta.RandomCheckCreationDeltaBuilder validCheck() {
+		return RandomCheckCreationDelta.builder()
+				.name("valid name")
+				.startActive(LocalTime.of(0,0))
+				.endActive(LocalTime.of(0, 0))
+				.minCheckLapse(LocalTime.of(0,30))
+				.maxCheckLapse(LocalTime.of(2, 0))
+				.reward(LocalTime.of(1,0))
+				.activeDays(Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))
+				.negativeQuestions(Set.of(dbQuestion().type(RandomBlockType.NEGATIVE).build(), dbQuestion().type(RandomBlockType.NEGATIVE).build()))
+				.positiveQuestions(Set.of(dbQuestion().type(RandomBlockType.POSITIVE).build(), dbQuestion().type(RandomBlockType.POSITIVE).build()));
 	}
 
 }

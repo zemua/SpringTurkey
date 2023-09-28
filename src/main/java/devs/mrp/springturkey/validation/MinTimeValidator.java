@@ -1,6 +1,7 @@
 package devs.mrp.springturkey.validation;
 
 import java.time.LocalTime;
+import java.util.Objects;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -19,7 +20,7 @@ public class MinTimeValidator implements ConstraintValidator<MinTimeConstraint, 
 	@Override
 	public boolean isValid(LocalTime value, ConstraintValidatorContext context) {
 		LocalTime minTime = LocalTime.of(hours, minutes);
-		return value.compareTo(minTime) >= 0;
+		return !Objects.isNull(value) && value.compareTo(minTime) >= 0;
 	}
 
 }

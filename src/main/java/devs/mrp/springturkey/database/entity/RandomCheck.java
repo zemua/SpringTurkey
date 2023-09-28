@@ -29,6 +29,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -58,7 +59,7 @@ public class RandomCheck implements MinMax<LocalTime> {
 	@NotNull
 	private TurkeyUser user;
 
-	@NotNull
+	@NotBlank
 	@AlphaNumericSpaceConstraint
 	private String name;
 

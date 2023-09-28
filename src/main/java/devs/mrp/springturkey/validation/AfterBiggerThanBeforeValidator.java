@@ -1,6 +1,7 @@
 package devs.mrp.springturkey.validation;
 
 import java.time.LocalTime;
+import java.util.Objects;
 
 import devs.mrp.springturkey.validation.dtodef.MinMax;
 import jakarta.validation.ConstraintValidator;
@@ -10,7 +11,7 @@ public class AfterBiggerThanBeforeValidator implements ConstraintValidator<MaxBi
 
 	@Override
 	public boolean isValid(MinMax<LocalTime> value, ConstraintValidatorContext context) {
-		return value.maxConstraint().compareTo(value.minConstraint()) >= 0;
+		return !Objects.isNull(value.maxConstraint()) && !Objects.isNull(value.minConstraint()) && value.maxConstraint().compareTo(value.minConstraint()) >= 0;
 	}
 
 }

@@ -67,11 +67,11 @@ public class RandomQuestion {
 
 	@Min(value = 1)
 	@Max(value = 10)
-	private int frequency;
+	private Integer frequency;
 
 	@Min(value = 1)
 	@Max(value = 10)
-	private int multiplier;
+	private Integer multiplier;
 
 	@CreatedDate
 	private LocalDateTime created;
