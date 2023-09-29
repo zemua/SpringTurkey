@@ -62,14 +62,14 @@ class DeletionDataConstrainerTest {
 	private static Stream<Arguments> provideCorrectValues() throws JsonProcessingException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		return Stream.of(
-				Arguments.of(DeltaType.DELETION, DeltaTable.GROUP, "object", fieldOf("deletion", UUID.randomUUID())),
-				Arguments.of(DeltaType.DELETION, DeltaTable.ACTIVITY, "object", fieldOf("deletion", UUID.randomUUID())),
-				Arguments.of(DeltaType.DELETION, DeltaTable.CONDITION, "object", fieldOf("deletion", UUID.randomUUID())),
-				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", UUID.randomUUID())),
-				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", UUID.randomUUID().toString())),
-				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_QUESTION, "", fieldOf("deletion", UUID.randomUUID())),
-				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_CHECK, "", fieldOf("deletion", UUID.randomUUID())),
-				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_CHECK, "", fieldOf("deletion", UUID.randomUUID().toString()))
+				Arguments.of(DeltaType.DELETION, DeltaTable.GROUP, "object", fieldOf("deletion", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.ACTIVITY, "object", fieldOf("deletion", "TRue")),
+				Arguments.of(DeltaType.DELETION, DeltaTable.CONDITION, "object", fieldOf("deletion", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", "true")),
+				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_QUESTION, "", fieldOf("deletion", "TRUE")),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_CHECK, "", fieldOf("deletion", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_CHECK, "", fieldOf("deletion", "true"))
 				);
 	}
 
@@ -95,22 +95,22 @@ class DeletionDataConstrainerTest {
 	private static Stream<Arguments> provideIncorrectValues() throws JsonProcessingException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		return Stream.of(
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "object", fieldOf("deletion", UUID.randomUUID())),
-				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", fieldOf("deletion", UUID.randomUUID())),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "object", fieldOf("deletion", true)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", fieldOf("deletion", "true")),
 
-				Arguments.of(DeltaType.DELETION, DeltaTable.GROUP, "othervalue", fieldOf("otherValue", UUID.randomUUID())),
-				Arguments.of(DeltaType.DELETION, DeltaTable.ACTIVITY, "othervalue", fieldOf("otherValue", UUID.randomUUID())),
-				Arguments.of(DeltaType.DELETION, DeltaTable.CONDITION, "othervalue", fieldOf("otherValue", UUID.randomUUID())),
-				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "othervalue", fieldOf("otherValue", UUID.randomUUID())),
-				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, null, fieldOf(null, UUID.randomUUID())),
-				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_QUESTION, "", fieldOf("otherValue", UUID.randomUUID())),
-				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_CHECK, "", fieldOf("otherValue", UUID.randomUUID())),
+				Arguments.of(DeltaType.DELETION, DeltaTable.GROUP, "othervalue", fieldOf("otherValue", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.ACTIVITY, "othervalue", fieldOf("otherValue", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.CONDITION, "othervalue", fieldOf("otherValue", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "othervalue", fieldOf("otherValue", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, null, fieldOf(null, true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_QUESTION, "", fieldOf("otherValue", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_CHECK, "", fieldOf("otherValue", true)),
 
-				Arguments.of(DeltaType.DELETION, DeltaTable.GROUP, "object", fieldOf("deletion", "invalid")),
+				Arguments.of(DeltaType.DELETION, DeltaTable.GROUP, "object", fieldOf("deletion", "false")),
 				Arguments.of(DeltaType.DELETION, DeltaTable.ACTIVITY, "object", fieldOf("deletion", "invalid")),
-				Arguments.of(DeltaType.DELETION, DeltaTable.CONDITION, "object", fieldOf("deletion", "invalid")),
+				Arguments.of(DeltaType.DELETION, DeltaTable.CONDITION, "object", fieldOf("deletion", "true ")),
 				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", "invalid")),
-				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", UUID.randomUUID().toString()+"a")),
+				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", "truee")),
 				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", null)),
 				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_QUESTION, "", fieldOf("deletion", "invalid")),
 				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_CHECK, "", fieldOf("deletion", "invalid"))

@@ -1,8 +1,8 @@
 package devs.mrp.springturkey.delta.validation.impl;
 
 import java.util.Objects;
-import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,17 +30,18 @@ public class DeletionDataConstrainer implements DataConstrainer {
 		if (Objects.isNull(deletionObject)) {
 			throw new WrongDataException("Payload should have a deletion property");
 		}
-		UUID deletionId;
-		try {
-			deletionId = UUID.fromString(String.valueOf(deletionObject));
-		} catch (IllegalArgumentException e) {
-			throw new WrongDataException("Deletion property should be an UUID", e);
+		if (notTrue(deletionObject)) {
+			throw new WrongDataException("Deletion action is not set to true");
 		}
 		return Mono.just(deltaFacadeService.pushDeletion(delta));
 	}
 
 	private Object getDeletionObject(Delta delta) {
 		return delta.getJsonValue().get(textValue);
+	}
+
+	private boolean notTrue(Object obj) {
+		return !(obj instanceof Boolean) && (!(obj instanceof String s) || !StringUtils.equalsIgnoreCase(String.valueOf(Boolean.TRUE), s));
 	}
 
 }

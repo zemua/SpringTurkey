@@ -197,7 +197,7 @@ class CreationDataConstrainerTest {
 	}
 
 	private static RandomQuestion.RandomQuestionBuilder dbQuestion() {
-		return RandomQuestion.builder().build();
+		return RandomQuestion.builder();
 	}
 
 	private static RandomCheckCreationDelta.RandomCheckCreationDeltaBuilder validCheck() {
