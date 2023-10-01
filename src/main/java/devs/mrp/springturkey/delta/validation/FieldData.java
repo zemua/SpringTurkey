@@ -47,8 +47,8 @@ public class FieldData {
 		return canModify && isValid(value);
 	}
 
-	public boolean isValidCreation(String value) { // TODO change to generic thing as we can receive in the json numbers and other stuff
-		return canCreate && predicate.test(value);
+	public boolean isValidCreation(Object value) throws WrongDataException {
+		return canCreate && validate(value);
 	}
 
 	public static FieldDataBuilder builder() {
@@ -62,7 +62,11 @@ public class FieldData {
 		} catch (IllegalArgumentException e) {
 			throw new WrongDataException("Validation failed", e);
 		}
-		Set<ConstraintViolation<Object>> violations = validator.validate(converted);
+		return validate(converted);
+	}
+
+	private boolean validate(Object obj) throws WrongDataException {
+		Set<ConstraintViolation<Object>> violations = validator.validate(obj);
 		if (violations.isEmpty()) {
 			return true;
 		} else {

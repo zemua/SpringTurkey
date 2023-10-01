@@ -7,19 +7,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
 
 import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.Exceptions.WrongDataException;
+import devs.mrp.springturkey.database.entity.Activity;
+import devs.mrp.springturkey.database.entity.TurkeyUser;
+import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
+import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.delta.validation.constraints.ActivityModificationConstraints;
 import devs.mrp.springturkey.delta.validation.constraints.ConditionModificationConstraints;
 import devs.mrp.springturkey.delta.validation.constraints.RandomCheckModificationConstraints;
 
 class FieldDataTest {
-
-	// TODO validate creation using object
 
 	@Test
 	void testModification() throws WrongDataException {
@@ -59,52 +60,54 @@ class FieldDataTest {
 	}
 
 	@Test
-	void testCreation() {
+	void testInvalidCreation() {
 		FieldData validator = FieldData.builder()
-				.columnName("some name")
 				.creatable(true)
-				.predicate(s -> Pattern.compile("^hello.+").matcher(s).matches())
+				.mapeable(ActivityModificationConstraints.class)
 				.build();
 
-		assertTrue(validator.isValidCreation("hello world!"));
-		assertFalse(validator.isValidCreation("bye world!"));
+		Activity activity = Activity.builder().build();
 
-		validator = FieldData.builder()
-				.columnName("some name")
+		assertThrows(WrongDataException.class, () -> validator.isValidCreation(activity));
+	}
+
+	@Test
+	void testValidCreation() throws WrongDataException {
+		FieldData validator = FieldData.builder()
 				.creatable(true)
-				.predicate(s -> Pattern.compile("^hello").matcher(s).matches())
+				.mapeable(ActivityModificationConstraints.class)
 				.build();
-		assertFalse(validator.isValidCreation("hello world!"));
-		assertFalse(validator.isValidCreation("bye world!"));
 
-		validator = FieldData.builder()
-				.columnName("some name")
+		assertTrue(validator.isValidCreation(validActivity()));
+	}
+
+	@Test
+	void testNotCreatable() throws WrongDataException {
+		FieldData validator = FieldData.builder()
 				.creatable(false)
-				.predicate(s -> Pattern.compile("^hello.+").matcher(s).matches())
+				.mapeable(ActivityModificationConstraints.class)
 				.build();
 
-		assertFalse(validator.isValidCreation("hello world!"));
-		assertFalse(validator.isValidCreation("bye world!"));
+		assertFalse(validator.isValidCreation(validActivity()));
+	}
+
+	private Activity validActivity() {
+		return Activity.builder()
+				.user(new TurkeyUser())
+				.activityName("some name")
+				.activityType(ActivityPlatform.ANDROID_APP)
+				.categoryType(CategoryType.NEGATIVE)
+				.build();
 	}
 
 	@Test
 	void testNotNullFields() {
-		assertThrows(TurkeySurpriseException.class, () -> FieldData.builder()
-				.columnName(null)
-				.predicate(s -> Pattern.compile("^hello").matcher(s).matches())
-				.build());
+		FieldData.builder()
+		.mapeable(RandomCheckModificationConstraints.class)
+		.build();
 
 		assertThrows(TurkeySurpriseException.class, () -> FieldData.builder()
-				.columnName("some name")
-				.predicate(null)
-				.build());
-
-		assertThrows(TurkeySurpriseException.class, () -> FieldData.builder()
-				.columnName("some name")
-				.build());
-
-		assertThrows(TurkeySurpriseException.class, () -> FieldData.builder()
-				.predicate(s -> Pattern.compile("^hello").matcher(s).matches())
+				.mapeable(null)
 				.build());
 	}
 
