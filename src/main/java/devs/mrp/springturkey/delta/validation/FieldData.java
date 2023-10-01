@@ -15,7 +15,6 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,8 +23,7 @@ import lombok.Getter;
 public class FieldData {
 
 	@Getter
-	@NotEmpty
-	private String columnName;
+	private String columnName; // TODO remove
 
 	private Predicate<String> predicate; // TODO remove
 
@@ -121,7 +119,7 @@ public class FieldData {
 		}
 
 		public FieldData build() {
-			if (Objects.isNull(this.columnName) || Objects.isNull(this.mapeable)) {
+			if (Objects.isNull(this.mapeable)) {
 				throw new TurkeySurpriseException("No fields were expected to be null");
 			}
 			return new FieldData(this.columnName, this.predicate, this.mapeable, this.canModify, this.canCreate, this.referenzable, getValidator(), objectMapper());

@@ -4,41 +4,58 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
 
 import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
+import devs.mrp.springturkey.Exceptions.WrongDataException;
+import devs.mrp.springturkey.delta.validation.constraints.ActivityModificationConstraints;
+import devs.mrp.springturkey.delta.validation.constraints.ConditionModificationConstraints;
+import devs.mrp.springturkey.delta.validation.constraints.RandomCheckModificationConstraints;
 
 class FieldDataTest {
 
+	// TODO validate creation using object
+
 	@Test
-	void testModification() {
-		FieldData validator = FieldData.builder()
-				.columnName("some name")
+	void testModification() throws WrongDataException {
+		final FieldData validator = FieldData.builder()
 				.modifiable(true)
-				.predicate(s -> Pattern.compile("^hello.+").matcher(s).matches())
+				.mapeable(ActivityModificationConstraints.class)
 				.build();
+		assertTrue(validator.isValidModification(mapOf("activityName", "hello world")));
+		assertThrows(WrongDataException.class, () -> validator.isValidModification(mapOf("activityName", "invalid character!")));
 
-		assertTrue(validator.isValidModification("hello world!"));
-		assertFalse(validator.isValidModification("bye world!"));
-
-		validator = FieldData.builder()
-				.columnName("some name")
+		final FieldData validator2 = FieldData.builder()
 				.modifiable(true)
-				.predicate(s -> Pattern.compile("^hello").matcher(s).matches())
+				.mapeable(ConditionModificationConstraints.class)
 				.build();
-		assertFalse(validator.isValidModification("hello world!"));
-		assertFalse(validator.isValidModification("bye world!"));
+		assertTrue(validator2.isValidModification(mapOf("lastDaysToConsider", 0)));
+		assertThrows(WrongDataException.class, () -> validator2.isValidModification(mapOf("lastDaysToConsider", -1)));
 
-		validator = FieldData.builder()
-				.columnName("some name")
+		final FieldData validator3 = FieldData.builder()
+				.modifiable(true)
+				.mapeable(RandomCheckModificationConstraints.class)
+				.build();
+		assertTrue(validator3.isValidModification(mapOf("minCheckLapse", LocalTime.of(0, 1))));
+		assertThrows(WrongDataException.class, () -> validator3.isValidModification(mapOf("minCheckLapse", LocalTime.of(0, 0))));
+
+		final FieldData validator4 = FieldData.builder()
 				.modifiable(false)
-				.predicate(s -> Pattern.compile("^hello.+").matcher(s).matches())
+				.mapeable(RandomCheckModificationConstraints.class)
 				.build();
+		assertFalse(validator4.isValidModification(mapOf("minCheckLapse", LocalTime.of(0, 1))));
+		assertFalse(validator4.isValidModification(mapOf("minCheckLapse", LocalTime.of(0, 0))));
+	}
 
-		assertFalse(validator.isValidModification("hello world!"));
-		assertFalse(validator.isValidModification("bye world!"));
+	private Map<String, Object> mapOf(String s, Object o) {
+		Map<String,Object> map = new HashMap<>();
+		map.put(s, o);
+		return map;
 	}
 
 	@Test

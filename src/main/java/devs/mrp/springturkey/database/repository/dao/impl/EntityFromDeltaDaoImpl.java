@@ -32,6 +32,8 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 
+	// TODO refactor usage of data.getColumnName() as we may modify more than one field
+
 	@PersistenceContext
 	private EntityManager entityManager;
 
