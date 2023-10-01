@@ -59,9 +59,6 @@ import reactor.core.publisher.Mono;
 @ContextConfiguration(classes = {CreationDataConstrainer.class})
 class CreationDataConstrainerTest {
 
-	// TODO implement for random questions
-	// TODO implement for random checks
-
 	@MockBean
 	Validator validator;
 
@@ -113,7 +110,9 @@ class CreationDataConstrainerTest {
 	}
 
 	private static Stream<Arguments> provideIncorrectValues() throws JsonProcessingException {
-		ObjectMapper objectMapper = new ObjectMapper();
+		ObjectMapper objectMapper = JsonMapper.builder()
+				.addModule(new JavaTimeModule())
+				.build();
 		return Stream.of(
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "object", objectMapper.convertValue(validGroup().build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", objectMapper.convertValue(validGroup().name("invalid 123 $").build(), Map.class)),
@@ -139,7 +138,17 @@ class CreationDataConstrainerTest {
 				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().frequency(0).build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().frequency(-1).build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().multiplier(0).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().multiplier(-1).build(), Map.class))
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().multiplier(-1).build(), Map.class)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().name("invalid 123 $%").build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().startActive(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().endActive(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().minCheckLapse(LocalTime.of(0, 0)).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().maxCheckLapse(LocalTime.of(0, 0)).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().reward(LocalTime.of(0, 0)).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().activeDays(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().negativeQuestions(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().positiveQuestions(null).build(), Map.class))
 				);
 	}
 

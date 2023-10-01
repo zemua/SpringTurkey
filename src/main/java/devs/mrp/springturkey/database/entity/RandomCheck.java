@@ -80,8 +80,10 @@ public class RandomCheck implements MinMax<LocalTime> {
 	@MinTimeConstraint(minutes = 1)
 	private LocalTime reward;
 
+	@NotNull
 	private Set<DayOfWeek> activeDays;
 
+	@NotNull
 	@ManyToMany
 	@JoinTable(
 			name = "negative_controls",
@@ -89,6 +91,7 @@ public class RandomCheck implements MinMax<LocalTime> {
 			inverseJoinColumns = @JoinColumn(name = "question_id"))
 	private Set<RandomQuestion> negativeQuestions;
 
+	@NotNull
 	@ManyToMany
 	@JoinTable(
 			name = "positive_controls",
