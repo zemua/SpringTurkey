@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.database.service.DeltaFacadeService;
@@ -28,7 +30,7 @@ public class CreationDataConstrainer implements DataConstrainer {
 	@Autowired
 	private DeltaFacadeService deltaFacade;
 
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private ObjectMapper objectMapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
 
 	@Override
 	public Mono<Integer> pushDelta(Delta delta) throws WrongDataException {

@@ -116,16 +116,13 @@ class CreationDataConstrainerTest {
 		ObjectMapper objectMapper = new ObjectMapper();
 		return Stream.of(
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "object", objectMapper.convertValue(validGroup().build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "invalid", objectMapper.convertValue(validGroup().build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", objectMapper.convertValue(validGroup().name("invalid 123 $").build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", objectMapper.convertValue(validGroup().type(null).build(), Map.class)),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "object", objectMapper.convertValue(validActivity().build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "invalid", objectMapper.convertValue(validActivity().build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.convertValue(validActivity().activityName("invalid 123 $").build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.convertValue(validActivity().activityType(null).build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.convertValue(validActivity().categoryType(null).build(), Map.class)),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "invalid", objectMapper.convertValue(validCondition().build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().conditionalGroup(null).build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().targetGroup(null).build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().requiredUsageMs(25000L).build(), Map.class)),
@@ -133,10 +130,16 @@ class CreationDataConstrainerTest {
 				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().lastDaysToConsider(35).build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().lastDaysToConsider(-5).build(), Map.class)),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.SETTING, "object", objectMapper.convertValue(validSetting().build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "invalid", objectMapper.convertValue(validSetting().build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.convertValue(validSetting().platformType(null).build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.convertValue(validSetting().settingKey("invalid 123 $").build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.convertValue(validSetting().settingValue("invalid 456 &").build(), Map.class))
+				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.convertValue(validSetting().settingValue("invalid 456 &").build(), Map.class)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().type(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().name("invalid 123 $%").build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().frequency(0).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().frequency(-1).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().multiplier(0).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().multiplier(-1).build(), Map.class))
 				);
 	}
 
@@ -209,8 +212,8 @@ class CreationDataConstrainerTest {
 				.maxCheckLapse(LocalTime.of(2, 0))
 				.reward(LocalTime.of(1,0))
 				.activeDays(Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))
-				.negativeQuestions(Set.of(dbQuestion().type(RandomBlockType.NEGATIVE).build(), dbQuestion().type(RandomBlockType.NEGATIVE).build()))
-				.positiveQuestions(Set.of(dbQuestion().type(RandomBlockType.POSITIVE).build(), dbQuestion().type(RandomBlockType.POSITIVE).build()));
+				.negativeQuestions(Set.of(dbQuestion().type(RandomBlockType.NEGATIVE).build(), dbQuestion().type(RandomBlockType.NEGATIVE).name("second name").build()))
+				.positiveQuestions(Set.of(dbQuestion().type(RandomBlockType.POSITIVE).build(), dbQuestion().type(RandomBlockType.POSITIVE).name("second name").build()));
 	}
 
 }
