@@ -1,14 +1,12 @@
 package devs.mrp.springturkey.database.entity;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaTable;
 import devs.mrp.springturkey.delta.DeltaType;
 import jakarta.annotation.Nullable;
@@ -53,7 +51,7 @@ public class DeltaEntity {
 	@NotBlank
 	private String fieldName;
 	@NotBlank
-	private Map<String,Object> jsonValue;
+	private String jsonValue;
 
 	@CreatedDate
 	private LocalDateTime created;
@@ -61,27 +59,5 @@ public class DeltaEntity {
 	private LocalDateTime edited;
 	@Nullable
 	private LocalDateTime deleted;
-
-	public static DeltaEntity from(Delta delta) {
-		return builder()
-				.deltaTimeStamp(delta.getTimestamp())
-				.deltaType(delta.getDeltaType())
-				.deltaTable(delta.getTable())
-				.recordId(delta.getRecordId())
-				.fieldName(delta.getFieldName())
-				.jsonValue(delta.getJsonValue())
-				.build();
-	}
-
-	public Delta toDelta() {
-		return Delta.builder()
-				.timestamp(getDeltaTimeStamp())
-				.deltaType(getDeltaType())
-				.table(getDeltaTable())
-				.recordId(getRecordId())
-				.fieldName(getFieldName())
-				.jsonValue(getJsonValue())
-				.build();
-	}
 
 }

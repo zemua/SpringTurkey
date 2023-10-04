@@ -4,17 +4,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
-import devs.mrp.springturkey.database.entity.DeltaEntity;
 import devs.mrp.springturkey.database.repository.DeltaRepository;
 import devs.mrp.springturkey.database.repository.dao.EntityFromDeltaDao;
 import devs.mrp.springturkey.database.service.DeltaFacadeService;
 import devs.mrp.springturkey.delta.Delta;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Service
+@Slf4j
 public class DeltaFacadeServiceImpl implements DeltaFacadeService {
 
 	@Autowired
@@ -31,7 +33,12 @@ public class DeltaFacadeServiceImpl implements DeltaFacadeService {
 		return entityFromDeltaDao.save(delta)
 				.map(i -> {
 					if (i > 0) {
-						deltaRepository.save(DeltaEntity.from(delta));
+						try {
+							deltaRepository.save(delta.toEntity());
+						} catch (JsonProcessingException e1) {
+							// TODO Auto-generated catch block
+							log.error("Error getting DeltaEntity from Delta", e1);
+						}
 					}
 					return i;
 				}).doOnError(TurkeySurpriseException.class, e -> Mono.error(new TurkeySurpriseException("Error persisting delta", e)));
