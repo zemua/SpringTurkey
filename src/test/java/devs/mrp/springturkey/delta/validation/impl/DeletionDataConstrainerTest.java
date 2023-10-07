@@ -2,18 +2,18 @@ package devs.mrp.springturkey.delta.validation.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -62,23 +62,27 @@ class DeletionDataConstrainerTest {
 	private static Stream<Arguments> provideCorrectValues() throws JsonProcessingException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		return Stream.of(
-				Arguments.of(DeltaType.DELETION, DeltaTable.GROUP, "object", "deletion"),
-				Arguments.of(DeltaType.DELETION, DeltaTable.ACTIVITY, "object", "deletion"),
-				Arguments.of(DeltaType.DELETION, DeltaTable.CONDITION, "object", "deletion"),
-				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", "deletion")
+				Arguments.of(DeltaType.DELETION, DeltaTable.GROUP, "object", fieldOf("deletion", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.ACTIVITY, "object", fieldOf("deletion", "TRue")),
+				Arguments.of(DeltaType.DELETION, DeltaTable.CONDITION, "object", fieldOf("deletion", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", "true")),
+				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_QUESTION, "", fieldOf("deletion", "TRUE")),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_CHECK, "", fieldOf("deletion", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_CHECK, "", fieldOf("deletion", "true"))
 				);
 	}
 
 	@ParameterizedTest
 	@MethodSource("provideCorrectValues")
-	void testSucess(DeltaType deltaType, DeltaTable table, String fieldName, String textValue) throws JsonProcessingException, WrongDataException {
+	void testSucess(DeltaType deltaType, DeltaTable table, String fieldName, Map<String, Object> textValue) throws JsonProcessingException, WrongDataException {
 		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.now())
 				.deltaType(deltaType)
 				.table(table)
 				.recordId(UUID.randomUUID())
 				.fieldName(fieldName)
-				.textValue(textValue)
+				.jsonValue(textValue)
 				.build();
 
 		when(deltaFacade.pushDeletion(ArgumentMatchers.refEq(delta))).thenReturn(1);
@@ -91,42 +95,48 @@ class DeletionDataConstrainerTest {
 	private static Stream<Arguments> provideIncorrectValues() throws JsonProcessingException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		return Stream.of(
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "object", "deletion"),
-				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", "deletion"),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "object", fieldOf("deletion", true)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", fieldOf("deletion", "true")),
 
-				Arguments.of(DeltaType.DELETION, DeltaTable.GROUP, "othervalue", "deletion"),
-				Arguments.of(DeltaType.DELETION, DeltaTable.ACTIVITY, "othervalue", "deletion"),
-				Arguments.of(DeltaType.DELETION, DeltaTable.CONDITION, "othervalue", "deletion"),
-				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "othervalue", "deletion"),
-				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, null, "deletion"),
+				Arguments.of(DeltaType.DELETION, DeltaTable.GROUP, "othervalue", fieldOf("otherValue", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.ACTIVITY, "othervalue", fieldOf("otherValue", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.CONDITION, "othervalue", fieldOf("otherValue", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "othervalue", fieldOf("otherValue", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, null, fieldOf(null, true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_QUESTION, "", fieldOf("otherValue", true)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_CHECK, "", fieldOf("otherValue", true)),
 
-				Arguments.of(DeltaType.DELETION, DeltaTable.GROUP, "object", "othervalue"),
-				Arguments.of(DeltaType.DELETION, DeltaTable.ACTIVITY, "object", "othervalue"),
-				Arguments.of(DeltaType.DELETION, DeltaTable.CONDITION, "object", "othervalue"),
-				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", "othervalue"),
-				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", null)
+				Arguments.of(DeltaType.DELETION, DeltaTable.GROUP, "object", fieldOf("deletion", "false")),
+				Arguments.of(DeltaType.DELETION, DeltaTable.ACTIVITY, "object", fieldOf("deletion", "invalid")),
+				Arguments.of(DeltaType.DELETION, DeltaTable.CONDITION, "object", fieldOf("deletion", "true ")),
+				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", "invalid")),
+				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", "truee")),
+				Arguments.of(DeltaType.DELETION, DeltaTable.SETTING, "object", fieldOf("deletion", null)),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_QUESTION, "", fieldOf("deletion", "invalid")),
+				Arguments.of(DeltaType.DELETION, DeltaTable.RANDOM_CHECK, "", fieldOf("deletion", "invalid"))
 				);
 	}
 
 	@ParameterizedTest
 	@MethodSource("provideIncorrectValues")
-	void testInvalidDeltaData(DeltaType deltaType, DeltaTable table, String fieldName, String jsonValue) throws JsonProcessingException, WrongDataException {
+	void testInvalidDeltaData(DeltaType deltaType, DeltaTable table, String fieldName, Map<String,Object> jsonValue) throws JsonProcessingException, WrongDataException {
 		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.now())
 				.deltaType(deltaType)
 				.table(table)
 				.recordId(UUID.randomUUID())
 				.fieldName(fieldName)
-				.textValue(jsonValue)
+				.jsonValue(jsonValue)
 				.build();
 
 		assertThrows(WrongDataException.class, () -> dataConstrainer.pushDelta(delta));
 		verifyNoInteractions(deltaFacade);
 	}
 
-	@Test
-	void test() {
-		fail("to implement random checks and random blocks");
+	private static Map<String, Object> fieldOf(String key, Object value) {
+		Map<String,Object> map = new HashMap<>();
+		map.put(key, value);
+		return map;
 	}
 
 }

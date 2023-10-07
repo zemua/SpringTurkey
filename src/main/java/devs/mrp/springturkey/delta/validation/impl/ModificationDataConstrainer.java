@@ -10,10 +10,12 @@ import devs.mrp.springturkey.database.service.DeltaFacadeService;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.DataConstrainer;
-import devs.mrp.springturkey.delta.validation.FieldValidator;
+import devs.mrp.springturkey.delta.validation.FieldData;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Service("modificationConstraints")
+@Slf4j
 public class ModificationDataConstrainer implements DataConstrainer {
 
 	@Autowired
@@ -21,16 +23,20 @@ public class ModificationDataConstrainer implements DataConstrainer {
 
 	@Override
 	public Mono<Integer> pushDelta(Delta delta) throws WrongDataException {
-		if (!isValid(delta)) {
-			throw new WrongDataException("Incorrect field name");
-		}
+		validate(delta);
 		return Mono.just(deltaFacadeService.pushModification(mapDeltaField(delta)));
 	}
 
-	private boolean isValid(Delta delta) {
-		return DeltaType.MODIFICATION.equals(delta.getDeltaType())
-				&& getFieldMap(delta).containsKey(delta.getFieldName())
-				&& getFieldMap(delta).get(delta.getFieldName()).isValidModification(delta.getTextValue());
+	private void validate(Delta delta) throws WrongDataException {
+		if (! DeltaType.MODIFICATION.equals(delta.getDeltaType())) {
+			throw new WrongDataException("Invalid action type: " + delta.getDeltaType());
+		}
+		if (!getFieldMap(delta).containsKey(delta.getFieldName())) {
+			throw new WrongDataException("Invalid field name: " + delta.getFieldName());
+		}
+		if (!getFieldMap(delta).get(delta.getFieldName()).isValidModification(delta.getJsonValue())) {
+			throw new WrongDataException("Invalid modification in field {" +  delta.getFieldName() + "} for value {" + delta.getJsonValue() + "}");
+		}
 	}
 
 	private Delta mapDeltaField(Delta delta) throws WrongDataException {
@@ -45,7 +51,7 @@ public class ModificationDataConstrainer implements DataConstrainer {
 		return getFieldMap(delta).get(name).getColumnName();
 	}
 
-	private Map<String,FieldValidator> getFieldMap(Delta delta) {
+	private Map<String,FieldData> getFieldMap(Delta delta) {
 		return delta.getTable().getFieldMap();
 	}
 

@@ -6,8 +6,9 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.database.service.DeltaFacadeService;
@@ -23,23 +24,18 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class CreationDataConstrainer implements DataConstrainer {
 
-	private static final String OBJECT_AS_FIELD_NAME = "object";
-
 	@Autowired
 	private Validator validator;
 
 	@Autowired
 	private DeltaFacadeService deltaFacade;
 
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private ObjectMapper objectMapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
 
 	@Override
 	public Mono<Integer> pushDelta(Delta delta) throws WrongDataException {
 		if (!DeltaType.CREATION.equals(delta.getDeltaType())) {
 			throw new WrongDataException("Delta is not of type 'CREATION'");
-		}
-		if (!OBJECT_AS_FIELD_NAME.equalsIgnoreCase(delta.getFieldName())) {
-			throw new WrongDataException("Delta field is not 'object'");
 		}
 		var violations = resolveViolations(delta);
 		if (!violations.isEmpty()) {
@@ -51,11 +47,7 @@ public class CreationDataConstrainer implements DataConstrainer {
 	private Set<ConstraintViolation<Object>> resolveViolations(Delta delta) {
 		Class<?> clazz = delta.getTable().getDtoClass();
 		Object creationEntity = null;
-		try {
-			creationEntity = objectMapper.readValue(delta.getTextValue(), clazz);
-		} catch (JsonProcessingException e) {
-			log.error("Invalid creation entity for {} with json {}", clazz, delta.getTextValue(), e);
-		}
+		creationEntity = objectMapper.convertValue(delta.getJsonValue(), clazz);
 		Set<ConstraintViolation<Object>> violations = new HashSet<>();
 		violations.addAll(validator.validate(creationEntity));
 		violations.addAll(validator.validate(delta));

@@ -1,6 +1,7 @@
 package devs.mrp.springturkey.database.entity;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -18,6 +19,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,10 +59,11 @@ public class Condition {
 
 	@Column(name = "required_usage_ms")
 	@NotNull
-	private Long requiredUsageMs;
+	private LocalTime requiredUsageMs;
 
 	@Column(name = "last_days_to_consider")
 	@NotNull
+	@Min(0)
 	private Integer lastDaysToConsider;
 
 	@CreatedDate

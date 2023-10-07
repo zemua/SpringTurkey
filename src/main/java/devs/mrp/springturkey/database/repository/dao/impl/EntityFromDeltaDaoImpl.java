@@ -17,7 +17,7 @@ import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.dao.EntityFromDeltaDao;
 import devs.mrp.springturkey.database.service.UserService;
 import devs.mrp.springturkey.delta.Delta;
-import devs.mrp.springturkey.delta.validation.FieldValidator;
+import devs.mrp.springturkey.delta.validation.FieldData;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
@@ -31,6 +31,8 @@ import reactor.core.publisher.Mono;
 @Repository
 @Slf4j
 public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
+
+	// TODO refactor usage of data.getColumnName() as we may modify more than one field
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -68,7 +70,7 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 		dtoMap(delta).forEach((k,v) -> addFieldToEntityMap(
 				EntityDtoFieldWrapper.builder()
 				.entityMap(modifiableEntityMap)
-				.validator(delta.getValidator(String.valueOf(k)))
+				.fieldData(delta.getFieldData(String.valueOf(k)))
 				.key(k)
 				.value(v)
 				.build()));
@@ -76,11 +78,11 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 
 	@SuppressWarnings("unchecked")
 	private Map<Object,Object> dtoMap(Delta delta) throws JsonMappingException, JsonProcessingException {
-		return objectMapper.readValue(delta.getTextValue(), Map.class);
+		return objectMapper.convertValue(delta.getJsonValue(), Map.class); // TODO make it right
 	}
 
 	private void addFieldToEntityMap(EntityDtoFieldWrapper data) {
-		if (data.getValidator() == null) {
+		if (data.getFieldData() == null) {
 			throw new TurkeySurpriseException("Delta content has not been properly validated, no validator for " + data.getKey());
 		}
 		if (data.getReferenzable() != null && data.getValue() != null) {
@@ -125,23 +127,23 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 	@Builder
 	private static class EntityDtoFieldWrapper {
 		Map<String,Object> entityMap;
-		FieldValidator validator;
+		FieldData fieldData;
 		Object key;
 		Object value;
 
-		public EntityDtoFieldWrapper(Map<String,Object> entityMap, FieldValidator validator, Object key, Object value) {
+		public EntityDtoFieldWrapper(Map<String,Object> entityMap, FieldData fieldData, Object key, Object value) {
 			this.entityMap = entityMap;
-			this.validator = validator;
+			this.fieldData = fieldData;
 			this.key = key;
 			this.value = value;
 		}
 
 		public Class<?> getReferenzable() {
-			return validator.getReferenzable();
+			return fieldData.getReferenzable();
 		}
 
 		public String getColumnName() {
-			return validator.getColumnName();
+			return fieldData.getColumnName();
 		}
 
 		public String getValue() {

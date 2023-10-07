@@ -147,7 +147,10 @@ class ActivityServiceImplTest {
 		Flux<Activity> fluxActivity = activityService.findAllUserActivites();
 
 		StepVerifier.create(fluxActivity)
-		.expectNextMatches(activity -> activity.getUser().getId().equals(userResult.getId()) && activity.getId().equals(activity1.getId()) && activity.getCreated() != null && activity.getEdited() != null)
+		.expectNextMatches(activity -> activity.getUser().getId().equals(userResult.getId())
+				&& activity.getId().equals(activity1.getId())
+				&& activity.getCreated() != null
+				&& activity.getEdited() != null)
 		.expectComplete()
 		.verify();
 	}
