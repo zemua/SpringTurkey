@@ -104,9 +104,9 @@ class ConditionServiceImplTest {
 		Flux<Condition> fluxCondition = conditionService.findAllUserConditions();
 
 		StepVerifier.create(fluxCondition)
-		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getRequiredUsageMs().equals(123L) && c.getCreated() != null && c.getEdited() != null)
-		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getRequiredUsageMs().equals(234L))
-		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getRequiredUsageMs().equals(345L))
+		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getRequiredUsageMs().equals(Duration.ofHours(0).plusMinutes(10)) && c.getCreated() != null && c.getEdited() != null)
+		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getRequiredUsageMs().equals(Duration.ofHours(0).plusMinutes(20)))
+		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getRequiredUsageMs().equals(Duration.ofHours(0).plusMinutes(30)))
 		.expectComplete()
 		.verify();
 	}
@@ -245,7 +245,7 @@ class ConditionServiceImplTest {
 		Flux<Condition> fluxCondition = conditionService.findAllUserConditions();
 
 		StepVerifier.create(fluxCondition)
-		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getRequiredUsageMs().equals(123L) && c.getId() != null)
+		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getRequiredUsageMs().equals(Duration.ofHours(0).plusMinutes(10)) && c.getId() != null)
 		.expectComplete()
 		.verify();
 	}
