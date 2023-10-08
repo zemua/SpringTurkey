@@ -1,6 +1,6 @@
 package devs.mrp.springturkey.database.repository;
 
-import java.time.LocalTime;
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +19,6 @@ public interface ConditionRepository extends JpaRepository<Condition, UUID> {
 	@Transactional
 	@Modifying
 	@Query(value = "INSERT INTO turkey_condition (id, turkey_user, conditional_group, target_group, required_usage_ms, last_days_to_consider, created, edited) VALUES (?1, ?2, ?3, ?4, ?5, ?6, NOW(), NOW())", nativeQuery = true)
-	public int insert(UUID id, UUID user, UUID conditionalGroup, UUID targetGroup, LocalTime requiredUsageMs, Integer lastDaysToConsider);
+	public int insert(UUID id, UUID user, UUID conditionalGroup, UUID targetGroup, Duration requiredUsageMs, Integer lastDaysToConsider);
 
 }

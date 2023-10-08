@@ -1,7 +1,7 @@
 package devs.mrp.springturkey.database.entity;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -59,7 +59,7 @@ public class Condition {
 
 	@Column(name = "required_usage_ms")
 	@NotNull
-	private LocalTime requiredUsageMs;
+	private Duration requiredUsageMs;
 
 	@Column(name = "last_days_to_consider")
 	@NotNull

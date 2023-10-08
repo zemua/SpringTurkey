@@ -1,7 +1,9 @@
 package devs.mrp.springturkey.delta.validation.entity;
 
+import java.time.Duration;
 import java.util.UUID;
 
+import devs.mrp.springturkey.validation.MinTimeConstraint;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -25,8 +27,8 @@ public class ConditionCreationDelta {
 	private UUID targetGroup;
 
 	@NotNull
-	@Min(60000L) // 1 minute
-	private Long requiredUsageMs;
+	@MinTimeConstraint(minutes = 1)
+	private Duration requiredUsageMs;
 
 	@NotNull
 	@Min(0)

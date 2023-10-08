@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
@@ -34,6 +35,8 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 
 	// TODO refactor usage of data.getColumnName() as we may modify more than one field
 
+	private static final String ID_FIELD = "id";
+
 	@PersistenceContext
 	private EntityManager entityManager;
 
@@ -43,8 +46,7 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 	private UserService userService;
 
 	public EntityFromDeltaDaoImpl() {
-		objectMapper = new ObjectMapper();
-		objectMapper.registerModule(new JavaTimeModule());
+		objectMapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
 	}
 
 	@Override
@@ -66,19 +68,14 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 	}
 
 	private void addFieldsToEntityMap(Delta delta, Map<String,Object> modifiableEntityMap) throws JsonMappingException, JsonProcessingException {
-		modifiableEntityMap.put("id", delta.getRecordId());
-		dtoMap(delta).forEach((k,v) -> addFieldToEntityMap(
+		modifiableEntityMap.put(ID_FIELD, delta.getRecordId());
+		delta.getJsonValue().forEach((k,v) -> addFieldToEntityMap(
 				EntityDtoFieldWrapper.builder()
 				.entityMap(modifiableEntityMap)
 				.fieldData(delta.getFieldData(String.valueOf(k)))
 				.key(k)
 				.value(v)
 				.build()));
-	}
-
-	@SuppressWarnings("unchecked")
-	private Map<Object,Object> dtoMap(Delta delta) throws JsonMappingException, JsonProcessingException {
-		return objectMapper.convertValue(delta.getJsonValue(), Map.class); // TODO make it right
 	}
 
 	private void addFieldToEntityMap(EntityDtoFieldWrapper data) {
@@ -95,7 +92,7 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 	private void addToEntityMapWithReferenzable(EntityDtoFieldWrapper data) {
 		UUID id;
 		try {
-			id = UUID.fromString(data.getValue());
+			id = UUID.fromString(String.valueOf(data.getValue()));
 		} catch (IllegalArgumentException e) {
 			throw new TurkeySurpriseException("Invalid UUID value provided", e);
 		}
@@ -146,8 +143,8 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 			return fieldData.getColumnName();
 		}
 
-		public String getValue() {
-			return value == null ? null : String.valueOf(value);
+		public Object getValue() {
+			return value;
 		}
 	}
 

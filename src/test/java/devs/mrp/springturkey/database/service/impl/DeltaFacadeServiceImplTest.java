@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
@@ -81,7 +83,7 @@ class DeltaFacadeServiceImplTest {
 	private TurkeyUser user;
 	private TurkeyUser alternativeUser;
 
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private ObjectMapper objectMapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
 
 	@BeforeEach
 	void setup() {
@@ -89,7 +91,6 @@ class DeltaFacadeServiceImplTest {
 		user = userRepository.save(user);
 		alternativeUser = TurkeyUser.builder().email("other@mail.com").build();
 		alternativeUser = userRepository.save(alternativeUser);
-		objectMapper.registerModule(new JavaTimeModule());
 	}
 
 	@Test
@@ -348,7 +349,7 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(delta.getTable(), storedDelta.getDeltaTable());
 		assertEquals(delta.getRecordId(), storedDelta.getRecordId());
 		assertEquals(delta.getFieldName(), storedDelta.getFieldName());
-		assertEquals(delta.getJsonValue(), storedDelta.getJsonValue());
+		assertEquals(delta.getJsonValue(), objectMapper.readValue(storedDelta.getJsonValue(), Map.class));
 	}
 
 	@Test
@@ -445,7 +446,7 @@ class DeltaFacadeServiceImplTest {
 		return ConditionCreationDelta.builder()
 				.conditionalGroup(conditional)
 				.targetGroup(target)
-				.requiredUsageMs(60000L)
+				.requiredUsageMs(Duration.ofHours(0).plusMinutes(6))
 				.lastDaysToConsider(1);
 	}
 

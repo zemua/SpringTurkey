@@ -1,6 +1,6 @@
 package devs.mrp.springturkey.controller.dto.exportentities;
 
-import java.time.LocalTime;
+import java.time.Duration;
 import java.util.UUID;
 
 import devs.mrp.springturkey.database.entity.Condition;
@@ -15,7 +15,7 @@ public class ExportConditionDto {
 
 	private UUID conditionalGroupId;
 	private UUID targetGroupId;
-	private LocalTime requiredUsageMs;
+	private Duration requiredUsageMs;
 	private Integer lastDaysToConsider;
 
 	public static ExportConditionDto fromCondition(Condition condition) {
