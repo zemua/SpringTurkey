@@ -1,6 +1,6 @@
 package devs.mrp.springturkey.database.service.impl;
 
-import java.time.LocalTime;
+import java.time.Duration;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -72,28 +72,28 @@ class ConditionServiceImplTest {
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
-				.requiredUsageMs(LocalTime.of(0, 10))
+				.requiredUsageMs(Duration.ofHours(0).plusMinutes(10))
 				.lastDaysToConsider(1)
 				.build();
 		Condition condition2 = Condition.builder()
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
-				.requiredUsageMs(LocalTime.of(0, 20))
+				.requiredUsageMs(Duration.ofHours(0).plusMinutes(20))
 				.lastDaysToConsider(1)
 				.build();
 		Condition condition3 = Condition.builder()
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
-				.requiredUsageMs(LocalTime.of(0, 30))
+				.requiredUsageMs(Duration.ofHours(0).plusMinutes(30))
 				.lastDaysToConsider(1)
 				.build();
 		Condition condition4 = Condition.builder()
 				.user(otherUser)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
-				.requiredUsageMs(LocalTime.of(0, 40))
+				.requiredUsageMs(Duration.ofHours(0).plusMinutes(40))
 				.lastDaysToConsider(1)
 				.build();
 		conditionRepository.save(condition1);
@@ -134,21 +134,21 @@ class ConditionServiceImplTest {
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
-				.requiredUsageMs(LocalTime.of(0, 10))
+				.requiredUsageMs(Duration.ofHours(0).plusMinutes(10))
 				.lastDaysToConsider(1)
 				.build();
 		Condition condition2 = Condition.builder()
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
-				.requiredUsageMs(LocalTime.of(0, 20))
+				.requiredUsageMs(Duration.ofHours(0).plusMinutes(20))
 				.lastDaysToConsider(1)
 				.build();
 		Condition condition3 = Condition.builder()
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
-				.requiredUsageMs(LocalTime.of(0, 30))
+				.requiredUsageMs(Duration.ofHours(0).plusMinutes(30))
 				.lastDaysToConsider(1)
 				.build();
 		conditionRepository.save(condition1);
@@ -186,7 +186,7 @@ class ConditionServiceImplTest {
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
-				.requiredUsageMs(LocalTime.of(0, 10))
+				.requiredUsageMs(Duration.ofHours(0).plusMinutes(10))
 				.lastDaysToConsider(1)
 				.build();
 
@@ -231,7 +231,7 @@ class ConditionServiceImplTest {
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
-				.requiredUsageMs(LocalTime.of(0, 10))
+				.requiredUsageMs(Duration.ofHours(0).plusMinutes(10))
 				.lastDaysToConsider(1)
 				.build();
 
@@ -273,7 +273,7 @@ class ConditionServiceImplTest {
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
-				.requiredUsageMs(LocalTime.of(0, 10))
+				.requiredUsageMs(Duration.ofHours(0).plusMinutes(10))
 				.lastDaysToConsider(1)
 				.build();
 
@@ -316,7 +316,7 @@ class ConditionServiceImplTest {
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
-				.requiredUsageMs(LocalTime.of(0, 10))
+				.requiredUsageMs(Duration.ofHours(0).plusMinutes(10))
 				.lastDaysToConsider(1)
 				.build();
 
@@ -350,7 +350,7 @@ class ConditionServiceImplTest {
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group1)
-				.requiredUsageMs(LocalTime.of(0, 10))
+				.requiredUsageMs(Duration.ofHours(0).plusMinutes(10))
 				.lastDaysToConsider(1)
 				.build();
 
@@ -391,7 +391,7 @@ class ConditionServiceImplTest {
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
-				.requiredUsageMs(LocalTime.of(0, 10))
+				.requiredUsageMs(Duration.ofHours(0).plusMinutes(10))
 				.lastDaysToConsider(1)
 				.build();
 
