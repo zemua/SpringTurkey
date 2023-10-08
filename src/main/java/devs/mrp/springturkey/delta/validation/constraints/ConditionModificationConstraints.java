@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.UUID;
 
 import devs.mrp.springturkey.validation.NullableMinConstraint;
+import devs.mrp.springturkey.validation.NullableMinDurationConstraint;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +16,7 @@ public class ConditionModificationConstraints {
 
 	private UUID targetGroup;
 
+	@NullableMinDurationConstraint(minutes = 1)
 	private Duration requiredUsageMs;
 
 	@NullableMinConstraint(min = 0)

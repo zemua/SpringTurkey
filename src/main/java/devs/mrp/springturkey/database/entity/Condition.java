@@ -8,6 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import devs.mrp.springturkey.validation.MinDurationConstraint;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -59,6 +60,7 @@ public class Condition {
 
 	@Column(name = "required_usage_ms")
 	@NotNull
+	@MinDurationConstraint(minutes = 1)
 	private Duration requiredUsageMs;
 
 	@Column(name = "last_days_to_consider")

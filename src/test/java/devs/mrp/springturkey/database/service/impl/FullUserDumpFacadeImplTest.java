@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -120,10 +121,10 @@ class FullUserDumpFacadeImplTest {
 
 		condition1 = conditionRepository.save(Condition.builder().user(user)
 				.conditionalGroup(group1).targetGroup(group2)
-				.lastDaysToConsider(3).requiredUsageMs(LocalTime.of(11, 22)).build());
+				.lastDaysToConsider(3).requiredUsageMs(Duration.ofHours(11).plusMinutes(22)).build());
 		condition2 = conditionRepository.save(Condition.builder().user(user)
 				.conditionalGroup(group1).targetGroup(group2)
-				.lastDaysToConsider(2).requiredUsageMs(LocalTime.of(11, 22)).build());
+				.lastDaysToConsider(2).requiredUsageMs(Duration.ofHours(11).plusMinutes(22)).build());
 
 		setting1 = settingRepository.save(Setting.builder().user(user).platform(PlatformType.ALL).settingKey("setting1").settingValue("value1").build());
 		setting2 = settingRepository.save(Setting.builder().user(user).platform(PlatformType.ALL).settingKey("setting2").settingValue("value2").build());

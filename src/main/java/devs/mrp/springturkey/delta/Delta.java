@@ -63,12 +63,14 @@ public class Delta {
 				.build();
 	}
 
+	// TODO avoid creation of new object Mapper
 	private String serializeJson() throws JsonProcessingException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new JavaTimeModule());
 		return objectMapper.writeValueAsString(this.jsonValue);
 	}
 
+	// TODO avoid creation of new object mapper
 	private Map<String,Object> deserializeJson(String json) throws JsonProcessingException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new JavaTimeModule());

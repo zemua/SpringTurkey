@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Map;
@@ -124,8 +125,8 @@ class CreationDataConstrainerTest {
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().conditionalGroup(null).build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().targetGroup(null).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().requiredUsageMs(25000L).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().requiredUsageMs(-5L).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().requiredUsageMs(Duration.ofMillis(25000L)).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().requiredUsageMs(Duration.ofMillis(-5L)).build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().lastDaysToConsider(35).build(), Map.class)),
 				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().lastDaysToConsider(-5).build(), Map.class)),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.SETTING, "object", objectMapper.convertValue(validSetting().build(), Map.class)),
@@ -188,7 +189,7 @@ class CreationDataConstrainerTest {
 		return ConditionCreationDelta.builder()
 				.conditionalGroup(UUID.randomUUID())
 				.targetGroup(UUID.randomUUID())
-				.requiredUsageMs(120000L)
+				.requiredUsageMs(Duration.ofMillis(120000L))
 				.lastDaysToConsider(10);
 	}
 
