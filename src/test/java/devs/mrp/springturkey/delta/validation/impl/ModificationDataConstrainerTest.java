@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ class ModificationDataConstrainerTest {
 	private static Stream<Arguments> provideCorrectValues() {
 		String uuid = UUID.randomUUID().toString();
 		return Stream.of(
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "requiredUsageMs", "requiredUsageMs", fieldOf("requiredUsageMs", LocalTime.of(0, 0))),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "requiredUsageMs", "requiredUsageMs", fieldOf("requiredUsageMs", Duration.ofMinutes(1))),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "lastDaysToConsider", "lastDaysToConsider", fieldOf("lastDaysToConsider", 3)),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "conditionalGroup", "conditionalGroup", fieldOf("conditionalGroup", uuid)),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "conditionalGroup", "conditionalGroup", fieldOf("conditionalGroup", uuid.toString())),
@@ -102,7 +103,7 @@ class ModificationDataConstrainerTest {
 	private static Stream<Arguments> provideIncorrectValues() {
 		String uuid = UUID.randomUUID().toString();
 		return Stream.of(
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "requiredUsageMs", fieldOf("requiredUsageMs", 123)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "requiredUsageMs", fieldOf("requiredUsageMs", "abcdef")),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "lastDaysToConsider", fieldOf("lastDaysToConsider", -3)),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "conditionalGroup", fieldOf("conditionalGroup", uuid.toString() + "a")),
 				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "name", fieldOf("name", "some group name 123 $$$")),
