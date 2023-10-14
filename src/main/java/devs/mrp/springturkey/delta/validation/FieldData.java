@@ -1,7 +1,6 @@
 package devs.mrp.springturkey.delta.validation;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -9,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.Exceptions.WrongDataException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -27,9 +25,6 @@ public class FieldData {
 
 	private Predicate<String> predicate; // TODO remove
 
-	@NotNull
-	private Class<?> mapeable;
-
 	private boolean canModify;
 
 	private boolean canCreate;
@@ -43,8 +38,8 @@ public class FieldData {
 	@NotNull
 	private ObjectMapper objectMapper;
 
-	public boolean isValidModification(Map<String,Object> value) throws WrongDataException {
-		return canModify && isValid(value);
+	public boolean isValidModification(Map<String,Object> value, Class<?> constraints) throws WrongDataException {
+		return canModify && isValid(value, constraints);
 	}
 
 	public boolean isValidCreation(Object value) throws WrongDataException {
@@ -55,10 +50,10 @@ public class FieldData {
 		return new FieldDataBuilder();
 	}
 
-	private boolean isValid(Map<String,Object> value) throws WrongDataException {
+	private boolean isValid(Map<String,Object> value, Class<?> constraints) throws WrongDataException {
 		Object converted;
 		try {
-			converted = convertedObject(value);
+			converted = convertedObject(value, constraints);
 		} catch (IllegalArgumentException e) {
 			throw new WrongDataException("Validation failed", e);
 		}
@@ -74,8 +69,8 @@ public class FieldData {
 		}
 	}
 
-	private Object convertedObject(Map<String,Object> value) {
-		return objectMapper.convertValue(value, mapeable);
+	private Object convertedObject(Map<String,Object> value, Class<?> constraints) {
+		return objectMapper.convertValue(value, constraints);
 	}
 
 	public static class FieldDataBuilder {
@@ -102,11 +97,6 @@ public class FieldData {
 			return this;
 		}
 
-		public FieldDataBuilder mapeable(Class<?> clazz) {
-			this.mapeable = clazz;
-			return this;
-		}
-
 		public FieldDataBuilder modifiable(boolean b) {
 			this.canModify = b;
 			return this;
@@ -123,10 +113,7 @@ public class FieldData {
 		}
 
 		public FieldData build() {
-			if (Objects.isNull(this.mapeable)) {
-				throw new TurkeySurpriseException("No fields were expected to be null");
-			}
-			return new FieldData(this.columnName, this.predicate, this.mapeable, this.canModify, this.canCreate, this.referenzable, getValidator(), objectMapper());
+			return new FieldData(this.columnName, this.predicate, this.canModify, this.canCreate, this.referenzable, getValidator(), objectMapper());
 		}
 
 	}

@@ -34,7 +34,7 @@ public class ModificationDataConstrainer implements DataConstrainer {
 		if (!getFieldMap(delta).containsKey(delta.getFieldName())) {
 			throw new WrongDataException("Invalid field name: " + delta.getFieldName());
 		}
-		if (!getFieldMap(delta).get(delta.getFieldName()).isValidModification(delta.getJsonValue())) {
+		if (!getFieldMap(delta).get(delta.getFieldName()).isValidModification(delta.getJsonValue(), delta.getTable().getModificationConstraints())) {
 			throw new WrongDataException("Invalid modification in field {" +  delta.getFieldName() + "} for value {" + delta.getJsonValue() + "}");
 		}
 	}
