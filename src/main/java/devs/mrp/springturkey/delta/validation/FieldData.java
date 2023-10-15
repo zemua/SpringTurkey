@@ -35,10 +35,12 @@ public class FieldData {
 	@NotNull
 	private ObjectMapper objectMapper;
 
+	// TODO remove this method
 	public boolean isValidModification(Map<String,Object> value, Class<?> constraints) throws WrongDataException {
 		return canModify && isValid(value, constraints);
 	}
 
+	// TODO move this method to CreationDataConstrainer
 	public boolean isValidCreation(Object value) throws WrongDataException {
 		return canCreate && validate(value);
 	}

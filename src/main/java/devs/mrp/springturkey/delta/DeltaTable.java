@@ -24,6 +24,8 @@ import devs.mrp.springturkey.delta.validation.entity.SettingCreationDelta;
 
 public enum DeltaTable {
 
+	// TODO remove flags for creatable and modifiable
+
 	GROUP(Map.of(
 			"name", FieldData.builder().columnName("name").modifiable(true).creatable(true).build(),
 			"type", FieldData.builder().columnName("type").creatable(true).modifiable(false).build(),

@@ -348,7 +348,6 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(delta.getDeltaType(), storedDelta.getDeltaType());
 		assertEquals(delta.getTable(), storedDelta.getDeltaTable());
 		assertEquals(delta.getRecordId(), storedDelta.getRecordId());
-		assertEquals(delta.getFieldName(), storedDelta.getFieldName());
 		assertEquals(delta.getJsonValue(), objectMapper.readValue(storedDelta.getJsonValue(), Map.class));
 	}
 
@@ -381,7 +380,6 @@ class DeltaFacadeServiceImplTest {
 				.deltaType(DeltaType.CREATION)
 				.table(DeltaTable.ACTIVITY)
 				.recordId(UUID.randomUUID())
-				.fieldName("object")
 				.jsonValue(objectMapper.convertValue(activityBuilder().build(), Map.class));
 	}
 
@@ -398,7 +396,6 @@ class DeltaFacadeServiceImplTest {
 				.deltaType(DeltaType.CREATION)
 				.table(DeltaTable.SETTING)
 				.recordId(UUID.randomUUID())
-				.fieldName("object")
 				.jsonValue(objectMapper.convertValue(settingBuilder().build(), Map.class));
 	}
 
@@ -415,7 +412,6 @@ class DeltaFacadeServiceImplTest {
 				.deltaType(DeltaType.CREATION)
 				.table(DeltaTable.GROUP)
 				.recordId(UUID.randomUUID())
-				.fieldName("object")
 				.jsonValue(objectMapper.convertValue(groupCreationBuilder().build(), Map.class));
 	}
 
@@ -438,8 +434,7 @@ class DeltaFacadeServiceImplTest {
 				.timestamp(LocalDateTime.now())
 				.deltaType(DeltaType.CREATION)
 				.table(DeltaTable.CONDITION)
-				.recordId(UUID.randomUUID())
-				.fieldName("object");
+				.recordId(UUID.randomUUID());
 	}
 
 	private ConditionCreationDelta.ConditionCreationDeltaBuilder conditionCreationBuilder(UUID conditional, UUID target) {
