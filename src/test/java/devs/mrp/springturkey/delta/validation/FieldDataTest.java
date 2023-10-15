@@ -10,7 +10,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.database.entity.Activity;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
@@ -26,31 +25,27 @@ class FieldDataTest {
 	void testModification() throws WrongDataException {
 		final FieldData validator = FieldData.builder()
 				.modifiable(true)
-				.mapeable(ActivityModificationConstraints.class)
 				.build();
-		assertTrue(validator.isValidModification(mapOf("activityName", "hello world")));
-		assertThrows(WrongDataException.class, () -> validator.isValidModification(mapOf("activityName", "invalid character!")));
+		assertTrue(validator.isValidModification(mapOf("activityName", "hello world"), ActivityModificationConstraints.class));
+		assertThrows(WrongDataException.class, () -> validator.isValidModification(mapOf("activityName", "invalid character!"), ActivityModificationConstraints.class));
 
 		final FieldData validator2 = FieldData.builder()
 				.modifiable(true)
-				.mapeable(ConditionModificationConstraints.class)
 				.build();
-		assertTrue(validator2.isValidModification(mapOf("lastDaysToConsider", 0)));
-		assertThrows(WrongDataException.class, () -> validator2.isValidModification(mapOf("lastDaysToConsider", -1)));
+		assertTrue(validator2.isValidModification(mapOf("lastDaysToConsider", 0), ConditionModificationConstraints.class));
+		assertThrows(WrongDataException.class, () -> validator2.isValidModification(mapOf("lastDaysToConsider", -1), ConditionModificationConstraints.class));
 
 		final FieldData validator3 = FieldData.builder()
 				.modifiable(true)
-				.mapeable(RandomCheckModificationConstraints.class)
 				.build();
-		assertTrue(validator3.isValidModification(mapOf("minCheckLapse", LocalTime.of(0, 1))));
-		assertThrows(WrongDataException.class, () -> validator3.isValidModification(mapOf("minCheckLapse", LocalTime.of(0, 0))));
+		assertTrue(validator3.isValidModification(mapOf("minCheckLapse", LocalTime.of(0, 1)), RandomCheckModificationConstraints.class));
+		assertThrows(WrongDataException.class, () -> validator3.isValidModification(mapOf("minCheckLapse", LocalTime.of(0, 0)), RandomCheckModificationConstraints.class));
 
 		final FieldData validator4 = FieldData.builder()
 				.modifiable(false)
-				.mapeable(RandomCheckModificationConstraints.class)
 				.build();
-		assertFalse(validator4.isValidModification(mapOf("minCheckLapse", LocalTime.of(0, 1))));
-		assertFalse(validator4.isValidModification(mapOf("minCheckLapse", LocalTime.of(0, 0))));
+		assertFalse(validator4.isValidModification(mapOf("minCheckLapse", LocalTime.of(0, 1)), RandomCheckModificationConstraints.class));
+		assertFalse(validator4.isValidModification(mapOf("minCheckLapse", LocalTime.of(0, 0)), RandomCheckModificationConstraints.class));
 	}
 
 	private Map<String, Object> mapOf(String s, Object o) {
@@ -63,7 +58,6 @@ class FieldDataTest {
 	void testInvalidCreation() {
 		FieldData validator = FieldData.builder()
 				.creatable(true)
-				.mapeable(ActivityModificationConstraints.class)
 				.build();
 
 		Activity activity = Activity.builder().build();
@@ -75,7 +69,6 @@ class FieldDataTest {
 	void testValidCreation() throws WrongDataException {
 		FieldData validator = FieldData.builder()
 				.creatable(true)
-				.mapeable(ActivityModificationConstraints.class)
 				.build();
 
 		assertTrue(validator.isValidCreation(validActivity()));
@@ -85,7 +78,6 @@ class FieldDataTest {
 	void testNotCreatable() throws WrongDataException {
 		FieldData validator = FieldData.builder()
 				.creatable(false)
-				.mapeable(ActivityModificationConstraints.class)
 				.build();
 
 		assertFalse(validator.isValidCreation(validActivity()));
@@ -98,17 +90,6 @@ class FieldDataTest {
 				.activityType(ActivityPlatform.ANDROID_APP)
 				.categoryType(CategoryType.NEGATIVE)
 				.build();
-	}
-
-	@Test
-	void testNotNullFields() {
-		FieldData.builder()
-		.mapeable(RandomCheckModificationConstraints.class)
-		.build();
-
-		assertThrows(TurkeySurpriseException.class, () -> FieldData.builder()
-				.mapeable(null)
-				.build());
 	}
 
 }

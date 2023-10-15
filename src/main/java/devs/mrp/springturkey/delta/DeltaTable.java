@@ -34,8 +34,6 @@ import devs.mrp.springturkey.utils.UuidUtils;
 
 public enum DeltaTable {
 
-	// TODO refactor repeated XxxModificationConstraints.class
-
 	GROUP(Map.of(
 			"name", FieldData.builder().columnName("name").predicate(StringUtils::isAlphanumericSpace).modifiable(true).creatable(true).build(),
 			"type", FieldData.builder().columnName("type").predicate(EnumUtils.getEnumPredicate(GroupType.class)).creatable(true).modifiable(false).build(),
