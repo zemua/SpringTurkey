@@ -2,7 +2,6 @@ package devs.mrp.springturkey.delta.validation;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -22,8 +21,6 @@ public class FieldData {
 
 	@Getter
 	private String columnName; // TODO remove
-
-	private Predicate<String> predicate; // TODO remove
 
 	private boolean canModify;
 
@@ -77,8 +74,6 @@ public class FieldData {
 
 		private String columnName;
 
-		private Predicate<String> predicate;
-
 		private Class<?> mapeable;
 
 		private boolean canModify = false;
@@ -89,11 +84,6 @@ public class FieldData {
 
 		public FieldDataBuilder columnName(String name) {
 			this.columnName = name;
-			return this;
-		}
-
-		public FieldDataBuilder predicate(Predicate<String> p) {
-			this.predicate = p;
 			return this;
 		}
 
@@ -113,7 +103,7 @@ public class FieldData {
 		}
 
 		public FieldData build() {
-			return new FieldData(this.columnName, this.predicate, this.canModify, this.canCreate, this.referenzable, getValidator(), objectMapper());
+			return new FieldData(this.columnName, this.canModify, this.canCreate, this.referenzable, getValidator(), objectMapper());
 		}
 
 	}
