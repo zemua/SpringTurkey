@@ -50,94 +50,95 @@ class ModificationDataConstrainerTest {
 	private static Stream<Arguments> provideCorrectValues() {
 		String uuid = UUID.randomUUID().toString();
 		return Stream.of(
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "requiredUsageMs", "requiredUsageMs", fieldOf("requiredUsageMs", Duration.ofMinutes(1))),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "lastDaysToConsider", "lastDaysToConsider", fieldOf("lastDaysToConsider", 3)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "conditionalGroup", "conditionalGroup", fieldOf("conditionalGroup", uuid)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "conditionalGroup", "conditionalGroup", fieldOf("conditionalGroup", uuid.toString())),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "name", "name", fieldOf("name", "some group name 123")),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "preventClose", "preventClose", fieldOf("preventClose", true)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "preventClose", "preventClose", fieldOf("preventClose", "true")),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "categoryType", "categoryType", fieldOf("categoryType", CategoryType.NEGATIVE)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "categoryType", "categoryType", fieldOf("categoryType", "NEGATIVE")),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", "group", fieldOf("group", UUID.randomUUID())),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "preventClose", "preventClosing", fieldOf("preventClosing", true)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.SETTING, "settingValue", "settingValue", fieldOf("settingValue", "some setting value 123")),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, "name", "name", fieldOf("name", "updated name")),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, "question", "question", fieldOf("question", "updated question")),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, "frequency", "frequency", fieldOf("frequency", 3)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, "multiplier", "multiplier", fieldOf("multiplier", 2)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "name", "name", fieldOf("name", "modified name")),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "startActive", "startActive", fieldOf("startActive", LocalTime.of(11, 22))),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "endActive", "endActive", fieldOf("endActive", LocalTime.of(11, 22))),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "minCheckLapse", "minCheckLapse", fieldOf("minCheckLapse", LocalTime.of(11, 22))),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "maxCheckLapse", "maxCheckLapse", fieldOf("maxCheckLapse", LocalTime.of(11, 22))),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "reward", "reward", fieldOf("reward", LocalTime.of(11, 22))),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "activeDays", "activeDays", fieldOf("activeDays", Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "negativeQuestions", "negativeQuestions", fieldOf("negativeQuestions", Set.of(UUID.randomUUID(), UUID.randomUUID()))),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "positiveQuestions", "positiveQuestions", fieldOf("positiveQuestions", Set.of(UUID.randomUUID(), UUID.randomUUID())))
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, fieldOf("requiredUsageMs", Duration.ofMinutes(1))),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, fieldOf("lastDaysToConsider", 3)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, fieldOf("conditionalGroup", uuid)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, fieldOf("conditionalGroup", uuid.toString())),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, fieldOf("name", "some group name 123")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, fieldOf("preventClose", true)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, fieldOf("preventClose", "true")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, fieldOf("categoryType", CategoryType.NEGATIVE)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, fieldOf("categoryType", "NEGATIVE")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, fieldOf("group", UUID.randomUUID())),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, fieldOf("preventClosing", true)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.SETTING, fieldOf("settingValue", "some setting value 123")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, fieldOf("name", "updated name")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, fieldOf("question", "updated question")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, fieldOf("frequency", 3)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, fieldOf("multiplier", 2)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("name", "modified name")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("startActive", LocalTime.of(11, 22))),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("endActive", LocalTime.of(11, 22))),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("minCheckLapse", LocalTime.of(11, 22))),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("maxCheckLapse", LocalTime.of(11, 22))),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("reward", LocalTime.of(11, 22))),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("activeDays", Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("negativeQuestions", Set.of(UUID.randomUUID(), UUID.randomUUID()))),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("positiveQuestions", Set.of(UUID.randomUUID(), UUID.randomUUID())))
 				);
 	}
 
 	@ParameterizedTest
 	@MethodSource("provideCorrectValues")
-	void pushesCorrectly(DeltaType deltaType, DeltaTable table, String fieldName, String columnName, Map<String,Object> jsonValue) throws WrongDataException {
+	void pushesCorrectly(DeltaType deltaType, DeltaTable table, Map<String,Object> jsonValue) throws WrongDataException {
 		UUID id = UUID.randomUUID();
 		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
 				.deltaType(deltaType)
 				.table(table)
 				.recordId(id)
-				.fieldName(fieldName)
 				.jsonValue(jsonValue)
 				.build();
 
-		Delta modifiedDelta = delta.withFieldName(columnName);
-
-		when(deltaFacade.pushModification(ArgumentMatchers.refEq(modifiedDelta))).thenReturn(1);
+		when(deltaFacade.pushModification(ArgumentMatchers.refEq(delta))).thenReturn(1);
 
 		int result = dataConstrainer.pushDelta(delta).block();
 		assertEquals(1, result);
-		verify(deltaFacade, times(1)).pushModification(ArgumentMatchers.refEq(modifiedDelta));
+		verify(deltaFacade, times(1)).pushModification(ArgumentMatchers.refEq(delta));
 	}
 
 	private static Stream<Arguments> provideIncorrectValues() {
 		String uuid = UUID.randomUUID().toString();
 		return Stream.of(
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "requiredUsageMs", fieldOf("requiredUsageMs", "abcdef")),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "lastDaysToConsider", fieldOf("lastDaysToConsider", -3)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "conditionalGroup", fieldOf("conditionalGroup", uuid.toString() + "a")),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "name", fieldOf("name", "some group name 123 $$$")),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "preventClose", fieldOf("preventClose", "wrong")),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "categoryType", fieldOf("categoryType", "wrong")),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "groupId", fieldOf("group", UUID.randomUUID().toString()+"a")),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "preventClose", fieldOf("preventClosing", "wrong")),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.SETTING, "settingValue", fieldOf("settingValue", "some setting value 123 $%")),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, "name", fieldOf("name", "updated name $%")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, fieldOf("nonExistingField", "0")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, fieldOf("nonExistingField", "0")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, fieldOf("nonExistingField", "0")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, fieldOf("nonExistingField", "0")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("nonExistingField", "0")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, fieldOf("requiredUsageMs", "abcdef")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, fieldOf("lastDaysToConsider", -3)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, fieldOf("conditionalGroup", uuid.toString() + "a")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, fieldOf("name", "some group name 123 $$$")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, fieldOf("preventClose", "wrong")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, fieldOf("categoryType", "wrong")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, fieldOf("group", UUID.randomUUID().toString()+"a")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, fieldOf("preventClosing", "wrong")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.SETTING, fieldOf("settingValue", "some setting value 123 $%")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, fieldOf("name", "updated name $%")),
 				// Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, "question", fieldOf("question", 123)), // any object that can be converted to string is valid
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, "frequency", fieldOf("frequency", -1)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, "multiplier", fieldOf("multiplier", -1)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "name", fieldOf("name", "modified name $%")),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "startActive", fieldOf("startActive", 123)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "endActive", fieldOf("endActive", 123)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "minCheckLapse", fieldOf("minCheckLapse", 123)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "maxCheckLapse", fieldOf("maxCheckLapse", 123)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "reward", fieldOf("reward", 123)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "activeDays", fieldOf("activeDays", Set.of("wrong"))),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "negativeQuestions", fieldOf("negativeQuestions", Set.of(UUID.randomUUID().toString()+"a", UUID.randomUUID()))),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "positiveQuestions", fieldOf("positiveQuestions", Set.of(UUID.randomUUID().toString()+"a", UUID.randomUUID())))
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, fieldOf("frequency", -1)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, fieldOf("multiplier", -1)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("name", "modified name $%")),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("startActive", 123)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("endActive", 123)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("minCheckLapse", 123)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("maxCheckLapse", 123)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("reward", 123)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("activeDays", Set.of("wrong"))),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("negativeQuestions", Set.of(UUID.randomUUID().toString()+"a", UUID.randomUUID()))),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, fieldOf("positiveQuestions", Set.of(UUID.randomUUID().toString()+"a", UUID.randomUUID())))
 				);
 	}
 
 	@ParameterizedTest
 	@MethodSource("provideIncorrectValues")
-	void pushesFails(DeltaType deltaType, DeltaTable table, String fieldName, Map<String,Object> jsonValue) throws WrongDataException {
+	void pushesFails(DeltaType deltaType, DeltaTable table, Map<String,Object> jsonValue) throws WrongDataException {
 		UUID id = UUID.randomUUID();
 		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.of(2023, 2, 14, 4, 25))
 				.deltaType(deltaType)
 				.table(table)
 				.recordId(id)
-				.fieldName(fieldName)
 				.jsonValue(jsonValue)
 				.build();
 

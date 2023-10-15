@@ -49,8 +49,6 @@ public class DeltaEntity {
 	@NotNull
 	private UUID recordId;
 	@NotBlank
-	private String fieldName;
-	@NotBlank
 	private String jsonValue;
 
 	@CreatedDate

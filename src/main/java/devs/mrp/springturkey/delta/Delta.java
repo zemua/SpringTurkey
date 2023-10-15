@@ -36,7 +36,6 @@ public class Delta {
 	@NotNull
 	private UUID recordId;
 
-	private String fieldName; // TODO remove this field
 	@NotEmpty
 	private Map<String,Object> jsonValue;
 
@@ -58,7 +57,6 @@ public class Delta {
 				.deltaType(this.getDeltaType())
 				.deltaTable(this.getTable())
 				.recordId(this.getRecordId())
-				.fieldName(this.getFieldName())
 				.jsonValue(serializeJson())
 				.build();
 	}

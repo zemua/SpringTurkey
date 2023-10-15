@@ -20,7 +20,7 @@ import lombok.Getter;
 public class FieldData {
 
 	@Getter
-	private String columnName; // TODO remove
+	private String columnName;
 
 	private boolean canModify;
 
