@@ -82,24 +82,23 @@ class CreationDataConstrainerTest {
 				.addModule(new JavaTimeModule())
 				.build();
 		return Stream.of(
-				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", objectMapper.convertValue(validGroup().build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.convertValue(validActivity().build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.convertValue(validSetting().build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "", objectMapper.convertValue(validQuestion().build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "", objectMapper.convertValue(validCheck().build(), Map.class))
+				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, objectMapper.convertValue(validGroup().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, objectMapper.convertValue(validActivity().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, objectMapper.convertValue(validCondition().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, objectMapper.convertValue(validSetting().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, objectMapper.convertValue(validQuestion().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, objectMapper.convertValue(validCheck().build(), Map.class))
 				);
 	}
 
 	@ParameterizedTest
 	@MethodSource("provideCorrectValues")
-	void testSucess(DeltaType deltaType, DeltaTable table, String fieldName, Map<String,Object> jsonValue) throws JsonProcessingException, WrongDataException {
+	void testSucess(DeltaType deltaType, DeltaTable table, Map<String,Object> jsonValue) throws JsonProcessingException, WrongDataException {
 		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.now())
 				.deltaType(deltaType)
 				.table(table)
 				.recordId(UUID.randomUUID())
-				.fieldName(fieldName)
 				.jsonValue(jsonValue)
 				.build();
 
@@ -115,53 +114,52 @@ class CreationDataConstrainerTest {
 				.addModule(new JavaTimeModule())
 				.build();
 		return Stream.of(
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, "object", objectMapper.convertValue(validGroup().build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", objectMapper.convertValue(validGroup().name("invalid 123 $").build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, "object", objectMapper.convertValue(validGroup().type(null).build(), Map.class)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, "object", objectMapper.convertValue(validActivity().build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.convertValue(validActivity().activityName("invalid 123 $").build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.convertValue(validActivity().activityType(null).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, "object", objectMapper.convertValue(validActivity().categoryType(null).build(), Map.class)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().conditionalGroup(null).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().targetGroup(null).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().requiredUsageMs(Duration.ofMillis(25000L)).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().requiredUsageMs(Duration.ofMillis(-5L)).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().lastDaysToConsider(35).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, "object", objectMapper.convertValue(validCondition().lastDaysToConsider(-5).build(), Map.class)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.SETTING, "object", objectMapper.convertValue(validSetting().build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.convertValue(validSetting().platformType(null).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.convertValue(validSetting().settingKey("invalid 123 $").build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, "object", objectMapper.convertValue(validSetting().settingValue("invalid 456 &").build(), Map.class)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().type(null).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().name("invalid 123 $%").build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().frequency(0).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().frequency(-1).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().multiplier(0).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, "object", objectMapper.convertValue(validQuestion().multiplier(-1).build(), Map.class)),
-				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().name("invalid 123 $%").build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().startActive(null).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().endActive(null).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().minCheckLapse(LocalTime.of(0, 0)).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().maxCheckLapse(LocalTime.of(0, 0)).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().reward(LocalTime.of(0, 0)).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().activeDays(null).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().negativeQuestions(null).build(), Map.class)),
-				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, "object", objectMapper.convertValue(validCheck().positiveQuestions(null).build(), Map.class))
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.GROUP, objectMapper.convertValue(validGroup().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, objectMapper.convertValue(validGroup().name("invalid 123 $").build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.GROUP, objectMapper.convertValue(validGroup().type(null).build(), Map.class)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.ACTIVITY, objectMapper.convertValue(validActivity().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, objectMapper.convertValue(validActivity().activityName("invalid 123 $").build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, objectMapper.convertValue(validActivity().activityType(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.ACTIVITY, objectMapper.convertValue(validActivity().categoryType(null).build(), Map.class)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.CONDITION, objectMapper.convertValue(validCondition().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, objectMapper.convertValue(validCondition().conditionalGroup(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, objectMapper.convertValue(validCondition().targetGroup(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, objectMapper.convertValue(validCondition().requiredUsageMs(Duration.ofMillis(25000L)).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, objectMapper.convertValue(validCondition().requiredUsageMs(Duration.ofMillis(-5L)).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, objectMapper.convertValue(validCondition().lastDaysToConsider(35).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.CONDITION, objectMapper.convertValue(validCondition().lastDaysToConsider(-5).build(), Map.class)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.SETTING, objectMapper.convertValue(validSetting().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, objectMapper.convertValue(validSetting().platformType(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, objectMapper.convertValue(validSetting().settingKey("invalid 123 $").build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.SETTING, objectMapper.convertValue(validSetting().settingValue("invalid 456 &").build(), Map.class)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_QUESTION, objectMapper.convertValue(validQuestion().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, objectMapper.convertValue(validQuestion().type(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, objectMapper.convertValue(validQuestion().name("invalid 123 $%").build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, objectMapper.convertValue(validQuestion().frequency(0).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, objectMapper.convertValue(validQuestion().frequency(-1).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, objectMapper.convertValue(validQuestion().multiplier(0).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_QUESTION, objectMapper.convertValue(validQuestion().multiplier(-1).build(), Map.class)),
+				Arguments.of(DeltaType.MODIFICATION, DeltaTable.RANDOM_CHECK, objectMapper.convertValue(validCheck().build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, objectMapper.convertValue(validCheck().name("invalid 123 $%").build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, objectMapper.convertValue(validCheck().startActive(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, objectMapper.convertValue(validCheck().endActive(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, objectMapper.convertValue(validCheck().minCheckLapse(LocalTime.of(0, 0)).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, objectMapper.convertValue(validCheck().maxCheckLapse(LocalTime.of(0, 0)).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, objectMapper.convertValue(validCheck().reward(LocalTime.of(0, 0)).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, objectMapper.convertValue(validCheck().activeDays(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, objectMapper.convertValue(validCheck().negativeQuestions(null).build(), Map.class)),
+				Arguments.of(DeltaType.CREATION, DeltaTable.RANDOM_CHECK, objectMapper.convertValue(validCheck().positiveQuestions(null).build(), Map.class))
 				);
 	}
 
 	@ParameterizedTest
 	@MethodSource("provideIncorrectValues")
-	void testInvalidDeltaData(DeltaType deltaType, DeltaTable table, String fieldName, Map<String,Object> jsonValue) throws JsonProcessingException, WrongDataException {
+	void testInvalidDeltaData(DeltaType deltaType, DeltaTable table, Map<String,Object> jsonValue) throws JsonProcessingException, WrongDataException {
 		Delta delta = Delta.builder()
 				.timestamp(LocalDateTime.now())
 				.deltaType(deltaType)
 				.table(table)
 				.recordId(UUID.randomUUID())
-				.fieldName(fieldName)
 				.jsonValue(jsonValue)
 				.build();
 
