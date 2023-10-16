@@ -45,7 +45,7 @@ public class CreationDataConstrainer implements DataConstrainer {
 	}
 
 	private Set<ConstraintViolation<Object>> resolveViolations(Delta delta) {
-		Class<?> clazz = delta.getTable().getDtoClass();
+		Class<?> clazz = delta.getTable().getCreationConstraints();
 		Object creationEntity = null;
 		creationEntity = objectMapper.convertValue(delta.getJsonValue(), clazz);
 		Set<ConstraintViolation<Object>> violations = new HashSet<>();

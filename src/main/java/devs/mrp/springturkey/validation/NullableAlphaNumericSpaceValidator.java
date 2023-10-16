@@ -11,7 +11,7 @@ public class NullableAlphaNumericSpaceValidator implements ConstraintValidator<N
 
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
-		return Objects.isNull(value) || StringUtils.isAlphanumericSpace(value);
+		return Objects.isNull(value) || (!StringUtils.isBlank(value) && StringUtils.isAlphanumericSpace(value));
 	}
 
 }

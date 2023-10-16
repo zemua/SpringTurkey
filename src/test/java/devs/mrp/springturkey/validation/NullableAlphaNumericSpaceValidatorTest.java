@@ -40,6 +40,14 @@ class NullableAlphaNumericSpaceValidatorTest {
 	}
 
 	@Test
+	void testBlank() {
+		var validable = new Validable();
+		validable.field = " ";
+		Set<ConstraintViolation<Validable>> violations = validator.validate(validable);
+		assertFalse(violations.isEmpty());
+	}
+
+	@Test
 	void testNull() {
 		var validable = new Validable();
 		validable.field = null;

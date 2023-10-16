@@ -101,7 +101,7 @@ public enum DeltaTable {
 		return fieldMap;
 	}
 
-	public Class<?> getDtoClass() {
+	public Class<?> getCreationConstraints() {
 		return entityDtoClass;
 	}
 

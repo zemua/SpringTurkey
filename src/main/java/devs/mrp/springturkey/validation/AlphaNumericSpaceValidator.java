@@ -13,7 +13,7 @@ public class AlphaNumericSpaceValidator implements ConstraintValidator<AlphaNume
 
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
-		return StringUtils.isAlphanumericSpace(value);
+		return !StringUtils.isBlank(value) && StringUtils.isAlphanumericSpace(value);
 	}
 
 }

@@ -39,6 +39,14 @@ class AlphaNumericSpaceValidatorTest {
 		assertFalse(violations.isEmpty());
 	}
 
+	@Test
+	void testBlank() {
+		var validable = new Validable();
+		validable.field = " ";
+		Set<ConstraintViolation<Validable>> violations = validator.validate(validable);
+		assertFalse(violations.isEmpty());
+	}
+
 	private static class Validable {
 		@AlphaNumericSpaceConstraint
 		private String field;
