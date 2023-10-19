@@ -78,9 +78,9 @@ public class FieldData {
 
 		private Class<?> mapeable;
 
-		private boolean canModify = false;
+		private boolean canModify = false; // TODO remove
 
-		private boolean canCreate = false;
+		private boolean canCreate = false; // TODO remove
 
 		private Class<?> referenzable;
 
@@ -104,7 +104,7 @@ public class FieldData {
 			return this;
 		}
 
-		public FieldData build() {
+		public FieldData build() { // TODO inject objectMapper instead of creating it here
 			return new FieldData(this.columnName, this.canModify, this.canCreate, this.referenzable, getValidator(), objectMapper());
 		}
 

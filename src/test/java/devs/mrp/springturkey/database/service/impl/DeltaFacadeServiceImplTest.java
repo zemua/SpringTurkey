@@ -52,13 +52,14 @@ import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.ConditionCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.GroupCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.SettingCreationDelta;
+import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
 
 @DataJpaTest
 @EnableJpaRepositories(basePackages = "devs.mrp.springturkey.database.repository")
 @EnableJpaAuditing
 @EntityScan("devs.mrp.springturkey.database.*")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(classes = {DeltaFacadeServiceImpl.class, EntityFromDeltaDaoImpl.class, UserServiceImpl.class, LoginDetailsReaderImpl.class})
+@ContextConfiguration(classes = {DeltaFacadeServiceImpl.class, EntityFromDeltaDaoImpl.class, UserServiceImpl.class, LoginDetailsReaderImpl.class, ObjectMapperProvider.class})
 class DeltaFacadeServiceImplTest {
 
 	@Autowired

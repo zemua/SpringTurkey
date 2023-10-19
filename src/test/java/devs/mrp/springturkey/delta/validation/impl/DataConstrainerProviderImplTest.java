@@ -14,10 +14,11 @@ import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.database.service.DeltaFacadeService;
 import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.DataConstrainer;
+import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
 import jakarta.validation.Validator;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {DataConstrainerProviderImpl.class, CreationDataConstrainer.class, ModificationDataConstrainer.class, DeletionDataConstrainer.class})
+@ContextConfiguration(classes = {DataConstrainerProviderImpl.class, CreationDataConstrainer.class, ModificationDataConstrainer.class, DeletionDataConstrainer.class, ObjectMapperProvider.class})
 class DataConstrainerProviderImplTest {
 
 	@MockBean

@@ -10,8 +10,6 @@ import org.springframework.stereotype.Repository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
@@ -40,14 +38,11 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 	@PersistenceContext
 	private EntityManager entityManager;
 
+	@Autowired
 	private ObjectMapper objectMapper;
 
 	@Autowired
 	private UserService userService;
-
-	public EntityFromDeltaDaoImpl() {
-		objectMapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
-	}
 
 	@Override
 	public Mono<Integer> save(Delta delta) {

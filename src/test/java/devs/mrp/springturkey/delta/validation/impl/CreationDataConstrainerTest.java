@@ -51,13 +51,14 @@ import devs.mrp.springturkey.delta.validation.entity.GroupCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.RandomCheckCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.RandomQuestionCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.SettingCreationDelta;
+import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import reactor.core.publisher.Mono;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {CreationDataConstrainer.class})
+@ContextConfiguration(classes = {CreationDataConstrainer.class, ObjectMapperProvider.class})
 class CreationDataConstrainerTest {
 
 	@MockBean

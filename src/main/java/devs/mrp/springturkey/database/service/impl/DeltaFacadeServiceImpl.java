@@ -25,7 +25,8 @@ public class DeltaFacadeServiceImpl implements DeltaFacadeService {
 	@Autowired
 	private EntityFromDeltaDao entityFromDeltaDao;
 
-	private ObjectMapper objectMapper = new ObjectMapper();
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@Override
 	@Transactional

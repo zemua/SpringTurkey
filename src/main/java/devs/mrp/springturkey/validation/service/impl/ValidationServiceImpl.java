@@ -3,11 +3,10 @@ package devs.mrp.springturkey.validation.service.impl;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.delta.Delta;
@@ -21,9 +20,10 @@ import jakarta.validation.ValidatorFactory;
 @Service
 public class ValidationServiceImpl implements ValidationService {
 
-	private ObjectMapper objectMapper = objectMapper();
-
 	private Validator validator = validator();
+
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@Override
 	public void validate(Delta delta) throws WrongDataException {
@@ -67,12 +67,6 @@ public class ValidationServiceImpl implements ValidationService {
 	private Validator validator() {
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		return factory.getValidator();
-	}
-
-	private ObjectMapper objectMapper() { // TODO make an objectMapperProvider bean
-		return JsonMapper.builder()
-				.addModule(new JavaTimeModule())
-				.build();
 	}
 
 }

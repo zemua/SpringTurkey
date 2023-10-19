@@ -52,12 +52,13 @@ import devs.mrp.springturkey.database.repository.RandomQuestionRepository;
 import devs.mrp.springturkey.database.repository.SettingRepository;
 import devs.mrp.springturkey.database.repository.UserRepository;
 import devs.mrp.springturkey.database.repository.dao.impl.EntityFromDeltaDaoImpl;
+import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
 
 @DataJpaTest
 @EnableJpaRepositories(basePackages = "devs.mrp.springturkey.database.repository")
 @EntityScan("devs.mrp.springturkey.database.*")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(classes = {EntityFromDeltaDaoImpl.class})
+@ContextConfiguration(classes = {EntityFromDeltaDaoImpl.class, ObjectMapperProvider.class})
 @Import({ServiceBeansConfig.class})
 @EnableJpaAuditing
 class FullUserDumpFacadeImplTest {

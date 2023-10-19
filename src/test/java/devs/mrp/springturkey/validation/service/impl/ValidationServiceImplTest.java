@@ -16,10 +16,11 @@ import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaTable;
 import devs.mrp.springturkey.delta.DeltaType;
+import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
 import devs.mrp.springturkey.validation.service.ValidationService;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {ValidationServiceImpl.class})
+@ContextConfiguration(classes = {ValidationServiceImpl.class, ObjectMapperProvider.class})
 class ValidationServiceImplTest {
 
 	@Autowired

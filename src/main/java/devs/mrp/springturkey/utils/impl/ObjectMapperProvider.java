@@ -1,17 +1,16 @@
 package devs.mrp.springturkey.utils.impl;
 
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import devs.mrp.springturkey.utils.ObjectMapperProvider;
+@Configuration
+public class ObjectMapperProvider {
 
-@Component
-public class ObjectMapperProviderImpl implements ObjectMapperProvider {
-
-	@Override
+	@Bean
 	public ObjectMapper getObjectMapper() {
 		return JsonMapper.builder()
 				.addModule(new JavaTimeModule())

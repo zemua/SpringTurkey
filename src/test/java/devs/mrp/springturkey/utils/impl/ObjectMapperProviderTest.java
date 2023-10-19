@@ -14,16 +14,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import devs.mrp.springturkey.utils.ObjectMapperProvider;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {ObjectMapperProviderImpl.class})
-class ObjectMapperProviderImplTest {
+@ContextConfiguration(classes = {ObjectMapperProvider.class})
+class ObjectMapperProviderTest {
 
 	@Autowired
-	private ObjectMapperProvider objectMapperProvider;
+	private ObjectMapper objectMapper;
 
 	@Test
 	void testMapping() {
@@ -31,15 +31,18 @@ class ObjectMapperProviderImplTest {
 		mapeable.myField = "hello";
 		mapeable.timeField = LocalDateTime.of(2020, 1, 1, 0, 0);
 
-		ObjectMapper mapper = objectMapperProvider.getObjectMapper();
-		Map<String,Object> mapped = mapper.convertValue(mapeable, Map.class);
+		Map<String,Object> mapped = objectMapper.convertValue(mapeable, Map.class);
 
 		assertEquals("hello", mapped.get("myField"));
 		assertEquals(List.of(2020, 1, 1, 0, 0), mapped.get("timeField"));
+
+		Mapeable reMapped = objectMapper.convertValue(mapped, Mapeable.class);
+		assertEquals(mapeable, reMapped);
 	}
 
 	@Getter
 	@Setter
+	@EqualsAndHashCode
 	private static class Mapeable {
 		String myField;
 		LocalDateTime timeField;

@@ -35,9 +35,10 @@ import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaTable;
 import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.DataConstrainer;
+import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {ModificationDataConstrainer.class})
+@ContextConfiguration(classes = {ModificationDataConstrainer.class, ObjectMapperProvider.class})
 class ModificationDataConstrainerTest {
 
 	@MockBean
