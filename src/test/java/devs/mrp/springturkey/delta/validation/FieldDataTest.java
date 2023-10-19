@@ -10,6 +10,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.database.entity.Activity;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
@@ -18,8 +20,11 @@ import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.delta.validation.constraints.ActivityModificationConstraints;
 import devs.mrp.springturkey.delta.validation.constraints.ConditionModificationConstraints;
 import devs.mrp.springturkey.delta.validation.constraints.RandomCheckModificationConstraints;
+import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
 
 class FieldDataTest {
+
+	private ObjectMapper objectMapper = new ObjectMapperProvider().getObjectMapper();
 
 	@Test
 	void testModification() throws WrongDataException {

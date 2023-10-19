@@ -12,6 +12,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,6 +21,7 @@ import lombok.Getter;
 public class FieldData {
 
 	@Getter
+	@NotBlank
 	private String columnName;
 
 	private boolean canModify;
@@ -32,8 +34,7 @@ public class FieldData {
 	@NotNull
 	private Validator validator;
 
-	@NotNull
-	private ObjectMapper objectMapper;
+	private ObjectMapper objectMapper; // TODO remove this field
 
 	// TODO remove this method
 	public boolean isValidModification(Map<String,Object> value, Class<?> constraints) throws WrongDataException {
@@ -74,8 +75,10 @@ public class FieldData {
 
 	public static class FieldDataBuilder {
 
+		@NotBlank
 		private String columnName;
 
+		@NotBlank
 		private Class<?> mapeable;
 
 		private boolean canModify = false; // TODO remove
@@ -104,8 +107,8 @@ public class FieldData {
 			return this;
 		}
 
-		public FieldData build() { // TODO inject objectMapper instead of creating it here
-			return new FieldData(this.columnName, this.canModify, this.canCreate, this.referenzable, getValidator(), objectMapper());
+		public FieldData build() {
+			return new FieldData(this.columnName, this.canModify, this.canCreate, this.referenzable, getValidator(), getObjectMapper());
 		}
 
 	}
@@ -115,7 +118,7 @@ public class FieldData {
 		return factory.getValidator();
 	}
 
-	private static ObjectMapper objectMapper() {
+	private static ObjectMapper getObjectMapper() { // TODO remove method
 		return JsonMapper.builder()
 				.addModule(new JavaTimeModule())
 				.build();

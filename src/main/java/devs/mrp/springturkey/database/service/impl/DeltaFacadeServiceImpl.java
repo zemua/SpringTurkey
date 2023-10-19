@@ -35,7 +35,7 @@ public class DeltaFacadeServiceImpl implements DeltaFacadeService {
 				.map(i -> {
 					if (i > 0) {
 						try {
-							deltaRepository.save(delta.toEntity());
+							deltaRepository.save(delta.toEntity(objectMapper));
 						} catch (JsonProcessingException e1) {
 							// TODO Auto-generated catch block
 							log.error("Error getting DeltaEntity from Delta", e1);

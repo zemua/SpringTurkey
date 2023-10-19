@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import devs.mrp.springturkey.database.entity.DeltaEntity;
 import devs.mrp.springturkey.delta.validation.FieldData;
@@ -51,28 +50,14 @@ public class Delta {
 		return table.getEntityClass();
 	}
 
-	public DeltaEntity toEntity() throws JsonProcessingException {
+	public DeltaEntity toEntity(ObjectMapper objectMapper) throws JsonProcessingException {
 		return DeltaEntity.builder()
 				.deltaTimeStamp(this.getTimestamp())
 				.deltaType(this.getDeltaType())
 				.deltaTable(this.getTable())
 				.recordId(this.getRecordId())
-				.jsonValue(serializeJson())
+				.jsonValue(objectMapper.writeValueAsString(this.jsonValue))
 				.build();
-	}
-
-	// TODO avoid creation of new object Mapper
-	private String serializeJson() throws JsonProcessingException {
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.registerModule(new JavaTimeModule());
-		return objectMapper.writeValueAsString(this.jsonValue);
-	}
-
-	// TODO avoid creation of new object mapper
-	private Map<String,Object> deserializeJson(String json) throws JsonProcessingException {
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.registerModule(new JavaTimeModule());
-		return objectMapper.readValue(json, Map.class);
 	}
 
 }
