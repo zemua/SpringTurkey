@@ -37,6 +37,8 @@ indexes = @Index(name = "user_email_index", columnList = "email", unique = true)
 @EqualsAndHashCode
 public class TurkeyUser {
 
+	// TODO make email modifiable
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
