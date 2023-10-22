@@ -38,8 +38,8 @@ import devs.mrp.springturkey.delta.validation.DataConstrainer;
 import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {ModificationDataConstrainer.class, ObjectMapperProvider.class})
-class ModificationDataConstrainerTest {
+@ContextConfiguration(classes = {ModificationDeltaFilterService.class, ObjectMapperProvider.class})
+class ModificationDeltaFilterServiceTest {
 
 	@MockBean
 	private DeltaFacadeService deltaFacade;

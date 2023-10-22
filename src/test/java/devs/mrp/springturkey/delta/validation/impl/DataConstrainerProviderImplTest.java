@@ -18,7 +18,7 @@ import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
 import jakarta.validation.Validator;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {DataConstrainerProviderImpl.class, CreationDataConstrainer.class, ModificationDataConstrainer.class, DeletionDataConstrainer.class, ObjectMapperProvider.class})
+@ContextConfiguration(classes = {DataConstrainerProviderImpl.class, CreationDataConstrainer.class, ModificationDeltaFilterService.class, DeletionDataConstrainer.class, ObjectMapperProvider.class})
 class DataConstrainerProviderImplTest {
 
 	@MockBean
@@ -41,7 +41,7 @@ class DataConstrainerProviderImplTest {
 		assertTrue(constrainer instanceof DeletionDataConstrainer);
 
 		constrainer = provider.getFor(DeltaType.MODIFICATION);
-		assertTrue(constrainer instanceof ModificationDataConstrainer);
+		assertTrue(constrainer instanceof ModificationDeltaFilterService);
 	}
 
 	@Test

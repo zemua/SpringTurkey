@@ -23,9 +23,7 @@ import reactor.core.publisher.Mono;
 
 @Service("modificationConstraints")
 @Slf4j
-public class ModificationDataConstrainer implements DataConstrainer {
-
-	// TODO change class name to ModificationDataRepositoryFilter or similar, maybe ModificationDeltaFilterService
+public class ModificationDeltaFilterService implements DataConstrainer {
 
 	@Autowired
 	private DeltaFacadeService deltaFacadeService;

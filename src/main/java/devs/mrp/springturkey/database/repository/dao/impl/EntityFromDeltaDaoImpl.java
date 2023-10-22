@@ -31,8 +31,6 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 
-	// TODO refactor usage of data.getColumnName() as we may modify more than one field
-
 	private static final String ID_FIELD = "id";
 
 	@PersistenceContext
