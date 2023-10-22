@@ -29,16 +29,16 @@ public class DeviceServiceImpl implements DeviceService {
 
 	@Override
 	public Mono<Device> addDevice() {
-		Device device = Device.builder()
-				.user(loginDetailsReader.setupCurrentUser())
+		return loginDetailsReader.setupCurrentUser().map(user -> Device.builder()
+				.user(user)
 				.usageTime(0L)
-				.build();
-		return Mono.just(deviceRepository.save(device));
+				.build())
+				.flatMap(device -> Mono.just(deviceRepository.save(device)));
 	}
 
 	@Override
 	public Flux<Device> getUserDevices() {
-		return Flux.fromIterable(deviceRepository.findAllByUser(loginDetailsReader.getTurkeyUser()))
+		return loginDetailsReader.getTurkeyUser().flatMapMany(user -> Flux.fromIterable(deviceRepository.findAllByUser(user)))
 				.filter(device -> loginDetailsReader.isCurrentUser(device.getUser()));
 	}
 

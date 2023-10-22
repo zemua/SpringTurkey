@@ -1,15 +1,16 @@
 package devs.mrp.springturkey.components;
 
 import devs.mrp.springturkey.database.entity.TurkeyUser;
+import reactor.core.publisher.Mono;
 
 public interface LoginDetailsReader {
 
-	public String getUsername();
+	public Mono<String> getUserId();
 
 	public boolean isCurrentUser(TurkeyUser user);
 
-	public TurkeyUser getTurkeyUser();
+	public Mono<TurkeyUser> getTurkeyUser();
 
-	public TurkeyUser setupCurrentUser();
+	public Mono<TurkeyUser> setupCurrentUser();
 
 }

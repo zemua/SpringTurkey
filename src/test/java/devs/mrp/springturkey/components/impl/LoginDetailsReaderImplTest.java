@@ -18,12 +18,14 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.web.reactive.config.EnableWebFlux;
 
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.UserRepository;
 
 @DataJpaTest
 @EnableJpaRepositories(basePackages = "devs.mrp.springturkey.database.repository")
+@EnableWebFlux
 @EntityScan("devs.mrp.springturkey.database.*")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(classes = {LoginDetailsReaderImpl.class})
@@ -38,7 +40,7 @@ class LoginDetailsReaderImplTest {
 	@Test
 	@WithMockUser(username = "basic@user.me", password = "password", roles = "USER")
 	void testGetUsername() {
-		String result = reader.getUsername();
+		String result = reader.getUserId();
 		assertEquals("basic@user.me", result);
 	}
 

@@ -24,7 +24,7 @@ public class RandomQuestionServiceImpl implements RandomQuestionService {
 
 	@Override
 	public Flux<RandomQuestion> findAllUserQuestions() {
-		return Flux.fromIterable(randomBlockRepository.findAllByUser(loginDetailsReader.getTurkeyUser()))
+		return loginDetailsReader.getTurkeyUser().flatMapMany(user -> Flux.fromIterable(randomBlockRepository.findAllByUser(user)))
 				.filter(block -> loginDetailsReader.isCurrentUser(block.getUser()));
 	}
 

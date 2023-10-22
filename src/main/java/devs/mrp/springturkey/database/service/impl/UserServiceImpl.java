@@ -20,15 +20,15 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Mono<TurkeyUser> addCurrentUser() {
-		TurkeyUser user = TurkeyUser.builder()
-				.email(loginDetailsReader.getUsername())
-				.build();
-		return Mono.just(userRepository.save(user));
+		return loginDetailsReader.getUserId().map(user -> TurkeyUser.builder()
+				.email(user)
+				.build())
+				.flatMap(user -> Mono.just(userRepository.save(user)));
 	}
 
 	@Override
 	public Mono<TurkeyUser> getUser() {
-		return Mono.just(userRepository.findByEmail(loginDetailsReader.getUsername()));
+		return loginDetailsReader.getUserId().flatMap(user -> Mono.just(userRepository.findByEmail(user)));
 	}
 
 }

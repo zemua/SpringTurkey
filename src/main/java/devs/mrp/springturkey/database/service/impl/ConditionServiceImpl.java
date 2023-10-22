@@ -27,7 +27,7 @@ public class ConditionServiceImpl implements ConditionService {
 
 	@Override
 	public Flux<Condition> findAllUserConditions() {
-		return Flux.fromIterable(conditionRepository.findAllByUser(loginDetailsReader.getTurkeyUser()))
+		return loginDetailsReader.getTurkeyUser().flatMapMany(user -> Flux.fromIterable(conditionRepository.findAllByUser(user)))
 				.filter(condition -> loginDetailsReader.isCurrentUser(condition.getUser()));
 	}
 

@@ -24,7 +24,7 @@ public class RandomCheckServiceImpl implements RandomCheckService {
 
 	@Override
 	public Flux<RandomCheck> findAllUserChecks() {
-		return Flux.fromIterable(randomCheckRepository.findAllByUser(loginDetailsReader.getTurkeyUser()))
+		return loginDetailsReader.getTurkeyUser().flatMapMany(user -> Flux.fromIterable(randomCheckRepository.findAllByUser(user)))
 				.filter(check -> loginDetailsReader.isCurrentUser(check.getUser()));
 	}
 

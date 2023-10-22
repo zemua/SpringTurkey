@@ -1,12 +1,19 @@
 package devs.mrp.springturkey.components.impl;
 
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import com.nimbusds.oauth2.sdk.util.StringUtils;
+
+import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.UserRepository;
+import reactor.core.publisher.Mono;
 
 @Component
 public class LoginDetailsReaderImpl implements LoginDetailsReader {
@@ -17,32 +24,41 @@ public class LoginDetailsReaderImpl implements LoginDetailsReader {
 	private static final Object CREATE_USER_LOCK = new Object();
 
 	@Override
-	public String getUsername() {
-		return SecurityContextHolder.getContext().getAuthentication().getName();
+	public Mono<String> getUserId() { // TODO fix tests
+		return ReactiveSecurityContextHolder.getContext().map(context -> {
+
+			Authentication auth = context.getAuthentication();
+
+			if (Objects.isNull(auth)) {
+				throw new TurkeySurpriseException("Authentication context is missing");
+			}
+			String id = auth.getName();
+
+			if (StringUtils.isBlank(id)) {
+				throw new TurkeySurpriseException("No user id found in Auth context");
+			}
+			return id;
+		});
 	}
 
 	@Override
 	public boolean isCurrentUser(TurkeyUser user) {
-		return user.getEmail().equals(getUsername());
+		return user.getEmail().equals(getUserId());
 	}
 
 	@Override
-	public TurkeyUser getTurkeyUser() {
-		return userRepository.findByEmail(getUsername());
+	public Mono<TurkeyUser> getTurkeyUser() { // TODO it could be not found in the db
+		return getUserId().map(userRepository::findByEmail);
 	}
 
 	@Override
-	public TurkeyUser setupCurrentUser() {
-		TurkeyUser currentUser = getTurkeyUser();
-		if (currentUser == null) {
-			synchronized (CREATE_USER_LOCK) {
-				currentUser = getTurkeyUser();
-				if (currentUser == null) {
-					currentUser = userRepository.save(TurkeyUser.builder().email(getUsername()).build());
-				}
+	public Mono<TurkeyUser> setupCurrentUser() {
+		return getTurkeyUser().flatMap(currentUser -> {
+			if (currentUser == null) {
+				return getUserId().map(email -> userRepository.save(TurkeyUser.builder().email(email).build()));
 			}
-		}
-		return currentUser;
+			return Mono.just(currentUser);
+		});
 	}
 
 }

@@ -26,7 +26,7 @@ public class ActivityServiceImpl implements ActivityService {
 
 	@Override
 	public Flux<Activity> findAllUserActivites() {
-		return Flux.fromIterable(activityRepository.findAllByUser(loginDetailsReader.getTurkeyUser()))
+		return loginDetailsReader.getTurkeyUser().flatMapMany(user -> Flux.fromIterable(activityRepository.findAllByUser(user)))
 				.filter(activity -> loginDetailsReader.isCurrentUser(activity.getUser()));
 	}
 

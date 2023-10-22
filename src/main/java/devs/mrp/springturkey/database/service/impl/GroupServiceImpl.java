@@ -24,7 +24,7 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	public Flux<Group> findAllUserGroups() {
-		return Flux.fromIterable(groupRepository.findAllByUser(loginDetailsReader.getTurkeyUser()))
+		return loginDetailsReader.getTurkeyUser().flatMapMany(user -> Flux.fromIterable(groupRepository.findAllByUser(user)))
 				.filter(group -> loginDetailsReader.isCurrentUser(group.getUser()));
 	}
 
