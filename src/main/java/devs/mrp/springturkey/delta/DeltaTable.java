@@ -27,59 +27,59 @@ public enum DeltaTable {
 	// TODO remove flags for creatable and modifiable
 
 	GROUP(Map.of(
-			"name", FieldData.builder().columnName("name").modifiable(true).creatable(true).build(),
-			"type", FieldData.builder().columnName("type").creatable(true).modifiable(false).build(),
-			"preventClose", FieldData.builder().columnName("preventClose").modifiable(true).creatable(true).build()
+			"name", FieldData.builder().columnName("name").build(),
+			"type", FieldData.builder().columnName("type").build(),
+			"preventClose", FieldData.builder().columnName("preventClose").build()
 			),
 			GroupCreationDelta.class,
 			Group.class,
 			GroupModificationConstraints.class),
 	ACTIVITY(Map.of(
-			"categoryType", FieldData.builder().columnName("categoryType").modifiable(true).creatable(true).build(),
-			"groupId", FieldData.builder().columnName("group").referenzable(Group.class).modifiable(true).creatable(true).build(),
-			"preventClose", FieldData.builder().columnName("preventClosing").modifiable(true).creatable(true).build(),
-			"activityName", FieldData.builder().columnName("activityName").creatable(true).build(),
-			"activityType", FieldData.builder().columnName("activityType").creatable(true).build()
+			"categoryType", FieldData.builder().columnName("categoryType").build(),
+			"groupId", FieldData.builder().columnName("group").referenzable(Group.class).build(),
+			"preventClose", FieldData.builder().columnName("preventClosing").build(),
+			"activityName", FieldData.builder().columnName("activityName").build(),
+			"activityType", FieldData.builder().columnName("activityType").build()
 			),
 			ActivityCreationDelta.class,
 			Activity.class,
 			ActivityModificationConstraints.class),
 	CONDITION(Map.of(
-			"requiredUsageMs", FieldData.builder().columnName("requiredUsageMs").modifiable(true).creatable(true).build(),
-			"lastDaysToConsider", FieldData.builder().columnName("lastDaysToConsider").modifiable(true).creatable(true).build(),
-			"conditionalGroup", FieldData.builder().columnName("conditionalGroup").referenzable(Group.class).modifiable(true).creatable(true).build(),
-			"targetGroup", FieldData.builder().columnName("targetGroup").referenzable(Group.class).modifiable(true).creatable(true).build()
+			"requiredUsageMs", FieldData.builder().columnName("requiredUsageMs").build(),
+			"lastDaysToConsider", FieldData.builder().columnName("lastDaysToConsider").build(),
+			"conditionalGroup", FieldData.builder().columnName("conditionalGroup").referenzable(Group.class).build(),
+			"targetGroup", FieldData.builder().columnName("targetGroup").referenzable(Group.class).build()
 			),
 			ConditionCreationDelta.class,
 			Condition.class,
 			ConditionModificationConstraints.class),
 	SETTING(Map.of(
-			"settingValue", FieldData.builder().columnName("settingValue").modifiable(true).creatable(true).build(),
-			"settingKey", FieldData.builder().columnName("settingKey").creatable(true).build(),
-			"platformType", FieldData.builder().columnName("platform").creatable(true).build()
+			"settingValue", FieldData.builder().columnName("settingValue").build(),
+			"settingKey", FieldData.builder().columnName("settingKey").build(),
+			"platformType", FieldData.builder().columnName("platform").build()
 			),
 			SettingCreationDelta.class,
 			Setting.class,
 			SettingModificationConstraints.class),
 	RANDOM_QUESTION(Map.of(
-			"name", FieldData.builder().columnName("name").modifiable(true).creatable(true).build(),
-			"question", FieldData.builder().columnName("question").modifiable(true).creatable(true).build(),
-			"frequency", FieldData.builder().columnName("frequency").modifiable(true).creatable(true).build(),
-			"multiplier", FieldData.builder().columnName("multiplier").modifiable(true).creatable(true).build()
+			"name", FieldData.builder().columnName("name").build(),
+			"question", FieldData.builder().columnName("question").build(),
+			"frequency", FieldData.builder().columnName("frequency").build(),
+			"multiplier", FieldData.builder().columnName("multiplier").build()
 			),
 			RandomQuestionCreationDelta.class,
 			RandomQuestion.class,
 			RandomQuestionModificationConstraints.class),
 	RANDOM_CHECK(Map.of(
-			"name", FieldData.builder().columnName("name").modifiable(true).creatable(true).build(),
-			"startActive", FieldData.builder().columnName("startActive").modifiable(true).creatable(true).build(),
-			"endActive", FieldData.builder().columnName("endActive").modifiable(true).creatable(true).build(),
-			"minCheckLapse", FieldData.builder().columnName("minCheckLapse").modifiable(true).creatable(true).build(),
-			"maxCheckLapse", FieldData.builder().columnName("maxCheckLapse").modifiable(true).creatable(true).build(),
-			"reward", FieldData.builder().columnName("reward").modifiable(true).creatable(true).build(),
-			"activeDays", FieldData.builder().columnName("activeDays").modifiable(true).creatable(true).build(),
-			"negativeQuestions", FieldData.builder().columnName("negativeQuestions").modifiable(true).creatable(true).build(),
-			"positiveQuestions", FieldData.builder().columnName("positiveQuestions").modifiable(true).creatable(true).build()
+			"name", FieldData.builder().columnName("name").build(),
+			"startActive", FieldData.builder().columnName("startActive").build(),
+			"endActive", FieldData.builder().columnName("endActive").build(),
+			"minCheckLapse", FieldData.builder().columnName("minCheckLapse").build(),
+			"maxCheckLapse", FieldData.builder().columnName("maxCheckLapse").build(),
+			"reward", FieldData.builder().columnName("reward").build(),
+			"activeDays", FieldData.builder().columnName("activeDays").build(),
+			"negativeQuestions", FieldData.builder().columnName("negativeQuestions").build(),
+			"positiveQuestions", FieldData.builder().columnName("positiveQuestions").build()
 			),
 			RandomCheckCreationDelta.class,
 			RandomCheck.class,
