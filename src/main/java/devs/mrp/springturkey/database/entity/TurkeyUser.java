@@ -37,7 +37,7 @@ indexes = @Index(name = "user_email_index", columnList = "email", unique = true)
 @EqualsAndHashCode
 public class TurkeyUser {
 
-	// TODO make email modifiable
+	// TODO make email modifiable, or best, don't store email and use a Keycloack generated identifier
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
