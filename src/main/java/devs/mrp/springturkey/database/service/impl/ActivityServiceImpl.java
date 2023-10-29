@@ -10,6 +10,7 @@ import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.Activity;
 import devs.mrp.springturkey.database.repository.ActivityRepository;
 import devs.mrp.springturkey.database.service.ActivityService;
+import devs.mrp.springturkey.utils.Duple;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -27,22 +28,31 @@ public class ActivityServiceImpl implements ActivityService {
 	@Override
 	public Flux<Activity> findAllUserActivites() {
 		return loginDetailsReader.getTurkeyUser().flatMapMany(user -> Flux.fromIterable(activityRepository.findAllByUser(user)))
-				.filter(activity -> loginDetailsReader.isCurrentUser(activity.getUser()));
+				.flatMap(activity -> {
+					return loginDetailsReader.isCurrentUser(activity.getUser())
+							.map(isCurrent -> new Duple<Activity,Boolean>(activity, isCurrent));
+				})
+				.filter(Duple::getValue2)
+				.map(Duple::getValue1);
 	}
 
 	@Override
 	public Mono<Integer> addNewActivity(Activity activity) {
-		if (!loginDetailsReader.isCurrentUser(activity.getUser())) {
-			log.error("Activity does not belong to user");
-			log.debug(activity.toString());
-			return Mono.error(new DoesNotBelongToUserException());
-		}
-		try {
-			return insert(activity);
-		} catch (DataIntegrityViolationException e) {
-			log.error("Error inserting condition", e);
-			return Mono.error(new AlreadyExistsException());
-		}
+		return loginDetailsReader.isCurrentUser(activity.getUser())
+				.flatMap(isCurrentUser -> {
+					if (!isCurrentUser) {
+						log.error("Activity does not belong to user");
+						log.debug(activity.toString());
+						return Mono.error(new DoesNotBelongToUserException());
+					}
+					try {
+						return insert(activity);
+					} catch (DataIntegrityViolationException e) {
+						log.error("Error inserting condition", e);
+						return Mono.error(new AlreadyExistsException());
+					}
+				});
+
 	}
 
 	private Mono<Integer> insert(Activity activity) {

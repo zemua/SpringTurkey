@@ -11,6 +11,7 @@ import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.Condition;
 import devs.mrp.springturkey.database.repository.ConditionRepository;
 import devs.mrp.springturkey.database.service.ConditionService;
+import devs.mrp.springturkey.utils.Duple;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -28,33 +29,50 @@ public class ConditionServiceImpl implements ConditionService {
 	@Override
 	public Flux<Condition> findAllUserConditions() {
 		return loginDetailsReader.getTurkeyUser().flatMapMany(user -> Flux.fromIterable(conditionRepository.findAllByUser(user)))
-				.filter(condition -> loginDetailsReader.isCurrentUser(condition.getUser()));
+				.flatMap(condition -> {
+					return loginDetailsReader.isCurrentUser(condition.getUser())
+							.map(isCurrent -> new Duple<Condition,Boolean>(condition, isCurrent));
+				})
+				.filter(Duple::getValue2)
+				.map(Duple::getValue1);
 	}
 
 	@Override
 	public Mono<Integer> addNewCondition(Condition condition) {
-		if (!isAllCurrentUser(condition)) {
-			log.error("Condition does not belong to user");
-			log.debug(condition.toString());
-			return Mono.error(new DoesNotBelongToUserException());
-		}
-		if (isTargetSameAsConditional(condition)) {
-			log.error("Conditional group and target group are the same");
-			log.debug(condition.toString());
-			return Mono.error(new WrongDataException("Same groups on condition"));
-		}
-		try {
-			return insert(condition);
-		} catch (DataIntegrityViolationException e) {
-			log.error("Error inserting condition", e);
-			return Mono.error(new AlreadyExistsException());
-		}
+		return isAllCurrentUser(condition).flatMap(isCurrent -> {
+			if (!isCurrent) {
+				log.error("Condition does not belong to user");
+				log.debug(condition.toString());
+				return Mono.error(new DoesNotBelongToUserException());
+			}
+			if (isTargetSameAsConditional(condition)) {
+				log.error("Conditional group and target group are the same");
+				log.debug(condition.toString());
+				return Mono.error(new WrongDataException("Same groups on condition"));
+			}
+			try {
+				return insert(condition);
+			} catch (DataIntegrityViolationException e) {
+				log.error("Error inserting condition", e);
+				return Mono.error(new AlreadyExistsException());
+			}
+		});
 	}
 
-	private boolean isAllCurrentUser(Condition condition) {
+	private Mono<Boolean> isAllCurrentUser(Condition condition) {
 		return loginDetailsReader.isCurrentUser(condition.getUser())
-				&& loginDetailsReader.isCurrentUser(condition.getConditionalGroup().getUser())
-				&& loginDetailsReader.isCurrentUser(condition.getTargetGroup().getUser());
+				.flatMap(isConditionUser -> {
+					if (!isConditionUser) {
+						return Mono.just(false);
+					}
+					return loginDetailsReader.isCurrentUser(condition.getConditionalGroup().getUser());
+				})
+				.flatMap(isConditionalGroupUser -> {
+					if (!isConditionalGroupUser) {
+						return Mono.just(false);
+					}
+					return loginDetailsReader.isCurrentUser(condition.getTargetGroup().getUser());
+				});
 	}
 
 	private boolean isTargetSameAsConditional(Condition condition) {

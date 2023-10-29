@@ -2,7 +2,7 @@ package devs.mrp.springturkey.Exceptions;
 
 import java.io.IOException;
 
-public class DoesNotExistException extends IOException {
+public class DoesNotExistException extends IOException { // TODO add controller advice to handle exceptions
 
 	private static final long serialVersionUID = 1L;
 
