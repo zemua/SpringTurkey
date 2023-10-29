@@ -2,12 +2,11 @@ package devs.mrp.springturkey.components.impl;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Component;
-
-import com.nimbusds.oauth2.sdk.util.StringUtils;
 
 import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
@@ -24,7 +23,7 @@ public class LoginDetailsReaderImpl implements LoginDetailsReader {
 	private static final Object CREATE_USER_LOCK = new Object();
 
 	@Override
-	public Mono<String> getUserId() { // TODO fix tests
+	public Mono<String> getUserId() {
 		return ReactiveSecurityContextHolder.getContext().map(context -> {
 
 			Authentication auth = context.getAuthentication();
@@ -42,23 +41,24 @@ public class LoginDetailsReaderImpl implements LoginDetailsReader {
 	}
 
 	@Override
-	public boolean isCurrentUser(TurkeyUser user) {
-		return user.getEmail().equals(getUserId());
+	public Mono<Boolean> isCurrentUser(TurkeyUser user) {
+		return getUserId().map(id -> StringUtils.equals(id, user.getEmail()));
 	}
 
 	@Override
-	public Mono<TurkeyUser> getTurkeyUser() { // TODO it could be not found in the db
-		return getUserId().map(userRepository::findByEmail);
+	public Mono<TurkeyUser> getTurkeyUser() {
+		return getUserId()
+				.map(userRepository::findByEmail)
+				.flatMap(optional -> optional.isPresent() ? Mono.just(optional.get()) : Mono.empty());
 	}
 
 	@Override
 	public Mono<TurkeyUser> setupCurrentUser() {
-		return getTurkeyUser().flatMap(currentUser -> {
-			if (currentUser == null) {
-				return getUserId().map(email -> userRepository.save(TurkeyUser.builder().email(email).build()));
-			}
-			return Mono.just(currentUser);
-		});
+		return getTurkeyUser()
+				.switchIfEmpty(Mono.defer(() -> {
+					return getUserId()
+							.map(id -> userRepository.save(TurkeyUser.builder().email(id).build()));
+				}));
 	}
 
 }

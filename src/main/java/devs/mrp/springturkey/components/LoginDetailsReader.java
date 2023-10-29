@@ -7,7 +7,7 @@ public interface LoginDetailsReader {
 
 	public Mono<String> getUserId();
 
-	public boolean isCurrentUser(TurkeyUser user);
+	public Mono<Boolean> isCurrentUser(TurkeyUser user);
 
 	public Mono<TurkeyUser> getTurkeyUser();
 

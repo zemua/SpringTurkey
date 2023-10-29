@@ -22,6 +22,7 @@ import org.springframework.web.reactive.config.EnableWebFlux;
 
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.UserRepository;
+import reactor.test.StepVerifier;
 
 @DataJpaTest
 @EnableJpaRepositories(basePackages = "devs.mrp.springturkey.database.repository")
@@ -40,7 +41,7 @@ class LoginDetailsReaderImplTest {
 	@Test
 	@WithMockUser(username = "basic@user.me", password = "password", roles = "USER")
 	void testGetUsername() {
-		String result = reader.getUserId();
+		String result = reader.getUserId().block();
 		assertEquals("basic@user.me", result);
 	}
 
@@ -52,40 +53,41 @@ class LoginDetailsReaderImplTest {
 				.email("basic@user.me")
 				.build();
 		userRepository.save(tobesaved);
-		TurkeyUser user = reader.getTurkeyUser();
+		TurkeyUser user = reader.getTurkeyUser().block();
 		assertEquals("basic@user.me", user.getEmail());
 	}
 
 	@Test
 	@WithMockUser(username = "basic@user.me", password = "password", roles = "USER")
 	void getNullUserObject() {
-		TurkeyUser user = reader.getTurkeyUser();
-		assertNull(user);
+		StepVerifier
+		.create(reader.getTurkeyUser())
+		.verifyComplete();
 	}
 
 	@Test
 	@WithMockUser(username = "basic@user.me", password = "password", roles = "USER")
 	void isCurrentUser() {
 		TurkeyUser user = TurkeyUser.builder().email("basic@user.me").build();
-		assertTrue(reader.isCurrentUser(user));
+		assertTrue(reader.isCurrentUser(user).block());
 		TurkeyUser user2 = TurkeyUser.builder().email("other@user.me").build();
-		assertFalse(reader.isCurrentUser(user2));
+		assertFalse(reader.isCurrentUser(user2).block());
 	}
 
 	@Test
 	@DirtiesContext
 	@WithMockUser(username = "basic@user.me", password = "password", roles = "USER")
 	void createCurrentUser() {
-		TurkeyUser user = reader.getTurkeyUser();
+		TurkeyUser user = reader.getTurkeyUser().block();
 		assertNull(user);
-		user = reader.setupCurrentUser();
+		user = reader.setupCurrentUser().block();
 		assertEquals("basic@user.me", user.getEmail());
-		user = reader.getTurkeyUser();
+		user = reader.getTurkeyUser().block();
 		assertEquals("basic@user.me", user.getEmail());
-		TurkeyUser user2 = reader.setupCurrentUser();
+		TurkeyUser user2 = reader.setupCurrentUser().block();
 		assertEquals(user.getId(), user2.getId());
 
-		TurkeyUser sameUser = reader.setupCurrentUser();
+		TurkeyUser sameUser = reader.setupCurrentUser().block();
 		assertEquals(user.getId(), sameUser.getId());
 
 		verify(userRepository, times(1)).save(ArgumentMatchers.any());
