@@ -10,6 +10,7 @@ import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.RandomCheck;
 import devs.mrp.springturkey.database.repository.RandomCheckRepository;
 import devs.mrp.springturkey.database.service.RandomCheckService;
+import devs.mrp.springturkey.utils.Duple;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -25,7 +26,12 @@ public class RandomCheckServiceImpl implements RandomCheckService {
 	@Override
 	public Flux<RandomCheck> findAllUserChecks() {
 		return loginDetailsReader.getTurkeyUser().flatMapMany(user -> Flux.fromIterable(randomCheckRepository.findAllByUser(user)))
-				.filter(check -> loginDetailsReader.isCurrentUser(check.getUser()));
+				.flatMap(check -> {
+					return loginDetailsReader.isCurrentUser(check.getUser())
+							.map(isCurrent -> new Duple<RandomCheck,Boolean>(check, isCurrent));
+				})
+				.filter(Duple::getValue2)
+				.map(Duple::getValue1);
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.Group;
 import devs.mrp.springturkey.database.repository.GroupRepository;
 import devs.mrp.springturkey.database.service.GroupService;
+import devs.mrp.springturkey.utils.Duple;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -25,19 +26,27 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	public Flux<Group> findAllUserGroups() {
 		return loginDetailsReader.getTurkeyUser().flatMapMany(user -> Flux.fromIterable(groupRepository.findAllByUser(user)))
-				.filter(group -> loginDetailsReader.isCurrentUser(group.getUser()));
+				.flatMap(group -> {
+					return loginDetailsReader.isCurrentUser(group.getUser())
+							.map(isCurrent -> new Duple<Group,Boolean>(group, isCurrent));
+				})
+				.filter(Duple::getValue2)
+				.map(Duple::getValue1);
 	}
 
 	@Override
 	public Mono<Integer> addNewGroup(Group group) {
-		if (!loginDetailsReader.isCurrentUser(group.getUser())) {
-			return Mono.error(new DoesNotBelongToUserException());
-		}
-		try {
-			return insert(group);
-		} catch (DataIntegrityViolationException e) {
-			return Mono.error(new AlreadyExistsException());
-		}
+		return loginDetailsReader.isCurrentUser(group.getUser())
+				.flatMap(isCurrent -> {
+					if (!isCurrent) {
+						return Mono.error(new DoesNotBelongToUserException());
+					}
+					try {
+						return insert(group);
+					} catch (DataIntegrityViolationException e) {
+						return Mono.error(new AlreadyExistsException());
+					}
+				});
 	}
 
 	private Mono<Integer> insert(Group group) {

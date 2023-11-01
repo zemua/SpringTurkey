@@ -10,6 +10,7 @@ import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.Setting;
 import devs.mrp.springturkey.database.repository.SettingRepository;
 import devs.mrp.springturkey.database.service.SettingService;
+import devs.mrp.springturkey.utils.Duple;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -28,23 +29,31 @@ public class SettingServiceImpl implements SettingService {
 	public Flux<Setting> findAllUserSettings() {
 		return loginDetailsReader.getTurkeyUser()
 				.map(user -> settingRepository.findAllByUser(user))
-				.flatMapMany(list -> Flux.fromIterable(list))
-				.filter(setting -> loginDetailsReader.isCurrentUser(setting.getUser()));
+				.flatMapMany(Flux::fromIterable)
+				.flatMap(setting -> {
+					return loginDetailsReader.isCurrentUser(setting.getUser())
+							.map(isCurrent -> new Duple<Setting,Boolean>(setting, isCurrent));
+				})
+				.filter(Duple::getValue2)
+				.map(Duple::getValue1);
 	}
 
 	@Override
 	public Mono<Integer> addNewSetting(Setting setting) {
-		if (!loginDetailsReader.isCurrentUser(setting.getUser())) {
-			log.error("Activity does not belong to user");
-			log.debug(setting.toString());
-			return Mono.error(new DoesNotBelongToUserException());
-		}
-		try {
-			return insert(setting);
-		} catch(DataIntegrityViolationException e) {
-			log.error("Error inserting condition", e);
-			return Mono.error(new AlreadyExistsException());
-		}
+		return loginDetailsReader.isCurrentUser(setting.getUser())
+				.flatMap(isCurrent -> {
+					if (!isCurrent) {
+						log.error("Activity does not belong to user");
+						log.debug(setting.toString());
+						return Mono.error(new DoesNotBelongToUserException());
+					}
+					try {
+						return insert(setting);
+					} catch(DataIntegrityViolationException e) {
+						log.error("Error inserting condition", e);
+						return Mono.error(new AlreadyExistsException());
+					}
+				});
 	}
 
 	private Mono<Integer> insert(Setting setting) {

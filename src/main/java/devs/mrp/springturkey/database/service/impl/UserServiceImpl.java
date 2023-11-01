@@ -1,8 +1,11 @@
 package devs.mrp.springturkey.database.service.impl;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import devs.mrp.springturkey.Exceptions.DoesNotExistException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.UserRepository;
@@ -28,7 +31,11 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Mono<TurkeyUser> getUser() {
-		return loginDetailsReader.getUserId().flatMap(user -> Mono.just(userRepository.findByEmail(user)));
+		return loginDetailsReader.getUserId()
+				.flatMap(user -> Mono.just(userRepository.findByEmail(user)))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.switchIfEmpty(Mono.error(new DoesNotExistException("User does not exist")));
 	}
 
 }

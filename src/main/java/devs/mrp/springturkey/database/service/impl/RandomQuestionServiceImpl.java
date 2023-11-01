@@ -10,6 +10,7 @@ import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.RandomQuestion;
 import devs.mrp.springturkey.database.repository.RandomQuestionRepository;
 import devs.mrp.springturkey.database.service.RandomQuestionService;
+import devs.mrp.springturkey.utils.Duple;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -25,19 +26,27 @@ public class RandomQuestionServiceImpl implements RandomQuestionService {
 	@Override
 	public Flux<RandomQuestion> findAllUserQuestions() {
 		return loginDetailsReader.getTurkeyUser().flatMapMany(user -> Flux.fromIterable(randomBlockRepository.findAllByUser(user)))
-				.filter(block -> loginDetailsReader.isCurrentUser(block.getUser()));
+				.flatMap(question -> {
+					return loginDetailsReader.isCurrentUser(question.getUser())
+							.map(isCurrent -> new Duple<RandomQuestion,Boolean>(question, isCurrent));
+				})
+				.filter(Duple::getValue2)
+				.map(Duple::getValue1);
 	}
 
 	@Override
 	public Mono<Integer> addNewQuestion(RandomQuestion question) {
-		if (!loginDetailsReader.isCurrentUser(question.getUser())) {
-			return Mono.error(new DoesNotBelongToUserException());
-		}
-		try {
-			return insert(question);
-		} catch (DataIntegrityViolationException e) {
-			return Mono.error(new AlreadyExistsException());
-		}
+		return loginDetailsReader.isCurrentUser(question.getUser())
+				.flatMap(isCurrent -> {
+					if (!isCurrent) {
+						return Mono.error(new DoesNotBelongToUserException());
+					}
+					try {
+						return insert(question);
+					} catch (DataIntegrityViolationException e) {
+						return Mono.error(new AlreadyExistsException());
+					}
+				});
 	}
 
 	public Mono<Integer> insert(RandomQuestion question) {
