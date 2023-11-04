@@ -14,7 +14,7 @@ class ExportDeviceDtoTest {
 
 	@Test
 	void testConvert() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		Device device1 = Device.builder().user(user).usageTime(111L).build();
 		Device device2 = Device.builder().user(user).usageTime(222L).build();
 		Device device3 = Device.builder().user(user).usageTime(333L).build();

@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Mono<TurkeyUser> addCurrentUser() {
 		return loginDetailsReader.getUserId().map(user -> TurkeyUser.builder()
-				.email(user)
+				.externalId(user)
 				.build())
 				.flatMap(user -> Mono.just(userRepository.save(user)));
 	}
@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Mono<TurkeyUser> getUser() {
 		return loginDetailsReader.getUserId()
-				.flatMap(user -> Mono.just(userRepository.findByEmail(user)))
+				.flatMap(user -> Mono.just(userRepository.findByExternalId(user)))
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.switchIfEmpty(Mono.error(new DoesNotExistException("User does not exist")));

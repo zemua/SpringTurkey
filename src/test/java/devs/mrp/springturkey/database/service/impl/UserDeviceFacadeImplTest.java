@@ -45,7 +45,7 @@ class UserDeviceFacadeImplTest {
 	@DirtiesContext
 	@WithMockUser("some@user.me")
 	void testAddDeviceSuccess() {
-		TurkeyUser user = TurkeyUser.builder().email("some@user.me").id(userId).build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@user.me").id(userId).build();
 		Device device = Device.builder()
 				.id(generatedId)
 				.user(user)
@@ -70,7 +70,7 @@ class UserDeviceFacadeImplTest {
 	@DirtiesContext
 	@WithMockUser("some@user.me")
 	void testAddDeviceToNotSavedUserCreatesTheUser() {
-		TurkeyUser user = TurkeyUser.builder().email("some@user.me").id(userId).build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@user.me").id(userId).build();
 		Device device = Device.builder()
 				.id(generatedId)
 				.user(user)
@@ -97,7 +97,7 @@ class UserDeviceFacadeImplTest {
 	void testGetUserDevices() {
 		UUID firstId = UUID.randomUUID();
 		UUID secondId = UUID.randomUUID();
-		TurkeyUser user = TurkeyUser.builder().id(userId).email("user@mail.me").build();
+		TurkeyUser user = TurkeyUser.builder().id(userId).externalId("user@mail.me").build();
 		Device first = Device.builder().id(firstId).user(user).usageTime(1234L).build();
 		Device second = Device.builder().id(secondId).user(user).usageTime(4321L).build();;
 
@@ -117,7 +117,7 @@ class UserDeviceFacadeImplTest {
 	@WithMockUser("some@user.me")
 	void testGetUserDeviceById() {
 		UUID firstId = UUID.randomUUID();
-		TurkeyUser user = TurkeyUser.builder().id(userId).email("user@mail.me").build();
+		TurkeyUser user = TurkeyUser.builder().id(userId).externalId("user@mail.me").build();
 		Device first = Device.builder().id(firstId).user(user).usageTime(1234L).build();
 
 		when(deviceService.getDeviceById(ArgumentMatchers.any())).thenReturn(Mono.just(first));

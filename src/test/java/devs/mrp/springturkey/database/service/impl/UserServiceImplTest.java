@@ -37,7 +37,7 @@ class UserServiceImplTest {
 
 		StepVerifier.create(monoUser)
 		.expectNextMatches(user -> {
-			return user.getEmail().equals("user@mail.me") && user.getCreated() != null;
+			return user.getExternalId().equals("user@mail.me") && user.getCreated() != null;
 		})
 		.expectComplete()
 		.verify();
@@ -46,13 +46,13 @@ class UserServiceImplTest {
 	@Test
 	@WithMockUser("user@mail.me")
 	void testGetUser() {
-		TurkeyUser user = TurkeyUser.builder().email("user@mail.me").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("user@mail.me").build();
 		UUID id = userRepository.save(user).getId();
 
 		Mono<TurkeyUser> monoUser = userServiceImpl.getUser();
 
 		StepVerifier.create(monoUser)
-		.expectNextMatches(u -> u.getId().equals(id) && u.getEmail().equals("user@mail.me")  && user.getCreated() != null)
+		.expectNextMatches(u -> u.getId().equals(id) && u.getExternalId().equals("user@mail.me")  && user.getCreated() != null)
 		.expectComplete()
 		.verify();
 	}

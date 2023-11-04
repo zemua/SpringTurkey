@@ -49,10 +49,10 @@ class RandomQuestionServiceImplTest {
 
 	@BeforeEach
 	void setup() {
-		user = TurkeyUser.builder().email("some@mail.com").build();
+		user = TurkeyUser.builder().externalId("some@mail.com").build();
 		savedUser = userRepository.save(user);
 
-		otherUser = TurkeyUser.builder().email("other@mail.com").build();
+		otherUser = TurkeyUser.builder().externalId("other@mail.com").build();
 		savedOtherUser = userRepository.save(otherUser);
 	}
 

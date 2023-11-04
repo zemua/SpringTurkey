@@ -18,7 +18,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +27,7 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "turkey_user")
 @Table(name = "turkey_user",
-indexes = @Index(name = "user_email_index", columnList = "email", unique = true))
+indexes = @Index(name = "user_external_id_index", columnList = "external_id", unique = true))
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @AllArgsConstructor
@@ -37,16 +36,13 @@ indexes = @Index(name = "user_email_index", columnList = "email", unique = true)
 @EqualsAndHashCode
 public class TurkeyUser {
 
-	// TODO make email modifiable, or best, don't store email and use a Keycloack generated identifier
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
-	private UUID id;
+	private UUID id; // Internal auto-generated db id
 
 	@NotBlank
-	@Column(name = "email")
-	@Email
-	private String email;
+	@Column(name = "external_id")
+	private String externalId; // External keycloak id
 
 	@OneToMany(mappedBy = "user")
 	private List<Device> devices;

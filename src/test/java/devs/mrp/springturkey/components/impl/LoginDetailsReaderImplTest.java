@@ -50,11 +50,11 @@ class LoginDetailsReaderImplTest {
 	@WithMockUser(username = "basic@user.me", password = "password", roles = "USER")
 	void getUserObject() {
 		TurkeyUser tobesaved = TurkeyUser.builder()
-				.email("basic@user.me")
+				.externalId("basic@user.me")
 				.build();
 		userRepository.save(tobesaved);
 		TurkeyUser user = reader.getTurkeyUser().block();
-		assertEquals("basic@user.me", user.getEmail());
+		assertEquals("basic@user.me", user.getExternalId());
 	}
 
 	@Test
@@ -68,9 +68,9 @@ class LoginDetailsReaderImplTest {
 	@Test
 	@WithMockUser(username = "basic@user.me", password = "password", roles = "USER")
 	void isCurrentUser() {
-		TurkeyUser user = TurkeyUser.builder().email("basic@user.me").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("basic@user.me").build();
 		assertTrue(reader.isCurrentUser(user).block());
-		TurkeyUser user2 = TurkeyUser.builder().email("other@user.me").build();
+		TurkeyUser user2 = TurkeyUser.builder().externalId("other@user.me").build();
 		assertFalse(reader.isCurrentUser(user2).block());
 	}
 
@@ -81,9 +81,9 @@ class LoginDetailsReaderImplTest {
 		TurkeyUser user = reader.getTurkeyUser().block();
 		assertNull(user);
 		user = reader.setupCurrentUser().block();
-		assertEquals("basic@user.me", user.getEmail());
+		assertEquals("basic@user.me", user.getExternalId());
 		user = reader.getTurkeyUser().block();
-		assertEquals("basic@user.me", user.getEmail());
+		assertEquals("basic@user.me", user.getExternalId());
 		TurkeyUser user2 = reader.setupCurrentUser().block();
 		assertEquals(user.getId(), user2.getId());
 

@@ -43,10 +43,10 @@ class GroupServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void findAllUserGroups() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
-		TurkeyUser otherUser = TurkeyUser.builder().email("other@mail.com").build();
+		TurkeyUser otherUser = TurkeyUser.builder().externalId("other@mail.com").build();
 		userRepository.save(otherUser);
 
 		Group group1 = Group.builder()
@@ -87,10 +87,10 @@ class GroupServiceImplTest {
 	@Test
 	@WithMockUser("wrong@mail.com")
 	void findAllUserGroupsWithWrongUser() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
-		TurkeyUser otherUser = TurkeyUser.builder().email("other@mail.com").build();
+		TurkeyUser otherUser = TurkeyUser.builder().externalId("other@mail.com").build();
 		userRepository.save(otherUser);
 
 		Group group1 = Group.builder()
@@ -128,7 +128,7 @@ class GroupServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void insertNewGroup() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()
@@ -160,7 +160,7 @@ class GroupServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void insertNewGroupEmptyId() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()
@@ -189,7 +189,7 @@ class GroupServiceImplTest {
 	@Test
 	@WithMockUser("wrong@mail.com")
 	void insertNewGroupWrongUser() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()
@@ -215,7 +215,7 @@ class GroupServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void insertDouble() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()

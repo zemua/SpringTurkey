@@ -42,7 +42,7 @@ class DeviceServiceImplTest {
 	@Test
 	@WithMockUser("some@user.me")
 	void testAddDevice() {
-		TurkeyUser user = TurkeyUser.builder().email("some@user.me").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@user.me").build();
 		TurkeyUser userResult = userRepository.save(user);
 		Device expectedDevice = Device.builder().user(user).usageTime(0L).build();
 
@@ -57,7 +57,7 @@ class DeviceServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void testGetUserDevices() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 		Device deviceOne = Device.builder().user(user).usageTime(1234L).deviceType(DeviceType.ANDROID).build();
 		Device deviceTwo = Device.builder().user(user).usageTime(2234L).deviceType(DeviceType.IOS).build();
@@ -79,7 +79,7 @@ class DeviceServiceImplTest {
 	@Test
 	@WithMockUser("wronguser@mail.com")
 	void testGetUserDevicesWithWrongUser() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 		Device deviceOne = Device.builder().user(user).usageTime(1234L).deviceType(DeviceType.ANDROID).build();
 		Device deviceTwo = Device.builder().user(user).usageTime(2234L).deviceType(DeviceType.IOS).build();
@@ -97,7 +97,7 @@ class DeviceServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void testGetOtherDevices() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 		Device deviceOne = Device.builder().user(user).usageTime(1234L).deviceType(DeviceType.ANDROID).build();
 		Device deviceTwo = Device.builder().user(user).usageTime(2234L).deviceType(DeviceType.IOS).build();
@@ -120,7 +120,7 @@ class DeviceServiceImplTest {
 	@Test
 	@WithMockUser("wronguser@mail.com")
 	void testGetOtherDevicesWithWrongUser() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 		Device deviceOne = Device.builder().user(user).usageTime(1234L).deviceType(DeviceType.ANDROID).build();
 		Device deviceTwo = Device.builder().user(user).usageTime(2234L).deviceType(DeviceType.IOS).build();
@@ -141,7 +141,7 @@ class DeviceServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void testGetDeviceById() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 		Device device = Device.builder().user(user).usageTime(1234L).deviceType(DeviceType.ANDROID).build();
 		Device savedDevice = deviceRepository.save(device);
@@ -157,7 +157,7 @@ class DeviceServiceImplTest {
 	@Test
 	@WithMockUser("another@user.me")
 	void testGetDeviceByIdThatDoesNotBelongToCurrentUser() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 		Device device = Device.builder().user(user).usageTime(1234L).deviceType(DeviceType.ANDROID).build();
 		Device savedDevice = deviceRepository.save(device);

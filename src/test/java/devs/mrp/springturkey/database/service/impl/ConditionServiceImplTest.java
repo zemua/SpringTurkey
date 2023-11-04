@@ -49,10 +49,10 @@ class ConditionServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void findAllUserConditions() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
-		TurkeyUser otherUser = TurkeyUser.builder().email("other@mail.com").build();
+		TurkeyUser otherUser = TurkeyUser.builder().externalId("other@mail.com").build();
 		userRepository.save(otherUser);
 
 		Group group1 = Group.builder()
@@ -114,7 +114,7 @@ class ConditionServiceImplTest {
 	@Test
 	@WithMockUser("wrong@mail.com")
 	void findAllUserConditionsWithWrongUser() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()
@@ -165,7 +165,7 @@ class ConditionServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void insertNewCondition() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()
@@ -211,7 +211,7 @@ class ConditionServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void insertNewConditionWithEmtpyIdGetsGenerated() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()
@@ -253,7 +253,7 @@ class ConditionServiceImplTest {
 	@Test
 	@WithMockUser("wrong@mail.com")
 	void insertNewConditionWithWrongUser() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()
@@ -293,10 +293,10 @@ class ConditionServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void insertPointingToGroupWithWrongUser() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
-		TurkeyUser otherUser = TurkeyUser.builder().email("other@mail.com").build();
+		TurkeyUser otherUser = TurkeyUser.builder().externalId("other@mail.com").build();
 		userRepository.save(otherUser);
 
 		Group group1 = Group.builder()
@@ -336,7 +336,7 @@ class ConditionServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void insertWithBothGroupsEqual() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()
@@ -370,7 +370,7 @@ class ConditionServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void insertRepeatedId() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()

@@ -44,10 +44,10 @@ class ActivityServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void findAllUserActivities() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
-		TurkeyUser otherUser = TurkeyUser.builder().email("other@mail.com").build();
+		TurkeyUser otherUser = TurkeyUser.builder().externalId("other@mail.com").build();
 		userRepository.save(otherUser);
 
 		Activity activity1 = Activity.builder()
@@ -92,7 +92,7 @@ class ActivityServiceImplTest {
 	@Test
 	@WithMockUser("wrong@mail.com")
 	void findAllUserActivitiesWithWrongUser() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
 		Activity activity1 = Activity.builder()
@@ -126,7 +126,7 @@ class ActivityServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void insertNewActivity() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
 		Activity activity1 = Activity.builder()
@@ -158,7 +158,7 @@ class ActivityServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void insertNewActivityEmptyId() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
 		Activity activity1 = Activity.builder()
@@ -186,7 +186,7 @@ class ActivityServiceImplTest {
 	@Test
 	@WithMockUser("wrong@mail.com")
 	void insertNewActivityWrongUser() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
 		Activity activity1 = Activity.builder()
@@ -213,7 +213,7 @@ class ActivityServiceImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	void insertRepeatedId() {
-		TurkeyUser user = TurkeyUser.builder().email("some@mail.com").build();
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
 		Activity activity1 = Activity.builder()

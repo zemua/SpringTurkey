@@ -42,13 +42,13 @@ public class LoginDetailsReaderImpl implements LoginDetailsReader {
 
 	@Override
 	public Mono<Boolean> isCurrentUser(TurkeyUser user) {
-		return getUserId().map(id -> StringUtils.equals(id, user.getEmail()));
+		return getUserId().map(id -> StringUtils.equals(id, user.getExternalId()));
 	}
 
 	@Override
 	public Mono<TurkeyUser> getTurkeyUser() {
 		return getUserId()
-				.map(userRepository::findByEmail)
+				.map(userRepository::findByExternalId)
 				.flatMap(optional -> optional.isPresent() ? Mono.just(optional.get()) : Mono.empty());
 	}
 
@@ -57,7 +57,7 @@ public class LoginDetailsReaderImpl implements LoginDetailsReader {
 		return getTurkeyUser()
 				.switchIfEmpty(Mono.defer(() -> {
 					return getUserId()
-							.map(id -> userRepository.save(TurkeyUser.builder().email(id).build()));
+							.map(id -> userRepository.save(TurkeyUser.builder().externalId(id).build()));
 				}));
 	}
 

@@ -88,9 +88,9 @@ class DeltaFacadeServiceImplTest {
 
 	@BeforeEach
 	void setup() {
-		user = TurkeyUser.builder().email("some@mail.com").build();
+		user = TurkeyUser.builder().externalId("some@mail.com").build();
 		user = userRepository.save(user);
-		alternativeUser = TurkeyUser.builder().email("other@mail.com").build();
+		alternativeUser = TurkeyUser.builder().externalId("other@mail.com").build();
 		alternativeUser = userRepository.save(alternativeUser);
 	}
 
@@ -134,7 +134,7 @@ class DeltaFacadeServiceImplTest {
 		Map<String,Object> expected = delta.getJsonValue();
 		Activity saved = postActivities.get(0);
 		assertEquals(expected.get("activityName"), saved.getActivityName());
-		assertEquals("some@mail.com", saved.getUser().getEmail());
+		assertEquals("some@mail.com", saved.getUser().getExternalId());
 		assertEquals(expected.get("activityType"), saved.getActivityType().name());
 		assertEquals(expected.get("categoryType"), saved.getCategoryType().name());
 		assertNull(saved.getGroup());
@@ -170,7 +170,7 @@ class DeltaFacadeServiceImplTest {
 		Map<String,Object> expected = delta.getJsonValue();
 		Activity saved = postActivities.get(0);
 		assertEquals(expected.get("activityName"), saved.getActivityName());
-		assertEquals("some@mail.com", saved.getUser().getEmail());
+		assertEquals("some@mail.com", saved.getUser().getExternalId());
 		assertEquals(expected.get("activityType"), saved.getActivityType().name());
 		assertEquals(expected.get("categoryType"), saved.getCategoryType().name());
 		assertEquals(expected.get("groupId"), saved.getGroup().getId().toString());

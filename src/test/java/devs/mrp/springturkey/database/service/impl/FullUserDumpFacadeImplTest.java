@@ -109,7 +109,7 @@ class FullUserDumpFacadeImplTest {
 
 	@BeforeEach
 	void setup() {
-		user = userRepository.save(TurkeyUser.builder().email("some@user.me").build());
+		user = userRepository.save(TurkeyUser.builder().externalId("some@user.me").build());
 		device1 = deviceRepository.save(Device.builder().deviceType(DeviceType.ANDROID).usageTime(123L).user(user).build());
 		device2 = deviceRepository.save(Device.builder().deviceType(DeviceType.ANDROID).usageTime(234L).user(user).build());
 		device3 = deviceRepository.save(Device.builder().deviceType(DeviceType.ANDROID).usageTime(345L).user(user).build());

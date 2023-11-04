@@ -47,9 +47,9 @@ class SettingServiceImplTest {
 
 	@BeforeEach
 	void setup() {
-		user = TurkeyUser.builder().email("some@mail.com").build();
+		user = TurkeyUser.builder().externalId("some@mail.com").build();
 		userResult = userRepository.save(user);
-		otherUser = TurkeyUser.builder().email("other@mail.com").build();
+		otherUser = TurkeyUser.builder().externalId("other@mail.com").build();
 		userRepository.save(otherUser);
 	}
 
