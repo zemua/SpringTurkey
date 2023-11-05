@@ -423,6 +423,28 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(1, result);
 	}
 
+	@Test
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
+	void dontDeleteOneSetting() throws JsonProcessingException {
+		Setting setting = Setting.builder().user(user).platform(PlatformType.ALL).settingKey("someKey")
+				.settingValue("original value").build();
+		setting = settingRepository.save(setting);
+		var preSettings = settingRepository.findAll();
+		var preDeltas = deltaRepository.findAll();
+		assertEquals(1, preSettings.size());
+		assertEquals(0, preDeltas.size());
+
+		Delta delta = settingDeletionDeltaBuilder(setting.getId()).jsonValue(Map.of("deletion", false)).build();
+		Integer result = deltaFacadeService.pushDeletion(delta).block();
+
+		var postSettings = settingRepository.findAll();
+		var postDeltas = deltaRepository.findAll();
+		assertEquals(1, postSettings.size());
+		assertEquals(1, postDeltas.size());
+		assertEquals(1, result);
+	}
+
 	private Delta.DeltaBuilder activityCreationDeltaBuilder() throws JsonProcessingException {
 		return Delta.builder().timestamp(LocalDateTime.now()).deltaType(DeltaType.CREATION).table(DeltaTable.ACTIVITY)
 				.recordId(UUID.randomUUID()).jsonValue(objectMapper.convertValue(activityBuilder().build(), Map.class));
