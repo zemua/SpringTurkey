@@ -5,6 +5,10 @@ import java.time.format.DateTimeParseException;
 
 public class TimeUtils {
 
+	private TimeUtils() {
+		// hide constructor
+	}
+
 	public static boolean isParseableTime(String time) {
 		try {
 			LocalTime.parse(time);

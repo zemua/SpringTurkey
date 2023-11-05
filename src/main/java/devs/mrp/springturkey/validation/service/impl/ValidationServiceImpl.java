@@ -8,16 +8,18 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaType;
+import devs.mrp.springturkey.exceptions.WrongDataException;
 import devs.mrp.springturkey.validation.service.ValidationService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class ValidationServiceImpl implements ValidationService {
 
 	private Validator validator = validator();
@@ -60,7 +62,8 @@ public class ValidationServiceImpl implements ValidationService {
 		if (violations.isEmpty()) {
 			return true;
 		} else {
-			throw new WrongDataException("Validation failed: " + violations.toString());
+			log.warn("Validation failed: {}", violations);
+			return false;
 		}
 	}
 

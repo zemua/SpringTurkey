@@ -7,16 +7,14 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.dao.EntityFromDeltaDao;
 import devs.mrp.springturkey.database.service.UserService;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.validation.FieldData;
+import devs.mrp.springturkey.exceptions.TurkeySurpriseException;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
@@ -44,23 +42,18 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 
 	@Override
 	public Mono<Integer> save(Delta delta) {
-		try {
-			Map<String,Object> modifiableEntityMap = new HashMap<>();
-			addFieldsToEntityMap(delta, modifiableEntityMap);
+		Map<String,Object> modifiableEntityMap = new HashMap<>();
+		addFieldsToEntityMap(delta, modifiableEntityMap);
 
-			return userService.getUser().map(user -> persistEntityMapToDb(
-					StorableEntityWrapper.builder()
-					.entityMap(modifiableEntityMap)
-					.user(user)
-					.entityClass(delta.getEntityClass())
-					.build()));
-
-		} catch (JsonProcessingException e) {
-			throw new TurkeySurpriseException("Json error, delta should have been validated previously", e);
-		}
+		return userService.getUser().map(user -> persistEntityMapToDb(
+				StorableEntityWrapper.builder()
+				.entityMap(modifiableEntityMap)
+				.user(user)
+				.entityClass(delta.getEntityClass())
+				.build()));
 	}
 
-	private void addFieldsToEntityMap(Delta delta, Map<String,Object> modifiableEntityMap) throws JsonMappingException, JsonProcessingException {
+	private void addFieldsToEntityMap(Delta delta, Map<String,Object> modifiableEntityMap) {
 		modifiableEntityMap.put(ID_FIELD, delta.getRecordId());
 		delta.getJsonValue().forEach((k,v) -> addFieldToEntityMap(
 				EntityDtoFieldWrapper.builder()

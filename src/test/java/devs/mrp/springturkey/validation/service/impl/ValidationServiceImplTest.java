@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaTable;
 import devs.mrp.springturkey.delta.DeltaType;
+import devs.mrp.springturkey.exceptions.WrongDataException;
 import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
 import devs.mrp.springturkey.validation.service.ValidationService;
 

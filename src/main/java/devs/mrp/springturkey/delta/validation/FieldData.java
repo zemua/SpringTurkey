@@ -49,11 +49,11 @@ public class FieldData {
 			return new FieldData(this.columnName, this.referenzable, getValidator());
 		}
 
-	}
+		private Validator getValidator() {
+			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+			return factory.getValidator();
+		}
 
-	private static Validator getValidator() {
-		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-		return factory.getValidator();
 	}
 
 }

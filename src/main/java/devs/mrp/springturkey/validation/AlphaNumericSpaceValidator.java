@@ -9,6 +9,7 @@ public class AlphaNumericSpaceValidator implements ConstraintValidator<AlphaNume
 
 	@Override
 	public void initialize(AlphaNumericSpaceConstraint contactNumber) {
+		// intentionally left empty
 	}
 
 	@Override

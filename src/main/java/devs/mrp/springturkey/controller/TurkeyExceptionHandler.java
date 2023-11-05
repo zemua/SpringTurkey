@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
-import devs.mrp.springturkey.Exceptions.WrongDataException;
+import devs.mrp.springturkey.exceptions.DoesNotBelongToUserException;
+import devs.mrp.springturkey.exceptions.WrongDataException;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 

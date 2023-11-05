@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
-import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.RandomQuestion;
 import devs.mrp.springturkey.database.repository.RandomQuestionRepository;
 import devs.mrp.springturkey.database.service.RandomQuestionService;
+import devs.mrp.springturkey.exceptions.AlreadyExistsException;
+import devs.mrp.springturkey.exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.utils.Duple;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -26,10 +26,8 @@ public class RandomQuestionServiceImpl implements RandomQuestionService {
 	@Override
 	public Flux<RandomQuestion> findAllUserQuestions() {
 		return loginDetailsReader.getTurkeyUser().flatMapMany(user -> Flux.fromIterable(randomBlockRepository.findAllByUser(user)))
-				.flatMap(question -> {
-					return loginDetailsReader.isCurrentUser(question.getUser())
-							.map(isCurrent -> new Duple<RandomQuestion,Boolean>(question, isCurrent));
-				})
+				.flatMap(question -> loginDetailsReader.isCurrentUser(question.getUser())
+						.map(isCurrent -> new Duple<RandomQuestion,Boolean>(question, isCurrent)))
 				.filter(Duple::getValue2)
 				.map(Duple::getValue1);
 	}
@@ -38,7 +36,7 @@ public class RandomQuestionServiceImpl implements RandomQuestionService {
 	public Mono<Integer> addNewQuestion(RandomQuestion question) {
 		return loginDetailsReader.isCurrentUser(question.getUser())
 				.flatMap(isCurrent -> {
-					if (!isCurrent) {
+					if (!Boolean.TRUE.equals(isCurrent)) {
 						return Mono.error(new DoesNotBelongToUserException());
 					}
 					try {

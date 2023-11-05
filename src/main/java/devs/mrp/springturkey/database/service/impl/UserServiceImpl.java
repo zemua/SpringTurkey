@@ -5,11 +5,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import devs.mrp.springturkey.Exceptions.DoesNotExistException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.UserRepository;
 import devs.mrp.springturkey.database.service.UserService;
+import devs.mrp.springturkey.exceptions.DoesNotExistException;
 import reactor.core.publisher.Mono;
 
 @Service

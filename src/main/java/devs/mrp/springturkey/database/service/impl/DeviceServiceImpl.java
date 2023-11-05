@@ -6,12 +6,12 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.Device;
 import devs.mrp.springturkey.database.repository.DeviceRepository;
 import devs.mrp.springturkey.database.repository.UserRepository;
 import devs.mrp.springturkey.database.service.DeviceService;
+import devs.mrp.springturkey.exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.utils.Duple;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -40,10 +40,8 @@ public class DeviceServiceImpl implements DeviceService {
 	@Override
 	public Flux<Device> getUserDevices() {
 		return loginDetailsReader.getTurkeyUser().flatMapMany(user -> Flux.fromIterable(deviceRepository.findAllByUser(user)))
-				.flatMap(device -> {
-					return loginDetailsReader.isCurrentUser(device.getUser())
-							.map(isCurrent -> new Duple<Device,Boolean>(device, isCurrent));
-				})
+				.flatMap(device -> loginDetailsReader.isCurrentUser(device.getUser())
+						.map(isCurrent -> new Duple<Device,Boolean>(device, isCurrent)))
 				.filter(Duple::getValue2)
 				.map(Duple::getValue1);
 	}
@@ -63,10 +61,8 @@ public class DeviceServiceImpl implements DeviceService {
 		return Mono.just(deviceRepository.findById(deviceId))
 				.filter(Optional::isPresent)
 				.map(Optional::get)
-				.flatMap(device -> {
-					return loginDetailsReader.isCurrentUser(device.getUser())
-							.map(isCurrent -> new Duple<Device,Boolean>(device, isCurrent));
-				})
+				.flatMap(device -> loginDetailsReader.isCurrentUser(device.getUser())
+						.map(isCurrent -> new Duple<Device,Boolean>(device, isCurrent)))
 				.filter(Duple::getValue2)
 				.map(Duple::getValue1)
 				.switchIfEmpty(Mono.error(new DoesNotBelongToUserException()));

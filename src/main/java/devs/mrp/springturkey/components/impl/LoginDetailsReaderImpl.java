@@ -8,10 +8,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.UserRepository;
+import devs.mrp.springturkey.exceptions.TurkeySurpriseException;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -19,8 +19,6 @@ public class LoginDetailsReaderImpl implements LoginDetailsReader {
 
 	@Autowired
 	private UserRepository userRepository;
-
-	private static final Object CREATE_USER_LOCK = new Object();
 
 	@Override
 	public Mono<String> getUserId() {
@@ -55,10 +53,8 @@ public class LoginDetailsReaderImpl implements LoginDetailsReader {
 	@Override
 	public Mono<TurkeyUser> setupCurrentUser() {
 		return getTurkeyUser()
-				.switchIfEmpty(Mono.defer(() -> {
-					return getUserId()
-							.map(id -> userRepository.save(TurkeyUser.builder().externalId(id).build()));
-				}));
+				.switchIfEmpty(Mono.defer(() -> getUserId()
+						.map(id -> userRepository.save(TurkeyUser.builder().externalId(id).build()))));
 	}
 
 }

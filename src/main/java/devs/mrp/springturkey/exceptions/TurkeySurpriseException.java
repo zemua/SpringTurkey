@@ -1,4 +1,4 @@
-package devs.mrp.springturkey.Exceptions;
+package devs.mrp.springturkey.exceptions;
 
 public class TurkeySurpriseException extends RuntimeException {
 

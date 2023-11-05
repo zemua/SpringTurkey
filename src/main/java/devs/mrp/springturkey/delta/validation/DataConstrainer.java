@@ -1,7 +1,7 @@
 package devs.mrp.springturkey.delta.validation;
 
-import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.delta.Delta;
+import devs.mrp.springturkey.exceptions.WrongDataException;
 import reactor.core.publisher.Mono;
 
 public interface DataConstrainer {

@@ -18,8 +18,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 
-import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
-import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
 import devs.mrp.springturkey.database.entity.RandomCheck;
 import devs.mrp.springturkey.database.entity.RandomQuestion;
@@ -28,6 +26,8 @@ import devs.mrp.springturkey.database.entity.enumerable.RandomBlockType;
 import devs.mrp.springturkey.database.repository.RandomCheckRepository;
 import devs.mrp.springturkey.database.repository.RandomQuestionRepository;
 import devs.mrp.springturkey.database.repository.UserRepository;
+import devs.mrp.springturkey.exceptions.AlreadyExistsException;
+import devs.mrp.springturkey.exceptions.DoesNotBelongToUserException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;

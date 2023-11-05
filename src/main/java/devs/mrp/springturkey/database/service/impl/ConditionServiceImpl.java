@@ -4,13 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
-import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
-import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.Condition;
 import devs.mrp.springturkey.database.repository.ConditionRepository;
 import devs.mrp.springturkey.database.service.ConditionService;
+import devs.mrp.springturkey.exceptions.AlreadyExistsException;
+import devs.mrp.springturkey.exceptions.DoesNotBelongToUserException;
+import devs.mrp.springturkey.exceptions.WrongDataException;
 import devs.mrp.springturkey.utils.Duple;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -29,10 +29,8 @@ public class ConditionServiceImpl implements ConditionService {
 	@Override
 	public Flux<Condition> findAllUserConditions() {
 		return loginDetailsReader.getTurkeyUser().flatMapMany(user -> Flux.fromIterable(conditionRepository.findAllByUser(user)))
-				.flatMap(condition -> {
-					return loginDetailsReader.isCurrentUser(condition.getUser())
-							.map(isCurrent -> new Duple<Condition,Boolean>(condition, isCurrent));
-				})
+				.flatMap(condition -> loginDetailsReader.isCurrentUser(condition.getUser())
+						.map(isCurrent -> new Duple<Condition,Boolean>(condition, isCurrent)))
 				.filter(Duple::getValue2)
 				.map(Duple::getValue1);
 	}
@@ -40,7 +38,7 @@ public class ConditionServiceImpl implements ConditionService {
 	@Override
 	public Mono<Integer> addNewCondition(Condition condition) {
 		return isAllCurrentUser(condition).flatMap(isCurrent -> {
-			if (!isCurrent) {
+			if (!Boolean.TRUE.equals(isCurrent)) {
 				log.error("Condition does not belong to user");
 				log.debug(condition.toString());
 				return Mono.error(new DoesNotBelongToUserException());
@@ -62,13 +60,13 @@ public class ConditionServiceImpl implements ConditionService {
 	private Mono<Boolean> isAllCurrentUser(Condition condition) {
 		return loginDetailsReader.isCurrentUser(condition.getUser())
 				.flatMap(isConditionUser -> {
-					if (!isConditionUser) {
+					if (!Boolean.TRUE.equals(isConditionUser)) {
 						return Mono.just(false);
 					}
 					return loginDetailsReader.isCurrentUser(condition.getConditionalGroup().getUser());
 				})
 				.flatMap(isConditionalGroupUser -> {
-					if (!isConditionalGroupUser) {
+					if (!Boolean.TRUE.equals(isConditionalGroupUser)) {
 						return Mono.just(false);
 					}
 					return loginDetailsReader.isCurrentUser(condition.getTargetGroup().getUser());

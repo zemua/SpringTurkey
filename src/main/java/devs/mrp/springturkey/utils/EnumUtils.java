@@ -6,6 +6,10 @@ import java.util.function.Predicate;
 
 public class EnumUtils {
 
+	private EnumUtils() {
+		// to hide constructor
+	}
+
 	public static final <T extends Enum<T>> Predicate<String> getEnumPredicate(Class<T> enumerable) {
 		List<Enum<T>> types = Arrays.asList(enumerable.getEnumConstants());
 		List<String> enumNames = types.stream().map(Enum::name).toList();

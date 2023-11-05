@@ -16,7 +16,7 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import lombok.AllArgsConstructor;
 
-public class MaxBiggerThanMinTest {
+class MaxBiggerThanMinTest {
 
 	private Validator validator;
 

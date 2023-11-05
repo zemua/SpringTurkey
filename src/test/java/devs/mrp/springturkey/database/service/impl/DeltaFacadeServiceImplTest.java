@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
 import devs.mrp.springturkey.database.entity.Activity;
 import devs.mrp.springturkey.database.entity.DeltaEntity;
@@ -52,7 +51,9 @@ import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.ConditionCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.GroupCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.SettingCreationDelta;
+import devs.mrp.springturkey.exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
+import reactor.core.publisher.Mono;
 
 @DataJpaTest
 @EnableJpaRepositories(basePackages = "devs.mrp.springturkey.database.repository")
@@ -192,7 +193,7 @@ class DeltaFacadeServiceImplTest {
 				.jsonValue(deltaMap)
 				.build();
 
-		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta).block());
+		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta));
 	}
 
 	@Test
@@ -313,7 +314,8 @@ class DeltaFacadeServiceImplTest {
 				.table(DeltaTable.ACTIVITY)
 				.jsonValue(objectMapper.convertValue(conditionCreationBuilder(fetchedGroup1.getId(), fetchedGroup2.getId()).build(), Map.class))
 				.build();
-		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta).block());
+
+		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta));
 	}
 
 	@Test
@@ -325,7 +327,8 @@ class DeltaFacadeServiceImplTest {
 		Group fetchedGroup = groupRepository.findAll().get(0);
 
 		Delta delta = groupCreationDeltaBuilder().recordId(fetchedGroup.getId()).build();
-		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta).block());
+		Mono<Integer> result = deltaFacadeService.pushCreation(delta);
+		assertThrows(TurkeySurpriseException.class, () -> result.block());
 	}
 
 
@@ -367,7 +370,7 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(0, preActivities.size());
 		assertEquals(0, preDeltas.size());
 
-		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta).block());
+		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta));
 
 		var postActivities = activityRepository.findAll();
 		var postDeltas = deltaRepository.findAll();

@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
-import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
-import devs.mrp.springturkey.Exceptions.DoesNotExistException;
-import devs.mrp.springturkey.Exceptions.TurkeySurpriseException;
-import devs.mrp.springturkey.Exceptions.WrongDataException;
+import devs.mrp.springturkey.exceptions.AlreadyExistsException;
+import devs.mrp.springturkey.exceptions.DoesNotBelongToUserException;
+import devs.mrp.springturkey.exceptions.DoesNotExistException;
+import devs.mrp.springturkey.exceptions.TurkeySurpriseException;
+import devs.mrp.springturkey.exceptions.WrongDataException;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 

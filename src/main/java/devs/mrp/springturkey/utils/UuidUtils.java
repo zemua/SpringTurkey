@@ -5,14 +5,18 @@ import java.util.Objects;
 
 public class UuidUtils {
 
+	private UuidUtils() {
+		// hide constructor
+	}
+
 	private static final List<Integer> uuidSlahes = List.of(8,13,18,23);
-	private static final int uuidLength = 36;
+	private static final int UUID_LENGTH = 36;
 
 	public static boolean isUuid(String s) {
-		if (s.length() != uuidLength) {
+		if (s.length() != UUID_LENGTH) {
 			return false;
 		}
-		for (int i = 0; i < uuidLength; i++) {
+		for (int i = 0; i < UUID_LENGTH; i++) {
 			char c = s.charAt(i);
 			if (!isUuidChar(i, c)) {
 				return false;
@@ -26,7 +30,7 @@ public class UuidUtils {
 	}
 
 	private static boolean isUuidChar(int position, char character) {
-		if (position < 0 || position > uuidLength-1) {
+		if (position < 0 || position > UUID_LENGTH-1) {
 			return false;
 		}
 		return uuidSlahes.contains(position) ? '-' == character : Character.isLetterOrDigit(character);

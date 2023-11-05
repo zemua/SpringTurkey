@@ -8,12 +8,11 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import devs.mrp.springturkey.Exceptions.WrongDataException;
 import devs.mrp.springturkey.database.service.DeltaFacadeService;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.DataConstrainer;
-import devs.mrp.springturkey.delta.validation.FieldData;
+import devs.mrp.springturkey.exceptions.WrongDataException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -46,10 +45,6 @@ public class ModificationDeltaFilterService implements DataConstrainer {
 		}
 	}
 
-	private Map<String,FieldData> getFieldMap(Delta delta) {
-		return delta.getTable().getFieldMap();
-	}
-
 	private boolean isValid(Map<String,Object> value, Class<?> constraints) throws WrongDataException {
 		Object converted;
 		try {
@@ -65,7 +60,8 @@ public class ModificationDeltaFilterService implements DataConstrainer {
 		if (violations.isEmpty()) {
 			return true;
 		} else {
-			throw new WrongDataException("Validation failed: " + violations.toString());
+			log.warn("Validation failed: {}", violations);
+			return false;
 		}
 	}
 

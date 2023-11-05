@@ -1,7 +1,6 @@
 package devs.mrp.springturkey.controller.dto;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import devs.mrp.springturkey.controller.dto.exportentities.ExportActivityDto;
 import devs.mrp.springturkey.controller.dto.exportentities.ExportConditionDto;
@@ -33,10 +32,10 @@ public class ExportDataDto {
 	public static ExportDataDto from(ExportData data) {
 		return new ExportDataDto()
 				.withOtherDevices(ExportDeviceDto.fromDevices(data.getOtherDevices()))
-				.withActivities(data.getActivities().stream().map(ExportActivityDto::fromActivity).collect(Collectors.toList()))
-				.withGroups(data.getGroups().stream().map(ExportGroupDto::fromGroup).collect(Collectors.toList()))
-				.withConditions(data.getConditions().stream().map(ExportConditionDto::fromCondition).collect(Collectors.toList()))
-				.withSettings(data.getSettings().stream().map(ExportSettingDto::fromSetting).collect(Collectors.toList()));
+				.withActivities(data.getActivities().stream().map(ExportActivityDto::fromActivity).toList())
+				.withGroups(data.getGroups().stream().map(ExportGroupDto::fromGroup).toList())
+				.withConditions(data.getConditions().stream().map(ExportConditionDto::fromCondition).toList())
+				.withSettings(data.getSettings().stream().map(ExportSettingDto::fromSetting).toList());
 	}
 
 }

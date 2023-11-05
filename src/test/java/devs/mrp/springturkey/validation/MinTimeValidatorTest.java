@@ -14,7 +14,7 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 
-public class MinTimeValidatorTest {
+class MinTimeValidatorTest {
 
 	private Validator validator;
 

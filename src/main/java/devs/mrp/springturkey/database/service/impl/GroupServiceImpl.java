@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
-import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.Group;
 import devs.mrp.springturkey.database.repository.GroupRepository;
 import devs.mrp.springturkey.database.service.GroupService;
+import devs.mrp.springturkey.exceptions.AlreadyExistsException;
+import devs.mrp.springturkey.exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.utils.Duple;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -26,10 +26,8 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	public Flux<Group> findAllUserGroups() {
 		return loginDetailsReader.getTurkeyUser().flatMapMany(user -> Flux.fromIterable(groupRepository.findAllByUser(user)))
-				.flatMap(group -> {
-					return loginDetailsReader.isCurrentUser(group.getUser())
-							.map(isCurrent -> new Duple<Group,Boolean>(group, isCurrent));
-				})
+				.flatMap(group -> loginDetailsReader.isCurrentUser(group.getUser())
+						.map(isCurrent -> new Duple<Group,Boolean>(group, isCurrent)))
 				.filter(Duple::getValue2)
 				.map(Duple::getValue1);
 	}
@@ -38,7 +36,7 @@ public class GroupServiceImpl implements GroupService {
 	public Mono<Integer> addNewGroup(Group group) {
 		return loginDetailsReader.isCurrentUser(group.getUser())
 				.flatMap(isCurrent -> {
-					if (!isCurrent) {
+					if (!Boolean.TRUE.equals(isCurrent)) {
 						return Mono.error(new DoesNotBelongToUserException());
 					}
 					try {

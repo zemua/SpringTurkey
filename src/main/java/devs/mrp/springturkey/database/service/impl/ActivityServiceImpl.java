@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import devs.mrp.springturkey.Exceptions.AlreadyExistsException;
-import devs.mrp.springturkey.Exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.Activity;
 import devs.mrp.springturkey.database.repository.ActivityRepository;
 import devs.mrp.springturkey.database.service.ActivityService;
+import devs.mrp.springturkey.exceptions.AlreadyExistsException;
+import devs.mrp.springturkey.exceptions.DoesNotBelongToUserException;
 import devs.mrp.springturkey.utils.Duple;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -28,10 +28,8 @@ public class ActivityServiceImpl implements ActivityService {
 	@Override
 	public Flux<Activity> findAllUserActivites() {
 		return loginDetailsReader.getTurkeyUser().flatMapMany(user -> Flux.fromIterable(activityRepository.findAllByUser(user)))
-				.flatMap(activity -> {
-					return loginDetailsReader.isCurrentUser(activity.getUser())
-							.map(isCurrent -> new Duple<Activity,Boolean>(activity, isCurrent));
-				})
+				.flatMap(activity -> loginDetailsReader.isCurrentUser(activity.getUser())
+						.map(isCurrent -> new Duple<Activity,Boolean>(activity, isCurrent)))
 				.filter(Duple::getValue2)
 				.map(Duple::getValue1);
 	}
@@ -40,7 +38,7 @@ public class ActivityServiceImpl implements ActivityService {
 	public Mono<Integer> addNewActivity(Activity activity) {
 		return loginDetailsReader.isCurrentUser(activity.getUser())
 				.flatMap(isCurrentUser -> {
-					if (!isCurrentUser) {
+					if (!Boolean.TRUE.equals(isCurrentUser)) {
 						log.error("Activity does not belong to user");
 						log.debug(activity.toString());
 						return Mono.error(new DoesNotBelongToUserException());
