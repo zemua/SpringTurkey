@@ -38,7 +38,7 @@ public class DeltaFacadeServiceImpl implements DeltaFacadeService {
 
 	@Override
 	@Transactional
-	public Mono<Integer> pushCreation(Delta delta) { // TODO validate delta
+	public Mono<Integer> pushCreation(Delta delta) { // TODO validate delta using DataConstrainer
 		return deltaDaoCreation.persistDelta(delta)
 				.filter(i -> i>0)
 				.doOnNext(i -> saveDeltaEntity(delta))
@@ -47,7 +47,7 @@ public class DeltaFacadeServiceImpl implements DeltaFacadeService {
 
 	@Override
 	@Transactional
-	public Mono<Integer> pushModification(Delta delta) { // TODO validate delta
+	public Mono<Integer> pushModification(Delta delta) { // TODO validate delta using DataConstrainer
 		return deltaDaoModification.persistDelta(delta)
 				.filter(i -> i>0)
 				.doOnNext(i -> saveDeltaEntity(delta))
@@ -56,7 +56,7 @@ public class DeltaFacadeServiceImpl implements DeltaFacadeService {
 
 	@Override
 	@Transactional
-	public Mono<Integer> pushDeletion(Delta delta) { // TODO validate delta
+	public Mono<Integer> pushDeletion(Delta delta) { // TODO validate delta usingDataConstrainer
 		return deltaDaoDeletion.persistDelta(delta)
 				.filter(i -> i>0)
 				.doOnNext(i -> saveDeltaEntity(delta))
