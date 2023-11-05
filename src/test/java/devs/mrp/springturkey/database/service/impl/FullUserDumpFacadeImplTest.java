@@ -51,14 +51,16 @@ import devs.mrp.springturkey.database.repository.RandomCheckRepository;
 import devs.mrp.springturkey.database.repository.RandomQuestionRepository;
 import devs.mrp.springturkey.database.repository.SettingRepository;
 import devs.mrp.springturkey.database.repository.UserRepository;
-import devs.mrp.springturkey.database.repository.dao.impl.EntityFromDeltaDaoImpl;
+import devs.mrp.springturkey.database.repository.dao.impl.EntityFromDeltaDaoCreator;
+import devs.mrp.springturkey.database.repository.dao.impl.EntityFromDeltaDaoDeleter;
+import devs.mrp.springturkey.database.repository.dao.impl.EntityFromDeltaDaoModifier;
 import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
 
 @DataJpaTest
 @EnableJpaRepositories(basePackages = "devs.mrp.springturkey.database.repository")
 @EntityScan("devs.mrp.springturkey.database.*")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(classes = {EntityFromDeltaDaoImpl.class, ObjectMapperProvider.class})
+@ContextConfiguration(classes = {EntityFromDeltaDaoCreator.class, EntityFromDeltaDaoModifier.class, EntityFromDeltaDaoDeleter.class, ObjectMapperProvider.class})
 @Import({ServiceBeansConfig.class})
 @EnableJpaAuditing
 class FullUserDumpFacadeImplTest {

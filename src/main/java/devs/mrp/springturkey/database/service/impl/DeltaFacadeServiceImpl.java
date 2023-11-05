@@ -1,6 +1,7 @@
 package devs.mrp.springturkey.database.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,18 +13,25 @@ import devs.mrp.springturkey.database.repository.dao.EntityFromDeltaDao;
 import devs.mrp.springturkey.database.service.DeltaFacadeService;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.exceptions.TurkeySurpriseException;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Service
-@Slf4j
 public class DeltaFacadeServiceImpl implements DeltaFacadeService {
 
 	@Autowired
 	private DeltaRepository deltaRepository;
 
 	@Autowired
-	private EntityFromDeltaDao entityFromDeltaDao;
+	@Qualifier("deltaDaoCreation")
+	private EntityFromDeltaDao deltaDaoCreation;
+
+	@Autowired
+	@Qualifier("deltaDaoModification")
+	private EntityFromDeltaDao deltaDaoModification;
+
+	@Autowired
+	@Qualifier("deltaDaoDeletion")
+	private EntityFromDeltaDao deltaDaoDeletion;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -31,31 +39,36 @@ public class DeltaFacadeServiceImpl implements DeltaFacadeService {
 	@Override
 	@Transactional
 	public Mono<Integer> pushCreation(Delta delta) {
-		return entityFromDeltaDao.save(delta)
-				.map(i -> {
-					if (i > 0) {
-						try {
-							deltaRepository.save(delta.toEntity(objectMapper));
-						} catch (JsonProcessingException e1) {
-							throw new TurkeySurpriseException("Error mapping DeltaEntity from Delta", e1);
-						}
-					}
-					return i;
-				}).doOnError(TurkeySurpriseException.class, e -> Mono.error(new TurkeySurpriseException("Error persisting delta", e)));
+		return deltaDaoCreation.persistDelta(delta)
+				.filter(i -> i>0)
+				.doOnNext(i -> saveDeltaEntity(delta))
+				.doOnError(TurkeySurpriseException.class, e -> Mono.error(new TurkeySurpriseException("Error persisting delta", e)));
 	}
 
 	@Override
 	@Transactional
-	public int pushModification(Delta delta) {
-		// TODO Auto-generated method stub
-		return 0;
+	public Mono<Integer> pushModification(Delta delta) {
+		return deltaDaoModification.persistDelta(delta)
+				.filter(i -> i>0)
+				.doOnNext(i -> saveDeltaEntity(delta))
+				.doOnError(TurkeySurpriseException.class, e -> Mono.error(new TurkeySurpriseException("Error persisting delta", e)));
 	}
 
 	@Override
 	@Transactional
-	public int pushDeletion(Delta delta) {
-		// TODO Auto-generated method stub
-		return 0;
+	public Mono<Integer> pushDeletion(Delta delta) {
+		return deltaDaoDeletion.persistDelta(delta)
+				.filter(i -> i>0)
+				.doOnNext(i -> saveDeltaEntity(delta))
+				.doOnError(TurkeySurpriseException.class, e -> Mono.error(new TurkeySurpriseException("Error persisting delta", e)));
+	}
+
+	private void saveDeltaEntity(Delta delta) {
+		try {
+			deltaRepository.save(delta.toEntity(objectMapper));
+		} catch (JsonProcessingException e1) {
+			throw new TurkeySurpriseException("Error mapping DeltaEntity from Delta", e1);
+		}
 	}
 
 }

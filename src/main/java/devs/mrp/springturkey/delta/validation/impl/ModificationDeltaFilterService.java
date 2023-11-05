@@ -33,7 +33,7 @@ public class ModificationDeltaFilterService implements DataConstrainer {
 	@Override
 	public Mono<Integer> pushDelta(Delta delta) throws WrongDataException {
 		validate(delta);
-		return Mono.just(deltaFacadeService.pushModification(delta));
+		return deltaFacadeService.pushModification(delta);
 	}
 
 	private void validate(Delta delta) throws WrongDataException {

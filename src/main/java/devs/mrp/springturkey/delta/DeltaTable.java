@@ -24,10 +24,11 @@ import devs.mrp.springturkey.delta.validation.entity.SettingCreationDelta;
 
 public enum DeltaTable {
 
-	GROUP(Map.of(
+	GROUP(Map.of( // TODO switch field data to a simple string
 			"name", FieldData.builder().columnName("name").build(),
 			"type", FieldData.builder().columnName("type").build(),
-			"preventClose", FieldData.builder().columnName("preventClose").build()
+			"preventClose", FieldData.builder().columnName("preventClose").build(),
+			"deletion", FieldData.builder().columnName("deletion").build()
 			),
 			GroupCreationDelta.class,
 			Group.class,
@@ -37,7 +38,8 @@ public enum DeltaTable {
 			"groupId", FieldData.builder().columnName("group").referenzable(Group.class).build(),
 			"preventClose", FieldData.builder().columnName("preventClosing").build(),
 			"activityName", FieldData.builder().columnName("activityName").build(),
-			"activityType", FieldData.builder().columnName("activityType").build()
+			"activityType", FieldData.builder().columnName("activityType").build(),
+			"deletion", FieldData.builder().columnName("deletion").build()
 			),
 			ActivityCreationDelta.class,
 			Activity.class,
@@ -46,7 +48,8 @@ public enum DeltaTable {
 			"requiredUsageMs", FieldData.builder().columnName("requiredUsageMs").build(),
 			"lastDaysToConsider", FieldData.builder().columnName("lastDaysToConsider").build(),
 			"conditionalGroup", FieldData.builder().columnName("conditionalGroup").referenzable(Group.class).build(),
-			"targetGroup", FieldData.builder().columnName("targetGroup").referenzable(Group.class).build()
+			"targetGroup", FieldData.builder().columnName("targetGroup").referenzable(Group.class).build(),
+			"deletion", FieldData.builder().columnName("deletion").build()
 			),
 			ConditionCreationDelta.class,
 			Condition.class,
@@ -54,7 +57,8 @@ public enum DeltaTable {
 	SETTING(Map.of(
 			"settingValue", FieldData.builder().columnName("settingValue").build(),
 			"settingKey", FieldData.builder().columnName("settingKey").build(),
-			"platformType", FieldData.builder().columnName("platform").build()
+			"platformType", FieldData.builder().columnName("platform").build(),
+			"deletion", FieldData.builder().columnName("deletion").build()
 			),
 			SettingCreationDelta.class,
 			Setting.class,
@@ -63,7 +67,8 @@ public enum DeltaTable {
 			"name", FieldData.builder().columnName("name").build(),
 			"question", FieldData.builder().columnName("question").build(),
 			"frequency", FieldData.builder().columnName("frequency").build(),
-			"multiplier", FieldData.builder().columnName("multiplier").build()
+			"multiplier", FieldData.builder().columnName("multiplier").build(),
+			"deletion", FieldData.builder().columnName("deletion").build()
 			),
 			RandomQuestionCreationDelta.class,
 			RandomQuestion.class,
@@ -77,7 +82,8 @@ public enum DeltaTable {
 			"reward", FieldData.builder().columnName("reward").build(),
 			"activeDays", FieldData.builder().columnName("activeDays").build(),
 			"negativeQuestions", FieldData.builder().columnName("negativeQuestions").build(),
-			"positiveQuestions", FieldData.builder().columnName("positiveQuestions").build()
+			"positiveQuestions", FieldData.builder().columnName("positiveQuestions").build(),
+			"deletion", FieldData.builder().columnName("deletion").build()
 			),
 			RandomCheckCreationDelta.class,
 			RandomCheck.class,

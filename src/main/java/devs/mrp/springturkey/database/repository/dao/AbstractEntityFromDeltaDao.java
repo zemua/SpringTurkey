@@ -1,16 +1,14 @@
-package devs.mrp.springturkey.database.repository.dao.impl;
+package devs.mrp.springturkey.database.repository.dao;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import devs.mrp.springturkey.database.entity.TurkeyUser;
-import devs.mrp.springturkey.database.repository.dao.EntityFromDeltaDao;
 import devs.mrp.springturkey.database.service.UserService;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.validation.FieldData;
@@ -22,26 +20,23 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TransactionRequiredException;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
-@Repository
-@Slf4j
-public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
+public abstract class AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 
-	private static final String ID_FIELD = "id";
+	protected static final String ID_FIELD = "id";
 
 	@PersistenceContext
-	private EntityManager entityManager;
+	protected EntityManager entityManager;
 
 	@Autowired
-	private ObjectMapper objectMapper;
+	protected ObjectMapper objectMapper;
 
 	@Autowired
 	private UserService userService;
 
 	@Override
-	public Mono<Integer> save(Delta delta) {
+	public Mono<Integer> persistDelta(Delta delta) {
 		Map<String,Object> modifiableEntityMap = new HashMap<>();
 		addFieldsToEntityMap(delta, modifiableEntityMap);
 
@@ -88,23 +83,16 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 
 	private int persistEntityMapToDb(StorableEntityWrapper data) {
 		try {
-			persistIfNewId(data);
+			data.getEntityMap().put("user", data.getUser());
+			Object dbObject = entityManager.find(data.getEntityClass(), data.getEntityMap().get(ID_FIELD));
+			persist(data, dbObject);
 		} catch (EntityExistsException | IllegalArgumentException | TransactionRequiredException e) {
 			throw new TurkeySurpriseException("Error persisting entity from delta", e);
 		}
 		return 1;
 	}
 
-	private void persistIfNewId(StorableEntityWrapper data) {
-		data.getEntityMap().put("user", data.getUser());
-		Object entity = objectMapper.convertValue(data.getEntityMap(), data.getEntityClass());
-		Object object = entityManager.find(data.getEntityClass(), data.getEntityMap().get("id"));
-		if (object != null) {
-			throw new TurkeySurpriseException("Trying to create an object with already existing id " + data.getEntityMap().toString());
-		} else {
-			entityManager.merge(entity);
-		}
-	}
+	protected abstract void persist(StorableEntityWrapper data, Object dbObject);
 
 	@Getter
 	@Builder
@@ -136,7 +124,7 @@ public class EntityFromDeltaDaoImpl implements EntityFromDeltaDao {
 
 	@Getter
 	@Builder
-	private static class StorableEntityWrapper {
+	protected static class StorableEntityWrapper {
 		@Nonnull
 		Map<String,Object> entityMap;
 		@Nonnull

@@ -5,6 +5,6 @@ import reactor.core.publisher.Mono;
 
 public interface EntityFromDeltaDao {
 
-	public Mono<Integer> save(Delta delta);
+	public Mono<Integer> persistDelta(Delta delta);
 
 }

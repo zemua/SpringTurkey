@@ -33,7 +33,7 @@ public class DeletionDataConstrainer implements DataConstrainer {
 		if (notTrue(deletionObject)) {
 			throw new WrongDataException("Deletion action is not set to true");
 		}
-		return Mono.just(deltaFacadeService.pushDeletion(delta));
+		return deltaFacadeService.pushDeletion(delta);
 	}
 
 	private Object getDeletionObject(Delta delta) {

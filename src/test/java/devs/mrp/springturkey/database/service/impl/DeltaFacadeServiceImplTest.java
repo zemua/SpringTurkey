@@ -31,6 +31,7 @@ import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
 import devs.mrp.springturkey.database.entity.Activity;
 import devs.mrp.springturkey.database.entity.DeltaEntity;
 import devs.mrp.springturkey.database.entity.Group;
+import devs.mrp.springturkey.database.entity.Setting;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.entity.enumerable.ActivityPlatform;
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
@@ -43,7 +44,9 @@ import devs.mrp.springturkey.database.repository.DeviceRepository;
 import devs.mrp.springturkey.database.repository.GroupRepository;
 import devs.mrp.springturkey.database.repository.SettingRepository;
 import devs.mrp.springturkey.database.repository.UserRepository;
-import devs.mrp.springturkey.database.repository.dao.impl.EntityFromDeltaDaoImpl;
+import devs.mrp.springturkey.database.repository.dao.impl.EntityFromDeltaDaoCreator;
+import devs.mrp.springturkey.database.repository.dao.impl.EntityFromDeltaDaoDeleter;
+import devs.mrp.springturkey.database.repository.dao.impl.EntityFromDeltaDaoModifier;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaTable;
 import devs.mrp.springturkey.delta.DeltaType;
@@ -60,7 +63,8 @@ import reactor.core.publisher.Mono;
 @EnableJpaAuditing
 @EntityScan("devs.mrp.springturkey.database.*")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(classes = {DeltaFacadeServiceImpl.class, EntityFromDeltaDaoImpl.class, UserServiceImpl.class, LoginDetailsReaderImpl.class, ObjectMapperProvider.class})
+@ContextConfiguration(classes = { DeltaFacadeServiceImpl.class, EntityFromDeltaDaoCreator.class, EntityFromDeltaDaoModifier.class, EntityFromDeltaDaoDeleter.class, UserServiceImpl.class,
+		LoginDetailsReaderImpl.class, ObjectMapperProvider.class })
 class DeltaFacadeServiceImplTest {
 
 	@Autowired
@@ -132,7 +136,7 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(1, postDeltas.size());
 		assertEquals(1, result);
 
-		Map<String,Object> expected = delta.getJsonValue();
+		Map<String, Object> expected = delta.getJsonValue();
 		Activity saved = postActivities.get(0);
 		assertEquals(expected.get("activityName"), saved.getActivityName());
 		assertEquals("some@mail.com", saved.getUser().getExternalId());
@@ -156,9 +160,8 @@ class DeltaFacadeServiceImplTest {
 		Group fetchedGroup = groupRepository.findAll().get(0);
 
 		Delta delta = activityCreationDeltaBuilder()
-				.jsonValue(objectMapper.convertValue(activityBuilder()
-						.groupId(fetchedGroup.getId())
-						.build(), Map.class))
+				.jsonValue(
+						objectMapper.convertValue(activityBuilder().groupId(fetchedGroup.getId()).build(), Map.class))
 				.build();
 		Integer result = deltaFacadeService.pushCreation(delta).block();
 
@@ -168,7 +171,7 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(1, postDeltas.size());
 		assertEquals(1, result);
 
-		Map<String,Object> expected = delta.getJsonValue();
+		Map<String, Object> expected = delta.getJsonValue();
 		Activity saved = postActivities.get(0);
 		assertEquals(expected.get("activityName"), saved.getActivityName());
 		assertEquals("some@mail.com", saved.getUser().getExternalId());
@@ -187,11 +190,9 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(0, preActivities.size());
 		assertEquals(0, preDeltas.size());
 
-		Map<String,Object> deltaMap = objectMapper.convertValue(activityBuilder().build(), Map.class);
+		Map<String, Object> deltaMap = objectMapper.convertValue(activityBuilder().build(), Map.class);
 		deltaMap.put("groupId", "invalid");
-		Delta delta = activityCreationDeltaBuilder()
-				.jsonValue(deltaMap)
-				.build();
+		Delta delta = activityCreationDeltaBuilder().jsonValue(deltaMap).build();
 
 		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta));
 	}
@@ -245,7 +246,7 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(0, preSettings.size());
 		assertEquals(0, preDeltas.size());
 
-		Map<String,Object> groupAsMap = objectMapper.convertValue(groupCreationBuilder().build(), Map.class);
+		Map<String, Object> groupAsMap = objectMapper.convertValue(groupCreationBuilder().build(), Map.class);
 		groupAsMap.put("name", 123);
 
 		Delta delta = groupCreationDeltaBuilder().jsonValue(groupAsMap).build();
@@ -278,7 +279,8 @@ class DeltaFacadeServiceImplTest {
 		Group fetchedGroup2 = fetchedGroups.get(1);
 
 		Delta delta = conditionCreationDeltaBuilder()
-				.jsonValue(objectMapper.convertValue(conditionCreationBuilder(fetchedGroup1.getId(), fetchedGroup2.getId()).build(), Map.class))
+				.jsonValue(objectMapper.convertValue(
+						conditionCreationBuilder(fetchedGroup1.getId(), fetchedGroup2.getId()).build(), Map.class))
 				.build();
 		Integer result = deltaFacadeService.pushCreation(delta).block();
 
@@ -310,9 +312,9 @@ class DeltaFacadeServiceImplTest {
 		Group fetchedGroup1 = fetchedGroups.get(0);
 		Group fetchedGroup2 = fetchedGroups.get(1);
 
-		Delta delta = conditionCreationDeltaBuilder()
-				.table(DeltaTable.ACTIVITY)
-				.jsonValue(objectMapper.convertValue(conditionCreationBuilder(fetchedGroup1.getId(), fetchedGroup2.getId()).build(), Map.class))
+		Delta delta = conditionCreationDeltaBuilder().table(DeltaTable.ACTIVITY)
+				.jsonValue(objectMapper.convertValue(
+						conditionCreationBuilder(fetchedGroup1.getId(), fetchedGroup2.getId()).build(), Map.class))
 				.build();
 
 		assertThrows(TurkeySurpriseException.class, () -> deltaFacadeService.pushCreation(delta));
@@ -330,8 +332,6 @@ class DeltaFacadeServiceImplTest {
 		Mono<Integer> result = deltaFacadeService.pushCreation(delta);
 		assertThrows(TurkeySurpriseException.class, () -> result.block());
 	}
-
-
 
 	@Test
 	@WithMockUser("some@mail.com")
@@ -359,11 +359,9 @@ class DeltaFacadeServiceImplTest {
 	@WithMockUser("some@mail.com")
 	@DirtiesContext
 	void persistingEntityErrorCancelsPersistOfDelta() throws JsonProcessingException, InterruptedException {
-		Map<String,Object> deltaMap = objectMapper.convertValue(activityBuilder().build(), Map.class);
+		Map<String, Object> deltaMap = objectMapper.convertValue(activityBuilder().build(), Map.class);
 		deltaMap.put("groupId", "invalid");
-		Delta delta = activityCreationDeltaBuilder()
-				.jsonValue(deltaMap)
-				.build();
+		Delta delta = activityCreationDeltaBuilder().jsonValue(deltaMap).build();
 
 		var preActivities = activityRepository.findAll();
 		var preDeltas = deltaRepository.findAll();
@@ -378,75 +376,106 @@ class DeltaFacadeServiceImplTest {
 		assertEquals(0, postDeltas.size());
 	}
 
+	@Test
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
+	void modifyOneSetting() throws JsonProcessingException {
+		Setting setting = Setting.builder().user(user).platform(PlatformType.ALL).settingKey("someKey")
+				.settingValue("original value").build();
+		setting = settingRepository.save(setting);
+		var preSettings = settingRepository.findAll();
+		var preDeltas = deltaRepository.findAll();
+		assertEquals(1, preSettings.size());
+		assertEquals(0, preDeltas.size());
+
+		Delta delta = settingModificationDeltaBuilder(setting.getId()).build();
+		Integer result = deltaFacadeService.pushModification(delta).block();
+
+		var postSettings = settingRepository.findAll();
+		var postDeltas = deltaRepository.findAll();
+		assertEquals(1, postSettings.size());
+		assertEquals(1, postDeltas.size());
+		assertEquals(1, result);
+
+		Setting updatedSetting = postSettings.get(0);
+		assertEquals("some value", updatedSetting.getSettingValue());
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
+	void deleteOneSetting() throws JsonProcessingException {
+		Setting setting = Setting.builder().user(user).platform(PlatformType.ALL).settingKey("someKey")
+				.settingValue("original value").build();
+		setting = settingRepository.save(setting);
+		var preSettings = settingRepository.findAll();
+		var preDeltas = deltaRepository.findAll();
+		assertEquals(1, preSettings.size());
+		assertEquals(0, preDeltas.size());
+
+		Delta delta = settingDeletionDeltaBuilder(setting.getId()).build();
+		Integer result = deltaFacadeService.pushDeletion(delta).block();
+
+		var postSettings = settingRepository.findAll();
+		var postDeltas = deltaRepository.findAll();
+		assertEquals(0, postSettings.size());
+		assertEquals(1, postDeltas.size());
+		assertEquals(1, result);
+	}
+
 	private Delta.DeltaBuilder activityCreationDeltaBuilder() throws JsonProcessingException {
-		return Delta.builder()
-				.timestamp(LocalDateTime.now())
-				.deltaType(DeltaType.CREATION)
-				.table(DeltaTable.ACTIVITY)
-				.recordId(UUID.randomUUID())
-				.jsonValue(objectMapper.convertValue(activityBuilder().build(), Map.class));
+		return Delta.builder().timestamp(LocalDateTime.now()).deltaType(DeltaType.CREATION).table(DeltaTable.ACTIVITY)
+				.recordId(UUID.randomUUID()).jsonValue(objectMapper.convertValue(activityBuilder().build(), Map.class));
 	}
 
 	private ActivityCreationDelta.ActivityCreationDeltaBuilder activityBuilder() {
-		return ActivityCreationDelta.builder()
-				.activityName("default name")
-				.activityType(ActivityPlatform.ANDROID_APP)
+		return ActivityCreationDelta.builder().activityName("default name").activityType(ActivityPlatform.ANDROID_APP)
 				.categoryType(CategoryType.NEGATIVE);
 	}
 
 	private Delta.DeltaBuilder settingCreationDeltaBuilder() throws JsonProcessingException {
-		return Delta.builder()
-				.timestamp(LocalDateTime.now())
-				.deltaType(DeltaType.CREATION)
-				.table(DeltaTable.SETTING)
-				.recordId(UUID.randomUUID())
-				.jsonValue(objectMapper.convertValue(settingBuilder().build(), Map.class));
+		return Delta.builder().timestamp(LocalDateTime.now()).deltaType(DeltaType.CREATION).table(DeltaTable.SETTING)
+				.recordId(UUID.randomUUID()).jsonValue(objectMapper.convertValue(settingBuilder().build(), Map.class));
+	}
+
+	private Delta.DeltaBuilder settingModificationDeltaBuilder(UUID uuid) {
+		return Delta.builder().timestamp(LocalDateTime.now()).deltaType(DeltaType.MODIFICATION).table(DeltaTable.SETTING)
+				.recordId(uuid).jsonValue(objectMapper.convertValue(settingBuilder().build(), Map.class));
+	}
+
+	private Delta.DeltaBuilder settingDeletionDeltaBuilder(UUID uuid) {
+		return Delta.builder().timestamp(LocalDateTime.now()).deltaType(DeltaType.DELETION).table(DeltaTable.SETTING)
+				.recordId(uuid).jsonValue(Map.of("deletion", true));
 	}
 
 	private SettingCreationDelta.SettingCreationDeltaBuilder settingBuilder() {
-		return SettingCreationDelta.builder()
-				.platformType(PlatformType.ALL)
-				.settingKey("someKey")
+		return SettingCreationDelta.builder().platformType(PlatformType.ALL).settingKey("someKey")
 				.settingValue("some value");
 	}
 
 	private Delta.DeltaBuilder groupCreationDeltaBuilder() throws JsonProcessingException {
-		return Delta.builder()
-				.timestamp(LocalDateTime.now())
-				.deltaType(DeltaType.CREATION)
-				.table(DeltaTable.GROUP)
+		return Delta.builder().timestamp(LocalDateTime.now()).deltaType(DeltaType.CREATION).table(DeltaTable.GROUP)
 				.recordId(UUID.randomUUID())
 				.jsonValue(objectMapper.convertValue(groupCreationBuilder().build(), Map.class));
 	}
 
 	private GroupCreationDelta.GroupCreationDeltaBuilder groupCreationBuilder() {
-		return GroupCreationDelta.builder()
-				.name("delta name")
-				.type(GroupType.NEGATIVE);
+		return GroupCreationDelta.builder().name("delta name").type(GroupType.NEGATIVE);
 	}
 
 	private Group.GroupBuilder groupBuilder() {
-		return Group.builder()
-				.id(UUID.randomUUID())
-				.name("some group name")
-				.type(GroupType.NEGATIVE)
-				.user(user);
+		return Group.builder().id(UUID.randomUUID()).name("some group name").type(GroupType.NEGATIVE).user(user);
 	}
 
 	private Delta.DeltaBuilder conditionCreationDeltaBuilder() {
-		return Delta.builder()
-				.timestamp(LocalDateTime.now())
-				.deltaType(DeltaType.CREATION)
-				.table(DeltaTable.CONDITION)
+		return Delta.builder().timestamp(LocalDateTime.now()).deltaType(DeltaType.CREATION).table(DeltaTable.CONDITION)
 				.recordId(UUID.randomUUID());
 	}
 
-	private ConditionCreationDelta.ConditionCreationDeltaBuilder conditionCreationBuilder(UUID conditional, UUID target) {
-		return ConditionCreationDelta.builder()
-				.conditionalGroup(conditional)
-				.targetGroup(target)
-				.requiredUsageMs(Duration.ofHours(0).plusMinutes(6))
-				.lastDaysToConsider(1);
+	private ConditionCreationDelta.ConditionCreationDeltaBuilder conditionCreationBuilder(UUID conditional,
+			UUID target) {
+		return ConditionCreationDelta.builder().conditionalGroup(conditional).targetGroup(target)
+				.requiredUsageMs(Duration.ofHours(0).plusMinutes(6)).lastDaysToConsider(1);
 	}
 
 }

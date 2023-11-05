@@ -37,6 +37,7 @@ import devs.mrp.springturkey.exceptions.WrongDataException;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import reactor.core.publisher.Mono;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {DeletionDataConstrainer.class})
@@ -84,7 +85,7 @@ class DeletionDataConstrainerTest {
 				.jsonValue(textValue)
 				.build();
 
-		when(deltaFacade.pushDeletion(ArgumentMatchers.refEq(delta))).thenReturn(1);
+		when(deltaFacade.pushDeletion(ArgumentMatchers.refEq(delta))).thenReturn(Mono.just(1));
 
 		int result = dataConstrainer.pushDelta(delta).block();
 		assertEquals(1, result);

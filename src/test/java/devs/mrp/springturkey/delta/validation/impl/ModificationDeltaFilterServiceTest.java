@@ -36,6 +36,7 @@ import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.DataConstrainer;
 import devs.mrp.springturkey.exceptions.WrongDataException;
 import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
+import reactor.core.publisher.Mono;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {ModificationDeltaFilterService.class, ObjectMapperProvider.class})
@@ -91,7 +92,7 @@ class ModificationDeltaFilterServiceTest {
 				.jsonValue(jsonValue)
 				.build();
 
-		when(deltaFacade.pushModification(ArgumentMatchers.refEq(delta))).thenReturn(1);
+		when(deltaFacade.pushModification(ArgumentMatchers.refEq(delta))).thenReturn(Mono.just(1));
 
 		int result = dataConstrainer.pushDelta(delta).block();
 		assertEquals(1, result);

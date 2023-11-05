@@ -7,8 +7,8 @@ public interface DeltaFacadeService {
 
 	public Mono<Integer> pushCreation(Delta delta);
 
-	public int pushModification(Delta delta);
+	public Mono<Integer> pushModification(Delta delta);
 
-	public int pushDeletion(Delta delta);
+	public Mono<Integer> pushDeletion(Delta delta);
 
 }
