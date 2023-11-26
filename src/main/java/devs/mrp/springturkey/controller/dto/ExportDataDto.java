@@ -9,13 +9,13 @@ import devs.mrp.springturkey.controller.dto.exportentities.ExportGroupDto;
 import devs.mrp.springturkey.controller.dto.exportentities.ExportSettingDto;
 import devs.mrp.springturkey.database.entity.dto.ExportData;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.With;
 
-@With
+@Builder
 @EqualsAndHashCode
 @Getter
 @AllArgsConstructor
@@ -30,12 +30,13 @@ public class ExportDataDto {
 	private List<ExportSettingDto> settings;
 
 	public static ExportDataDto from(ExportData data) {
-		return new ExportDataDto()
-				.withOtherDevices(ExportDeviceDto.fromDevices(data.getOtherDevices()))
-				.withActivities(data.getActivities().stream().map(ExportActivityDto::fromActivity).toList())
-				.withGroups(data.getGroups().stream().map(ExportGroupDto::fromGroup).toList())
-				.withConditions(data.getConditions().stream().map(ExportConditionDto::fromCondition).toList())
-				.withSettings(data.getSettings().stream().map(ExportSettingDto::fromSetting).toList());
+		return ExportDataDto.builder()
+				.otherDevices(ExportDeviceDto.fromDevices(data.getOtherDevices()))
+				.activities(data.getActivities().stream().map(ExportActivityDto::fromActivity).toList())
+				.groups(data.getGroups().stream().map(ExportGroupDto::fromGroup).toList())
+				.conditions(data.getConditions().stream().map(ExportConditionDto::fromCondition).toList())
+				.settings(data.getSettings().stream().map(ExportSettingDto::fromSetting).toList())
+				.build();
 	}
 
 }
