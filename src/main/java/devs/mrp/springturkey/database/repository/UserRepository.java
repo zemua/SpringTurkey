@@ -9,6 +9,8 @@ import devs.mrp.springturkey.database.entity.TurkeyUser;
 
 public interface UserRepository extends JpaRepository<TurkeyUser, UUID> {
 
+	// TODO try changing driver to a reactive one
+
 	public Optional<TurkeyUser> findByExternalId(String externalId);
 
 }
