@@ -63,9 +63,9 @@ import reactor.core.publisher.Mono;
 @EnableJpaAuditing
 @EntityScan("devs.mrp.springturkey.database.*")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(classes = { DeltaFacadeServiceImpl.class, EntityFromDeltaDaoCreator.class, EntityFromDeltaDaoModifier.class, EntityFromDeltaDaoDeleter.class, UserServiceImpl.class,
+@ContextConfiguration(classes = { DeltaServiceFacadeImpl.class, EntityFromDeltaDaoCreator.class, EntityFromDeltaDaoModifier.class, EntityFromDeltaDaoDeleter.class, UserServiceImpl.class,
 		LoginDetailsReaderImpl.class, ObjectMapperProvider.class })
-class DeltaFacadeServiceImplTest {
+class DeltaServiceFacadeImplTest {
 
 	@Autowired
 	private UserRepository userRepository;
@@ -84,7 +84,7 @@ class DeltaFacadeServiceImplTest {
 	private DeltaRepository deltaRepository;
 
 	@Autowired
-	private DeltaFacadeServiceImpl deltaFacadeService;
+	private DeltaServiceFacadeImpl deltaFacadeService;
 
 	private TurkeyUser user;
 	private TurkeyUser alternativeUser;

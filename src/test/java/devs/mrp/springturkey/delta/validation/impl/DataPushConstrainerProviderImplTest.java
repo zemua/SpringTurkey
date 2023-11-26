@@ -10,29 +10,29 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import devs.mrp.springturkey.database.service.DeltaFacadeService;
+import devs.mrp.springturkey.database.service.DeltaServiceFacade;
 import devs.mrp.springturkey.delta.DeltaType;
-import devs.mrp.springturkey.delta.validation.DataConstrainer;
+import devs.mrp.springturkey.delta.validation.DataPushConstrainer;
 import devs.mrp.springturkey.exceptions.WrongDataException;
 import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
 import jakarta.validation.Validator;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {DataConstrainerProviderImpl.class, CreationDataConstrainer.class, ModificationDeltaFilterService.class, DeletionDataConstrainer.class, ObjectMapperProvider.class})
-class DataConstrainerProviderImplTest {
+@ContextConfiguration(classes = {DataPushConstrainerProviderImpl.class, CreationDataConstrainer.class, ModificationDeltaFilterService.class, DeletionDataConstrainer.class, ObjectMapperProvider.class})
+class DataPushConstrainerProviderImplTest {
 
 	@MockBean
 	private Validator validator;
 
 	@MockBean
-	private DeltaFacadeService deltaFacadeService;
+	private DeltaServiceFacade deltaFacadeService;
 
 	@Autowired
-	private DataConstrainerProviderImpl provider;
+	private DataPushConstrainerProviderImpl provider;
 
 	@Test
 	void testMapsInstancesCorrectly() throws WrongDataException {
-		DataConstrainer constrainer;
+		DataPushConstrainer constrainer;
 
 		constrainer = provider.getFor(DeltaType.CREATION);
 		assertTrue(constrainer instanceof CreationDataConstrainer);

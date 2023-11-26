@@ -4,7 +4,7 @@ import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.exceptions.WrongDataException;
 import reactor.core.publisher.Mono;
 
-public interface DataConstrainer {
+public interface DataPushConstrainer {
 
 	public Mono<Integer> pushDelta(Delta delta) throws WrongDataException;
 

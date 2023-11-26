@@ -3,7 +3,7 @@ package devs.mrp.springturkey.database.service;
 import devs.mrp.springturkey.delta.Delta;
 import reactor.core.publisher.Mono;
 
-public interface DeltaFacadeService {
+public interface DeltaServiceFacade {
 
 	public Mono<Integer> pushCreation(Delta delta);
 

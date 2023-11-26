@@ -24,7 +24,7 @@ import devs.mrp.springturkey.delta.validation.entity.SettingCreationDelta;
 
 public enum DeltaTable {
 
-	GROUP(Map.of( // TODO switch field data to a simple string
+	GROUP(Map.of(
 			"name", FieldData.builder().columnName("name").build(),
 			"type", FieldData.builder().columnName("type").build(),
 			"preventClose", FieldData.builder().columnName("preventClose").build(),

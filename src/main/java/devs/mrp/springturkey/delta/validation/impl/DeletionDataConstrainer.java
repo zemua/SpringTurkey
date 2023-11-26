@@ -6,18 +6,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import devs.mrp.springturkey.database.service.DeltaFacadeService;
+import devs.mrp.springturkey.database.service.DeltaServiceFacade;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaType;
-import devs.mrp.springturkey.delta.validation.DataConstrainer;
+import devs.mrp.springturkey.delta.validation.DataPushConstrainer;
 import devs.mrp.springturkey.exceptions.WrongDataException;
 import reactor.core.publisher.Mono;
 
 @Service("deletionConstraints")
-public class DeletionDataConstrainer implements DataConstrainer {
+public class DeletionDataConstrainer implements DataPushConstrainer {
 
 	@Autowired
-	private DeltaFacadeService deltaFacadeService;
+	private DeltaServiceFacade deltaFacadeService;
 
 	private static final String TEXT_VALUE = "deletion";
 

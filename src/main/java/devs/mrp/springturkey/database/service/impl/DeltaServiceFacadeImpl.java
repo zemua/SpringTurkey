@@ -10,13 +10,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import devs.mrp.springturkey.database.repository.DeltaRepository;
 import devs.mrp.springturkey.database.repository.dao.EntityFromDeltaDao;
-import devs.mrp.springturkey.database.service.DeltaFacadeService;
+import devs.mrp.springturkey.database.service.DeltaServiceFacade;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.exceptions.TurkeySurpriseException;
 import reactor.core.publisher.Mono;
 
 @Service
-public class DeltaFacadeServiceImpl implements DeltaFacadeService {
+public class DeltaServiceFacadeImpl implements DeltaServiceFacade {
 
 	@Autowired
 	private DeltaRepository deltaRepository;
@@ -36,36 +36,31 @@ public class DeltaFacadeServiceImpl implements DeltaFacadeService {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	// TODO reduce methods to a single one and call DataConstrainerProvider which segregates per DeltaType
-
 	@Override
 	@Transactional
-	public Mono<Integer> pushCreation(Delta delta) { // TODO validate delta using DataConstrainer
-		return deltaDaoCreation.persistDelta(delta)
-				.filter(i -> i>0)
-				.doOnNext(i -> saveDeltaEntity(delta))
-				.doOnError(TurkeySurpriseException.class, e -> Mono.error(new TurkeySurpriseException("Error persisting delta", e)));
+	public Mono<Integer> pushCreation(Delta delta) {
+		return persistEntity(deltaDaoCreation.persistDelta(delta), delta);
 	}
 
 	@Override
 	@Transactional
-	public Mono<Integer> pushModification(Delta delta) { // TODO validate delta using DataConstrainer
-		return deltaDaoModification.persistDelta(delta)
-				.filter(i -> i>0)
-				.doOnNext(i -> saveDeltaEntity(delta))
-				.doOnError(TurkeySurpriseException.class, e -> Mono.error(new TurkeySurpriseException("Error persisting delta", e)));
+	public Mono<Integer> pushModification(Delta delta) {
+		return persistEntity(deltaDaoModification.persistDelta(delta), delta);
 	}
 
 	@Override
 	@Transactional
-	public Mono<Integer> pushDeletion(Delta delta) { // TODO validate delta usingDataConstrainer
-		return deltaDaoDeletion.persistDelta(delta)
-				.filter(i -> i>0)
-				.doOnNext(i -> saveDeltaEntity(delta))
+	public Mono<Integer> pushDeletion(Delta delta) {
+		return persistEntity(deltaDaoDeletion.persistDelta(delta), delta);
+	}
+
+	private Mono<Integer> persistEntity(Mono<Integer> previousResult, Delta delta) {
+		return previousResult.filter(i -> i>0)
+				.doOnNext(i -> saveEntityFromDelta(delta))
 				.doOnError(TurkeySurpriseException.class, e -> Mono.error(new TurkeySurpriseException("Error persisting delta", e)));
 	}
 
-	private void saveDeltaEntity(Delta delta) {
+	private void saveEntityFromDelta(Delta delta) {
 		try {
 			deltaRepository.save(delta.toEntity(objectMapper));
 		} catch (JsonProcessingException e1) {

@@ -39,11 +39,11 @@ import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
 import devs.mrp.springturkey.database.entity.enumerable.GroupType;
 import devs.mrp.springturkey.database.entity.enumerable.PlatformType;
 import devs.mrp.springturkey.database.entity.enumerable.RandomBlockType;
-import devs.mrp.springturkey.database.service.DeltaFacadeService;
+import devs.mrp.springturkey.database.service.DeltaServiceFacade;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaTable;
 import devs.mrp.springturkey.delta.DeltaType;
-import devs.mrp.springturkey.delta.validation.DataConstrainer;
+import devs.mrp.springturkey.delta.validation.DataPushConstrainer;
 import devs.mrp.springturkey.delta.validation.entity.ActivityCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.ConditionCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.GroupCreationDelta;
@@ -65,11 +65,11 @@ class CreationDataConstrainerTest {
 	Validator validator;
 
 	@MockBean
-	private DeltaFacadeService deltaFacade;
+	private DeltaServiceFacade deltaFacade;
 
 	@Autowired
 	@Qualifier("creationConstraints")
-	private DataConstrainer dataConstrainer;
+	private DataPushConstrainer dataConstrainer;
 
 	@BeforeEach
 	void setup() {

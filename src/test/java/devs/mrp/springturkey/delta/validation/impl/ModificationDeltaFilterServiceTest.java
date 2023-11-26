@@ -29,11 +29,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import devs.mrp.springturkey.database.entity.enumerable.CategoryType;
-import devs.mrp.springturkey.database.service.DeltaFacadeService;
+import devs.mrp.springturkey.database.service.DeltaServiceFacade;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaTable;
 import devs.mrp.springturkey.delta.DeltaType;
-import devs.mrp.springturkey.delta.validation.DataConstrainer;
+import devs.mrp.springturkey.delta.validation.DataPushConstrainer;
 import devs.mrp.springturkey.exceptions.WrongDataException;
 import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
 import reactor.core.publisher.Mono;
@@ -43,11 +43,11 @@ import reactor.core.publisher.Mono;
 class ModificationDeltaFilterServiceTest {
 
 	@MockBean
-	private DeltaFacadeService deltaFacade;
+	private DeltaServiceFacade deltaFacade;
 
 	@Autowired
 	@Qualifier("modificationConstraints")
-	private DataConstrainer dataConstrainer;
+	private DataPushConstrainer dataConstrainer;
 
 	private static Stream<Arguments> provideCorrectValues() {
 		String uuid = UUID.randomUUID().toString();

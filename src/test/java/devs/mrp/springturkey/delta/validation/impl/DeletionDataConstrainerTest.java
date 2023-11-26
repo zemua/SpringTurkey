@@ -28,11 +28,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import devs.mrp.springturkey.database.service.DeltaFacadeService;
+import devs.mrp.springturkey.database.service.DeltaServiceFacade;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaTable;
 import devs.mrp.springturkey.delta.DeltaType;
-import devs.mrp.springturkey.delta.validation.DataConstrainer;
+import devs.mrp.springturkey.delta.validation.DataPushConstrainer;
 import devs.mrp.springturkey.exceptions.WrongDataException;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -47,11 +47,11 @@ class DeletionDataConstrainerTest {
 	Validator validator;
 
 	@MockBean
-	private DeltaFacadeService deltaFacade;
+	private DeltaServiceFacade deltaFacade;
 
 	@Autowired
 	@Qualifier("deletionConstraints")
-	private DataConstrainer dataConstrainer;
+	private DataPushConstrainer dataConstrainer;
 
 	@BeforeEach
 	void setup() {

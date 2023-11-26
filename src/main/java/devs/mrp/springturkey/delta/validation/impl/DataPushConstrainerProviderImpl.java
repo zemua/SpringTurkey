@@ -5,31 +5,31 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import devs.mrp.springturkey.delta.DeltaType;
-import devs.mrp.springturkey.delta.validation.DataConstrainer;
-import devs.mrp.springturkey.delta.validation.DataConstrainerProvider;
+import devs.mrp.springturkey.delta.validation.DataPushConstrainer;
+import devs.mrp.springturkey.delta.validation.DataPushConstrainerProvider;
 import devs.mrp.springturkey.exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.exceptions.WrongDataException;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class DataConstrainerProviderImpl implements DataConstrainerProvider {
+public class DataPushConstrainerProviderImpl implements DataPushConstrainerProvider {
 
 	@Autowired
 	@Qualifier("modificationConstraints")
-	private DataConstrainer modificationConstrainter;
+	private DataPushConstrainer modificationConstrainter;
 
 	@Autowired
 	@Qualifier("creationConstraints")
-	private DataConstrainer creationConstrainter;
+	private DataPushConstrainer creationConstrainter;
 
 	@Autowired
 	@Qualifier("deletionConstraints")
-	private DataConstrainer deletionConstrainer;
+	private DataPushConstrainer deletionConstrainer;
 
 
 	@Override
-	public DataConstrainer getFor(DeltaType type) throws WrongDataException {
+	public DataPushConstrainer getFor(DeltaType type) throws WrongDataException {
 		if (type == null) {
 			throw new WrongDataException("Invalid table");
 		}
