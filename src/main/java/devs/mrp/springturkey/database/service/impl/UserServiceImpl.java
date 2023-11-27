@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
 	private UserRepository userRepository;
 
 	@Override
-	public Mono<TurkeyUser> addCurrentUser() {
+	public Mono<TurkeyUser> createCurrentUser() {
 		return loginDetailsReader.getUserId().map(user -> TurkeyUser.builder()
 				.externalId(user)
 				.build())

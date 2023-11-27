@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -63,6 +64,28 @@ class UserControllerTest {
 		.isEqualTo(false);
 	}
 
-	// TODO test create user
+	@Test
+	@WithMockUser("some@user.me")
+	void testCreateUser() {
+		when(userService.createCurrentUser()).thenReturn(Mono.just(new TurkeyUser()));
+
+		webClient.post().uri("/user/create")
+		.exchange()
+		.expectStatus().isEqualTo(HttpStatusCode.valueOf(201))
+		.expectBody(Boolean.class)
+		.isEqualTo(true);
+	}
+
+	@Test
+	@WithMockUser("some@user.me")
+	void testCreateUserConflict() {
+		when(userService.createCurrentUser()).thenReturn(Mono.error(() -> new DataIntegrityViolationException("conflict")));
+
+		webClient.post().uri("/user/create")
+		.exchange()
+		.expectStatus().isEqualTo(HttpStatusCode.valueOf(409))
+		.expectBody(Boolean.class)
+		.isEqualTo(false);
+	}
 
 }

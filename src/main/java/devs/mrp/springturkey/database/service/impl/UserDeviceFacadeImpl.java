@@ -23,7 +23,7 @@ public class UserDeviceFacadeImpl implements UserDeviceFacade {
 	@Override
 	public Mono<Device> addDevice() {
 		return userService.getUser()
-				.switchIfEmpty(Mono.defer(() -> userService.addCurrentUser()))
+				.switchIfEmpty(Mono.defer(() -> userService.createCurrentUser()))
 				.flatMap(user -> deviceService.addDevice());
 	}
 

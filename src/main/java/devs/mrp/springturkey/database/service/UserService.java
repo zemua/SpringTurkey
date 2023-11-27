@@ -5,7 +5,7 @@ import reactor.core.publisher.Mono;
 
 public interface UserService {
 
-	public Mono<TurkeyUser> addCurrentUser();
+	public Mono<TurkeyUser> createCurrentUser();
 
 	public Mono<TurkeyUser> getUser();
 

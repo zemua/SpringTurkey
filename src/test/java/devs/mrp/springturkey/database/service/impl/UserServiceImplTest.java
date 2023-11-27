@@ -33,7 +33,7 @@ class UserServiceImplTest {
 	@Test
 	@WithMockUser("user@mail.me")
 	void testAddCurrentUser() {
-		Mono<TurkeyUser> monoUser = userServiceImpl.addCurrentUser();
+		Mono<TurkeyUser> monoUser = userServiceImpl.createCurrentUser();
 
 		StepVerifier.create(monoUser)
 		.expectNextMatches(user -> {
@@ -42,6 +42,8 @@ class UserServiceImplTest {
 		.expectComplete()
 		.verify();
 	}
+
+	// TODO test save existing throws DataPersistenceException
 
 	@Test
 	@WithMockUser("user@mail.me")

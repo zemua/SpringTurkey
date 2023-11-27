@@ -3,6 +3,7 @@ package devs.mrp.springturkey.controller;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,10 +32,12 @@ public class UserController {
 				.onErrorReturn(DoesNotExistException.class, new ResponseEntity<>(false, HttpStatusCode.valueOf(200)));
 	}
 
-	// TODO create user
 	@PostMapping("/create")
-	public Mono<ResponseEntity<String>> createCurrentUser() {
-		return null;
+	public Mono<ResponseEntity<Boolean>> createCurrentUser() {
+		return userService.createCurrentUser()
+				.map(user -> new ResponseEntity<>(Objects.nonNull(user), HttpStatusCode.valueOf(201)))
+				.switchIfEmpty(Mono.just(new ResponseEntity<>(false, HttpStatusCode.valueOf(502))))
+				.onErrorReturn(DataIntegrityViolationException.class, new ResponseEntity<>(false, HttpStatusCode.valueOf(409)));
 	}
 
 }

@@ -54,7 +54,7 @@ class UserDeviceFacadeImplTest {
 
 		when(deviceService.addDevice()).thenReturn(Mono.just(device));
 		when(userService.getUser()).thenReturn(Mono.just(user));
-		when(userService.addCurrentUser()).thenReturn(Mono.just(user));
+		when(userService.createCurrentUser()).thenReturn(Mono.just(user));
 
 		Mono<Device> monoResult = userDeviceFacadeImpl.addDevice();
 		Device deviceResult = monoResult.block();
@@ -63,7 +63,7 @@ class UserDeviceFacadeImplTest {
 		assertEquals(user, deviceResult.getUser());
 		assertEquals(123456L, deviceResult.getUsageTime());
 
-		verify(userService, times(0)).addCurrentUser();
+		verify(userService, times(0)).createCurrentUser();
 	}
 
 	@Test
@@ -79,7 +79,7 @@ class UserDeviceFacadeImplTest {
 
 		when(deviceService.addDevice()).thenReturn(Mono.just(device));
 		when(userService.getUser()).thenReturn(Mono.empty());
-		when(userService.addCurrentUser()).thenReturn(Mono.just(user));
+		when(userService.createCurrentUser()).thenReturn(Mono.just(user));
 
 		Mono<Device> monoResult = userDeviceFacadeImpl.addDevice();
 		Device deviceResult = monoResult.block();
@@ -88,7 +88,7 @@ class UserDeviceFacadeImplTest {
 		assertEquals(user, deviceResult.getUser());
 		assertEquals(123456L, deviceResult.getUsageTime());
 
-		verify(userService, times(1)).addCurrentUser();
+		verify(userService, times(1)).createCurrentUser();
 	}
 
 	@Test
