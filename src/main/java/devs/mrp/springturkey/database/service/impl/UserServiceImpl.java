@@ -9,6 +9,7 @@ import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.UserRepository;
 import devs.mrp.springturkey.database.service.UserService;
+import devs.mrp.springturkey.exceptions.AlreadyExistsException;
 import devs.mrp.springturkey.exceptions.DoesNotExistException;
 import reactor.core.publisher.Mono;
 
@@ -26,7 +27,9 @@ public class UserServiceImpl implements UserService {
 		return loginDetailsReader.getUserId().map(user -> TurkeyUser.builder()
 				.externalId(user)
 				.build())
-				.flatMap(user -> Mono.just(userRepository.save(user)));
+				.filter(user -> userRepository.findByExternalId(user.getExternalId()).isEmpty()) // TODO use reactor in this line
+				.flatMap(user -> Mono.just(userRepository.save(user)))
+				.switchIfEmpty(Mono.error(new AlreadyExistsException("User already exists")));
 	}
 
 	@Override

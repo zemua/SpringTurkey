@@ -14,6 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import devs.mrp.springturkey.components.impl.LoginDetailsReaderImpl;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.repository.UserRepository;
+import devs.mrp.springturkey.exceptions.AlreadyExistsException;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -43,7 +44,22 @@ class UserServiceImplTest {
 		.verify();
 	}
 
-	// TODO test save existing throws DataPersistenceException
+	@Test
+	@WithMockUser("user@mail.me")
+	void testAddExistingUser() {
+		Mono<TurkeyUser> monoUser = userServiceImpl.createCurrentUser();
+
+		StepVerifier.create(monoUser)
+		.expectNextMatches(user -> {
+			return user.getExternalId().equals("user@mail.me") && user.getCreated() != null;
+		})
+		.expectComplete()
+		.verify();
+
+		StepVerifier.create(monoUser)
+		.expectError(AlreadyExistsException.class)
+		.verify();
+	}
 
 	@Test
 	@WithMockUser("user@mail.me")
