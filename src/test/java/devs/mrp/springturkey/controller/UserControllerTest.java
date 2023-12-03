@@ -15,6 +15,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import devs.mrp.springturkey.configuration.SecurityConfig;
 import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.database.service.UserService;
+import devs.mrp.springturkey.exceptions.AlreadyExistsException;
 import devs.mrp.springturkey.exceptions.DoesNotExistException;
 import reactor.core.publisher.Mono;
 
@@ -78,7 +79,19 @@ class UserControllerTest {
 
 	@Test
 	@WithMockUser("some@user.me")
-	void testCreateUserConflict() {
+	void testCreateUserAlreadyExists() {
+		when(userService.createCurrentUser()).thenReturn(Mono.error(() -> new AlreadyExistsException("conflict")));
+
+		webClient.post().uri("/user/create")
+		.exchange()
+		.expectStatus().isEqualTo(HttpStatusCode.valueOf(409))
+		.expectBody(Boolean.class)
+		.isEqualTo(false);
+	}
+
+	@Test
+	@WithMockUser("some@user.me")
+	void testCreateUserDataIntegrityException() {
 		when(userService.createCurrentUser()).thenReturn(Mono.error(() -> new DataIntegrityViolationException("conflict")));
 
 		webClient.post().uri("/user/create")

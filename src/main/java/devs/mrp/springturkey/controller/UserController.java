@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import devs.mrp.springturkey.database.service.UserService;
+import devs.mrp.springturkey.exceptions.AlreadyExistsException;
 import devs.mrp.springturkey.exceptions.DoesNotExistException;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -37,7 +38,8 @@ public class UserController {
 		return userService.createCurrentUser()
 				.map(user -> new ResponseEntity<>(Objects.nonNull(user), HttpStatusCode.valueOf(201)))
 				.switchIfEmpty(Mono.just(new ResponseEntity<>(false, HttpStatusCode.valueOf(502))))
-				.onErrorReturn(DataIntegrityViolationException.class, new ResponseEntity<>(false, HttpStatusCode.valueOf(409)));
+				.onErrorReturn(DataIntegrityViolationException.class, new ResponseEntity<>(false, HttpStatusCode.valueOf(409)))
+				.onErrorReturn(AlreadyExistsException.class, new ResponseEntity<>(false, HttpStatusCode.valueOf(409)));
 	}
 
 }

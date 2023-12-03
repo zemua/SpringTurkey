@@ -27,9 +27,14 @@ public class UserServiceImpl implements UserService {
 		return loginDetailsReader.getUserId().map(user -> TurkeyUser.builder()
 				.externalId(user)
 				.build())
-				.filter(user -> userRepository.findByExternalId(user.getExternalId()).isEmpty()) // TODO use reactor in this line
+				.flatMap(this::filterOutAlreadyExisting)
 				.flatMap(user -> Mono.just(userRepository.save(user)))
 				.switchIfEmpty(Mono.error(new AlreadyExistsException("User already exists")));
+	}
+
+	private Mono<TurkeyUser> filterOutAlreadyExisting(TurkeyUser user) {
+		return Mono.just(userRepository.findByExternalId(user.getExternalId()).isEmpty())
+				.flatMap(isEmtpy -> Boolean.TRUE.equals(isEmtpy) ? Mono.just(user) : Mono.empty());
 	}
 
 	@Override
