@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,7 @@ public class UserController {
 	private UserService userService;
 
 	@GetMapping("/exists")
+	@PreAuthorize("isAuthenticated()")
 	public Mono<ResponseEntity<Boolean>> currentUserExists() {
 		return userService.getUser()
 				.map(user -> new ResponseEntity<>(Objects.nonNull(user), HttpStatusCode.valueOf(200)))
@@ -34,6 +36,7 @@ public class UserController {
 	}
 
 	@PostMapping("/create")
+	@PreAuthorize("isAuthenticated()")
 	public Mono<ResponseEntity<Boolean>> createCurrentUser() {
 		return userService.createCurrentUser()
 				.map(user -> new ResponseEntity<>(Objects.nonNull(user), HttpStatusCode.valueOf(201)))

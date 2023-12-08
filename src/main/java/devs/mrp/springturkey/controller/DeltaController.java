@@ -1,8 +1,6 @@
 package devs.mrp.springturkey.controller;
 
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,14 +24,12 @@ public class DeltaController {
 
 	private final DataPushConstrainerProvider dataPushConstrainer;
 
-	// TODO enpoint to push deltas into the db
-	@PostMapping(path = "/push", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Flux<PushDeltaResponseDto>> pushDeltas(@RequestBody Flux<DeltaRequestDto> deltas) {
-		Flux<PushDeltaResponseDto> responseFlux = deltas
+	@PostMapping("/push")
+	@PreAuthorize("isAuthenticated()")
+	public Flux<PushDeltaResponseDto> pushDeltas(@RequestBody Flux<DeltaRequestDto> deltas) {
+		return deltas
 				.map(DeltaRequestDto::toDelta)
 				.flatMap(this::insertedDeltaResponse);
-
-		return new ResponseEntity<Flux<PushDeltaResponseDto>>(responseFlux, HttpStatusCode.valueOf(201));
 	}
 
 	private Mono<PushDeltaResponseDto> insertedDeltaResponse(Delta delta) {
@@ -55,6 +51,6 @@ public class DeltaController {
 	}
 
 
-	// TODO endpoint to export deltas from a given point onwards
+	// TODO endpoint to export deltas from a given point/id onwards
 
 }

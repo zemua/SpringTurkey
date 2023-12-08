@@ -3,6 +3,7 @@ package devs.mrp.springturkey.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,7 @@ public class DeviceController {
 	private UserDeviceFacade userDeviceFacade;
 
 	@PostMapping("/add")
+	@PreAuthorize("isAuthenticated()")
 	public Mono<ResponseEntity<DeviceIdDto>> addDevice() {
 		return userDeviceFacade.addDevice()
 				.map(device -> DeviceIdDto.builder().id(device.getId()).build())
@@ -34,6 +36,7 @@ public class DeviceController {
 	}
 
 	@GetMapping("/all")
+	@PreAuthorize("isAuthenticated()")
 	public Flux<DeviceIdDto> allDevices(Authentication auth) {
 		return userDeviceFacade.getUserDevices()
 				.map(device -> DeviceIdDto.builder().id(device.getId()).build());
