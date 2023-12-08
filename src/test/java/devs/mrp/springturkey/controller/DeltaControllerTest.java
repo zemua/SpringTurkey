@@ -35,7 +35,7 @@ import devs.mrp.springturkey.delta.validation.impl.DataPushConstrainerProviderIm
 import devs.mrp.springturkey.delta.validation.impl.DeletionDataConstrainer;
 import devs.mrp.springturkey.delta.validation.impl.ModificationDeltaFilterService;
 import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
-import jakarta.validation.Validator;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -43,6 +43,7 @@ import reactor.core.publisher.Mono;
 @Import({SecurityConfig.class, ObjectMapperProvider.class})
 @ContextConfiguration(classes = {DeltaController.class, DataPushConstrainerProviderImpl.class, CreationDataConstrainer.class,
 		DeletionDataConstrainer.class, ModificationDeltaFilterService.class})
+@Slf4j
 class DeltaControllerTest {
 
 	@Autowired
@@ -52,10 +53,11 @@ class DeltaControllerTest {
 	private DeltaServiceFacade deltaFacade;
 
 	@MockBean
-	private Validator validator;
-
-	@MockBean
 	private ReactiveJwtDecoder jwtDecoder;
+
+	static {
+		System.setProperty("logging.level.devs.mrp.springturkey", "DEBUG");
+	}
 
 	@BeforeEach
 	void setup() {
@@ -85,20 +87,63 @@ class DeltaControllerTest {
 	@WithMockUser
 	void testInvalidDataFails() {
 		DeltaRequestDto delta = validDelta()
-				.jsonValue(Map.of("platformType", "ALL", "key1", "invalid·$%·$", "key2", "invalid%&/(%&"))
+				.jsonValue(Map.of("platformType", "ALL", "settingKey", "invalid·$%·$", "settingValue", "invalid%&/(%&"))
 				.build();
 
 		webClient.post().uri("/deltas/push")
 		.contentType(MediaType.APPLICATION_JSON)
 		.body(BodyInserters.fromValue(List.of(delta)))
 		.exchange()
-		.expectStatus().is4xxClientError();
+		.expectStatus().is2xxSuccessful()
+		.expectBody(List.class)
+		.consumeWith(result -> {
+			List<Map<String,Object>> body = result.getResponseBody();
+			Map<String,Object> savedDelta = body.get(0);
+			assertEquals(delta.getRecordId().toString(), savedDelta.get("uuid"));
+			assertEquals(false, savedDelta.get("success"));
+		});
+	}
+
+	@Test
+	void testWithWrongKeyName() {
+		fail("not yet implemented");
+	}
+
+	@Test
+	void testWithNullJsonObject() {
+		fail("not yet implemented");
 	}
 
 	@Test
 	@WithMockUser
 	void testMultiple() {
-		fail("to be implemented");
+		DeltaRequestDto correctDelta = validDelta().build();
+		DeltaRequestDto wrongDelta = validDelta()
+				.jsonValue(Map.of("platformType", "ALL", "settingKey", "invalid·$%·$", "settingValue", "invalid%&/(%&"))
+				.build();
+
+		webClient.post().uri("/deltas/push")
+		.contentType(MediaType.APPLICATION_JSON)
+		.body(BodyInserters.fromPublisher(Flux.just(correctDelta, wrongDelta, correctDelta), DeltaRequestDto.class))
+		.exchange()
+		.expectStatus().is2xxSuccessful()
+		.expectBody(List.class)
+		.consumeWith(result -> {
+			List<Map<String,Object>> body = result.getResponseBody();
+			Map<String,Object> savedDelta;
+
+			savedDelta = body.get(0);
+			assertEquals(correctDelta.getRecordId().toString(), savedDelta.get("uuid"));
+			assertEquals(true, savedDelta.get("success"));
+
+			savedDelta = body.get(1);
+			assertEquals(wrongDelta.getRecordId().toString(), savedDelta.get("uuid"));
+			assertEquals(false, savedDelta.get("success"));
+
+			savedDelta = body.get(2);
+			assertEquals(correctDelta.getRecordId().toString(), savedDelta.get("uuid"));
+			assertEquals(true, savedDelta.get("success"));
+		});
 	}
 
 	private DeltaRequestDto.DeltaRequestDtoBuilder validDelta() {

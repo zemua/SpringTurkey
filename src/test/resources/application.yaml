@@ -43,4 +43,5 @@ spring:
       on-profile: debug
 logging:
   level:
-    root: TRACE
+    root: INFO
+    devs.mrp.springturkey: DEBUG

@@ -46,6 +46,7 @@ public class DeltaRequestDto {
 				.deltaType(deltaType)
 				.table(table)
 				.recordId(recordId)
+				.jsonValue(jsonValue)
 				.build();
 	}
 
