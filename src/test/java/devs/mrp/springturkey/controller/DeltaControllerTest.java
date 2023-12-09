@@ -60,6 +60,7 @@ class DeltaControllerTest {
 	void setup() {
 		when(deltaFacade.pushCreation(any())).thenReturn(Mono.just(1));
 		when(deltaFacade.pushModification(any())).thenReturn(Mono.just(1));
+		when(deltaFacade.pushDeletion(any())).thenReturn(Mono.just(1));
 	}
 
 	@Test
@@ -85,6 +86,25 @@ class DeltaControllerTest {
 	@WithMockUser("some@user.me")
 	void testPushModificationDeltaSuccess() throws JsonProcessingException {
 		DeltaRequestDto delta = validModificationDelta().build();
+
+		webClient.post().uri("/deltas/push")
+		.contentType(MediaType.APPLICATION_JSON)
+		.body(BodyInserters.fromPublisher(Flux.just(delta), DeltaRequestDto.class))
+		.exchange()
+		.expectStatus().is2xxSuccessful()
+		.expectBody(List.class)
+		.consumeWith(result -> {
+			List<Map<String,Object>> body = result.getResponseBody();
+			Map<String,Object> savedDelta = body.get(0);
+			assertEquals(delta.getRecordId().toString(), savedDelta.get("uuid"));
+			assertEquals(true, savedDelta.get("success"));
+		});
+	}
+
+	@Test
+	@WithMockUser("some@user.me")
+	void testPushDeletionDeltaSuccess() throws JsonProcessingException {
+		DeltaRequestDto delta = validDeletionDelta().build();
 
 		webClient.post().uri("/deltas/push")
 		.contentType(MediaType.APPLICATION_JSON)
@@ -144,6 +164,27 @@ class DeltaControllerTest {
 
 	@Test
 	@WithMockUser
+	void testInvalidDeletionDataFails() {
+		DeltaRequestDto delta = validDeletionDelta()
+				.jsonValue(Map.of("deletion", "invalid"))
+				.build();
+
+		webClient.post().uri("/deltas/push")
+		.contentType(MediaType.APPLICATION_JSON)
+		.body(BodyInserters.fromValue(List.of(delta)))
+		.exchange()
+		.expectStatus().is2xxSuccessful()
+		.expectBody(List.class)
+		.consumeWith(result -> {
+			List<Map<String,Object>> body = result.getResponseBody();
+			Map<String,Object> savedDelta = body.get(0);
+			assertEquals(delta.getRecordId().toString(), savedDelta.get("uuid"));
+			assertEquals(false, savedDelta.get("success"));
+		});
+	}
+
+	@Test
+	@WithMockUser
 	void testCreationWithWrongKeyName() {
 		DeltaRequestDto wrongDelta = validCreationDelta()
 				.jsonValue(Map.of("platformType", "ALL", "unknownKey", "blablabla", "anotherUnknown", "blablabla"))
@@ -170,6 +211,29 @@ class DeltaControllerTest {
 	void testModificationWithWrongKeyName() {
 		DeltaRequestDto wrongDelta = validModificationDelta()
 				.jsonValue(Map.of("unknownKey", "blablabla"))
+				.build();
+
+		webClient.post().uri("/deltas/push")
+		.contentType(MediaType.APPLICATION_JSON)
+		.body(BodyInserters.fromPublisher(Flux.just(wrongDelta), DeltaRequestDto.class))
+		.exchange()
+		.expectStatus().is2xxSuccessful()
+		.expectBody(List.class)
+		.consumeWith(result -> {
+			List<Map<String,Object>> body = result.getResponseBody();
+			Map<String,Object> savedDelta;
+
+			savedDelta = body.get(0);
+			assertEquals(wrongDelta.getRecordId().toString(), savedDelta.get("uuid"));
+			assertEquals(false, savedDelta.get("success"));
+		});
+	}
+
+	@Test
+	@WithMockUser
+	void testDeletionWithWrongKeyName() {
+		DeltaRequestDto wrongDelta = validModificationDelta()
+				.jsonValue(Map.of("unknownKey", "true"))
 				.build();
 
 		webClient.post().uri("/deltas/push")
@@ -236,16 +300,40 @@ class DeltaControllerTest {
 
 	@Test
 	@WithMockUser
+	void testDeletionnWithNullJsonObject() {
+		DeltaRequestDto wrongDelta = validDeletionDelta()
+				.jsonValue(null)
+				.build();
+
+		webClient.post().uri("/deltas/push")
+		.contentType(MediaType.APPLICATION_JSON)
+		.body(BodyInserters.fromPublisher(Flux.just(wrongDelta), DeltaRequestDto.class))
+		.exchange()
+		.expectStatus().is2xxSuccessful()
+		.expectBody(List.class)
+		.consumeWith(result -> {
+			List<Map<String,Object>> body = result.getResponseBody();
+			Map<String,Object> savedDelta;
+
+			savedDelta = body.get(0);
+			assertEquals(wrongDelta.getRecordId().toString(), savedDelta.get("uuid"));
+			assertEquals(false, savedDelta.get("success"));
+		});
+	}
+
+	@Test
+	@WithMockUser
 	void testMultiple() {
 		DeltaRequestDto correctDelta = validCreationDelta().build();
 		DeltaRequestDto wrongDelta = validCreationDelta()
 				.jsonValue(Map.of("platformType", "ALL", "settingKey", "invalid·$%·$", "settingValue", "invalid%&/(%&"))
 				.build();
 		DeltaRequestDto modificationDelta = validModificationDelta().build();
+		DeltaRequestDto deletionDelta = validDeletionDelta().build();
 
 		webClient.post().uri("/deltas/push")
 		.contentType(MediaType.APPLICATION_JSON)
-		.body(BodyInserters.fromPublisher(Flux.just(correctDelta, wrongDelta, correctDelta, modificationDelta), DeltaRequestDto.class))
+		.body(BodyInserters.fromPublisher(Flux.just(correctDelta, wrongDelta, correctDelta, modificationDelta, deletionDelta), DeltaRequestDto.class))
 		.exchange()
 		.expectStatus().is2xxSuccessful()
 		.expectBody(List.class)
@@ -268,6 +356,10 @@ class DeltaControllerTest {
 			savedDelta = body.get(3);
 			assertEquals(modificationDelta.getRecordId().toString(), savedDelta.get("uuid"));
 			assertEquals(true, savedDelta.get("success"));
+
+			savedDelta = body.get(4);
+			assertEquals(deletionDelta.getRecordId().toString(), savedDelta.get("uuid"));
+			assertEquals(true, savedDelta.get("success"));
 		});
 	}
 
@@ -287,6 +379,15 @@ class DeltaControllerTest {
 				.table(DeltaTable.SETTING)
 				.recordId(UUID.randomUUID())
 				.jsonValue(Map.of("settingValue", "value"));
+	}
+
+	private DeltaRequestDto.DeltaRequestDtoBuilder validDeletionDelta() {
+		return DeltaRequestDto.builder()
+				.timestamp(LocalDateTime.now())
+				.deltaType(DeltaType.DELETION)
+				.table(DeltaTable.SETTING)
+				.recordId(UUID.randomUUID())
+				.jsonValue(Map.of("deletion", "true"));
 	}
 
 }
