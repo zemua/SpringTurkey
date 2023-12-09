@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +14,7 @@ import devs.mrp.springturkey.database.service.DeltaServiceFacade;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.DataPushConstrainer;
+import devs.mrp.springturkey.exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.exceptions.WrongDataException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -44,7 +46,12 @@ public class CreationDataConstrainer implements DataPushConstrainer {
 			throw new WrongDataException("Invalid data for delta with violations: " + violations.toString());
 		}
 		log.debug("Saving creation delta {}", delta);
-		return deltaFacade.pushCreation(delta);
+		try {
+			return deltaFacade.pushCreation(delta);
+		} catch (TurkeySurpriseException | DataIntegrityViolationException e) {
+			log.error("There was an error persisting delta in the database", e);
+			return Mono.just(0);
+		}
 	}
 
 	private Set<ConstraintViolation<Object>> resolveViolations(Delta delta) throws WrongDataException {

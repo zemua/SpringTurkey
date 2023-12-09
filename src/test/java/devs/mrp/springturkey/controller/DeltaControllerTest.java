@@ -2,9 +2,11 @@ package devs.mrp.springturkey.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -27,12 +30,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import devs.mrp.springturkey.configuration.SecurityConfig;
 import devs.mrp.springturkey.controller.dto.DeltaRequestDto;
 import devs.mrp.springturkey.database.service.DeltaServiceFacade;
+import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.DeltaTable;
 import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.impl.CreationDataConstrainer;
 import devs.mrp.springturkey.delta.validation.impl.DataPushConstrainerProviderImpl;
 import devs.mrp.springturkey.delta.validation.impl.DeletionDataConstrainer;
 import devs.mrp.springturkey.delta.validation.impl.ModificationDeltaFilterService;
+import devs.mrp.springturkey.exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -363,7 +368,65 @@ class DeltaControllerTest {
 		});
 	}
 
-	// TODO create two equals making a conflict of unique key
+	@Test
+	@WithMockUser("some@user.me")
+	void testPushCreationDeltaSurpriseException() throws JsonProcessingException {
+		DeltaRequestDto delta = validCreationDelta().build();
+
+		when(deltaFacade.pushCreation(any())).thenThrow(new TurkeySurpriseException("unexpected error"));
+
+		webClient.post().uri("/deltas/push")
+		.contentType(MediaType.APPLICATION_JSON)
+		.body(BodyInserters.fromPublisher(Flux.just(delta), DeltaRequestDto.class))
+		.exchange()
+		.expectStatus().is2xxSuccessful()
+		.expectBody(List.class)
+		.consumeWith(result -> {
+			List<Map<String,Object>> body = result.getResponseBody();
+			Map<String,Object> savedDelta = body.get(0);
+			assertEquals(delta.getRecordId().toString(), savedDelta.get("uuid"));
+			assertEquals(false, savedDelta.get("success"));
+		});
+	}
+
+	@Test
+	@WithMockUser("some@user.me")
+	void testPushCreationDeltaConflictException() throws JsonProcessingException {
+		DeltaRequestDto delta = validCreationDelta().build();
+
+		when(deltaFacade.pushCreation(any())).thenThrow(new DataIntegrityViolationException("conflict on data"));
+
+		webClient.post().uri("/deltas/push")
+		.contentType(MediaType.APPLICATION_JSON)
+		.body(BodyInserters.fromPublisher(Flux.just(delta), DeltaRequestDto.class))
+		.exchange()
+		.expectStatus().is2xxSuccessful()
+		.expectBody(List.class)
+		.consumeWith(result -> {
+			List<Map<String,Object>> body = result.getResponseBody();
+			Map<String,Object> savedDelta = body.get(0);
+			assertEquals(delta.getRecordId().toString(), savedDelta.get("uuid"));
+			assertEquals(false, savedDelta.get("success"));
+		});
+	}
+
+	@Test
+	@WithMockUser("some@user.me")
+	void testGetDeltasFromPosition() {
+		Delta delta = Delta.builder().deltaType(DeltaType.CREATION)
+				.jsonValue(new HashMap<>()).recordId(UUID.randomUUID())
+				.table(DeltaTable.ACTIVITY).timestamp(LocalDateTime.now()).build();
+		when(deltaFacade.findAfterPosition(anyLong())).thenReturn(Flux.just(delta));
+
+		webClient.get().uri("/deltas/from/2")
+		.exchange()
+		.expectStatus().is2xxSuccessful()
+		.expectBody(List.class)
+		.consumeWith(result -> {
+			List<Map<String,Object>> body = result.getResponseBody();
+			assertEquals(1, body.size());
+		});
+	}
 
 	private DeltaRequestDto.DeltaRequestDtoBuilder validCreationDelta() {
 		return DeltaRequestDto.builder()

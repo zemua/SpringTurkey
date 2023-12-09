@@ -1,6 +1,8 @@
 package devs.mrp.springturkey.controller;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import devs.mrp.springturkey.controller.dto.DeltaRequestDto;
 import devs.mrp.springturkey.controller.dto.PushDeltaResponseDto;
+import devs.mrp.springturkey.database.service.DeltaServiceFacade;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.validation.DataPushConstrainerProvider;
 import devs.mrp.springturkey.exceptions.WrongDataException;
@@ -23,6 +26,7 @@ import reactor.core.publisher.Mono;
 public class DeltaController {
 
 	private final DataPushConstrainerProvider dataPushConstrainer;
+	private final DeltaServiceFacade deltaServiceFacade;
 
 	@PostMapping("/push")
 	@PreAuthorize("isAuthenticated()")
@@ -50,7 +54,10 @@ public class DeltaController {
 		}
 	}
 
-
-	// TODO endpoint to export deltas from a given point/id onwards
+	@GetMapping("/from/{position}")
+	@PreAuthorize("isAuthenticated()")
+	public Flux<Delta> getDeltasFromPosition(@PathVariable long position) {
+		return deltaServiceFacade.findAfterPosition(position);
+	}
 
 }
