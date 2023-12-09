@@ -1,7 +1,6 @@
 package devs.mrp.springturkey.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -35,7 +34,6 @@ import devs.mrp.springturkey.delta.validation.impl.DataPushConstrainerProviderIm
 import devs.mrp.springturkey.delta.validation.impl.DeletionDataConstrainer;
 import devs.mrp.springturkey.delta.validation.impl.ModificationDeltaFilterService;
 import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -43,7 +41,6 @@ import reactor.core.publisher.Mono;
 @Import({SecurityConfig.class, ObjectMapperProvider.class})
 @ContextConfiguration(classes = {DeltaController.class, DataPushConstrainerProviderImpl.class, CreationDataConstrainer.class,
 		DeletionDataConstrainer.class, ModificationDeltaFilterService.class})
-@Slf4j
 class DeltaControllerTest {
 
 	@Autowired
@@ -105,13 +102,49 @@ class DeltaControllerTest {
 	}
 
 	@Test
+	@WithMockUser
 	void testWithWrongKeyName() {
-		fail("not yet implemented");
+		DeltaRequestDto wrongDelta = validDelta()
+				.jsonValue(Map.of("platformType", "ALL", "unknownKey", "blablabla", "anotherUnknown", "blablabla"))
+				.build();
+
+		webClient.post().uri("/deltas/push")
+		.contentType(MediaType.APPLICATION_JSON)
+		.body(BodyInserters.fromPublisher(Flux.just(wrongDelta), DeltaRequestDto.class))
+		.exchange()
+		.expectStatus().is2xxSuccessful()
+		.expectBody(List.class)
+		.consumeWith(result -> {
+			List<Map<String,Object>> body = result.getResponseBody();
+			Map<String,Object> savedDelta;
+
+			savedDelta = body.get(0);
+			assertEquals(wrongDelta.getRecordId().toString(), savedDelta.get("uuid"));
+			assertEquals(false, savedDelta.get("success"));
+		});
 	}
 
 	@Test
+	@WithMockUser
 	void testWithNullJsonObject() {
-		fail("not yet implemented");
+		DeltaRequestDto wrongDelta = validDelta()
+				.jsonValue(null)
+				.build();
+
+		webClient.post().uri("/deltas/push")
+		.contentType(MediaType.APPLICATION_JSON)
+		.body(BodyInserters.fromPublisher(Flux.just(wrongDelta), DeltaRequestDto.class))
+		.exchange()
+		.expectStatus().is2xxSuccessful()
+		.expectBody(List.class)
+		.consumeWith(result -> {
+			List<Map<String,Object>> body = result.getResponseBody();
+			Map<String,Object> savedDelta;
+
+			savedDelta = body.get(0);
+			assertEquals(wrongDelta.getRecordId().toString(), savedDelta.get("uuid"));
+			assertEquals(false, savedDelta.get("success"));
+		});
 	}
 
 	@Test

@@ -25,6 +25,7 @@ import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -36,10 +37,12 @@ import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.DataPushConstrainer;
 import devs.mrp.springturkey.exceptions.WrongDataException;
 import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
+import devs.mrp.springturkey.validation.service.impl.ValidationServiceImpl;
 import reactor.core.publisher.Mono;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {ModificationDeltaFilterService.class, ObjectMapperProvider.class})
+@Import({ObjectMapperProvider.class})
+@ContextConfiguration(classes = {ModificationDeltaFilterService.class, ObjectMapperProvider.class, ValidationServiceImpl.class})
 class ModificationDeltaFilterServiceTest {
 
 	@MockBean

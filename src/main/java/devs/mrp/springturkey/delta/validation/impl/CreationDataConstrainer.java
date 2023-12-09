@@ -50,7 +50,11 @@ public class CreationDataConstrainer implements DataPushConstrainer {
 	private Set<ConstraintViolation<Object>> resolveViolations(Delta delta) throws WrongDataException {
 		Class<?> clazz = delta.getTable().getCreationConstraints();
 		Object creationEntity = null;
-		creationEntity = objectMapper.convertValue(delta.getJsonValue(), clazz);
+		try {
+			creationEntity = objectMapper.convertValue(delta.getJsonValue(), clazz);
+		} catch (IllegalArgumentException e) {
+			throw new WrongDataException("Payload cannot be parsed", e);
+		}
 		if (Objects.isNull(creationEntity)) {
 			throw new WrongDataException("Json property in delta is empty");
 		}
