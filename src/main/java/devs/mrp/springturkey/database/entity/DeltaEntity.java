@@ -15,6 +15,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
@@ -27,7 +28,8 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 
 @Entity(name = "turkey_delta")
-@Table(name = "turkey_delta")
+@Table(name = "turkey_delta",
+indexes = @Index(name = "position_and_user_index", columnList = "id, user_id"))
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Builder
@@ -41,7 +43,6 @@ public class DeltaEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	// TODO add related TurkeyUser entity
 	// TODO add index on TurkeyUser, recordId and deltaTimeStamp to verify the most recent delta to a given record
 
 	@ManyToOne
