@@ -24,6 +24,8 @@ import reactor.core.publisher.Mono;
 
 public abstract class AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 
+	// TODO evaluate sync conflicts with the db before pushing data to the repo
+
 	protected static final String ID_FIELD = "id";
 
 	@PersistenceContext
