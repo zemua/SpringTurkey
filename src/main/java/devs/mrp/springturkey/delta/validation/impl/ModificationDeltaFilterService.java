@@ -1,6 +1,7 @@
 package devs.mrp.springturkey.delta.validation.impl;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,12 +52,15 @@ public class ModificationDeltaFilterService implements DataPushConstrainer {
 		try {
 			converted = convertedObject(value, constraints);
 		} catch (IllegalArgumentException e) {
-			throw new WrongDataException("Validation failed", e);
+			throw new WrongDataException("Could not convert payload", e);
 		}
 		return validate(converted);
 	}
 
 	private boolean validate(Object obj) throws WrongDataException {
+		if (Objects.isNull(obj)) {
+			throw new WrongDataException("The object to be validated is null");
+		}
 		Set<ConstraintViolation<Object>> violations = validator.validate(obj);
 		if (violations.isEmpty()) {
 			return true;
