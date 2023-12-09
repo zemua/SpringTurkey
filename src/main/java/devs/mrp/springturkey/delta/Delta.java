@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import devs.mrp.springturkey.database.entity.DeltaEntity;
@@ -57,6 +58,16 @@ public class Delta {
 				.deltaTable(this.getTable())
 				.recordId(this.getRecordId())
 				.jsonValue(objectMapper.writeValueAsString(this.jsonValue))
+				.build();
+	}
+
+	public static Delta fromEntity(DeltaEntity entity, ObjectMapper mapper) throws JsonMappingException, JsonProcessingException {
+		return Delta.builder()
+				.timestamp(entity.getDeltaTimeStamp())
+				.deltaType(entity.getDeltaType())
+				.table(entity.getDeltaTable())
+				.recordId(entity.getRecordId())
+				.jsonValue(mapper.readValue(entity.getJsonValue(), Map.class))
 				.build();
 	}
 

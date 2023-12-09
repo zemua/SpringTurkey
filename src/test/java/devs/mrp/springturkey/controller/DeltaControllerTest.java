@@ -363,6 +363,8 @@ class DeltaControllerTest {
 		});
 	}
 
+	// TODO create two equals making a conflict of unique key
+
 	private DeltaRequestDto.DeltaRequestDtoBuilder validCreationDelta() {
 		return DeltaRequestDto.builder()
 				.timestamp(LocalDateTime.now())

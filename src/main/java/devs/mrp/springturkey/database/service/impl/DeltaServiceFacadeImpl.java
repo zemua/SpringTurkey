@@ -8,11 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import devs.mrp.springturkey.database.entity.DeltaEntity;
 import devs.mrp.springturkey.database.repository.DeltaRepository;
 import devs.mrp.springturkey.database.repository.dao.EntityFromDeltaDao;
 import devs.mrp.springturkey.database.service.DeltaServiceFacade;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.exceptions.TurkeySurpriseException;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -65,6 +67,20 @@ public class DeltaServiceFacadeImpl implements DeltaServiceFacade {
 			deltaRepository.save(delta.toEntity(objectMapper));
 		} catch (JsonProcessingException e1) {
 			throw new TurkeySurpriseException("Error mapping DeltaEntity from Delta", e1);
+		}
+	}
+
+	@Override
+	public Flux<Delta> findAfterPosition(Long position) {
+		return Flux.fromIterable(deltaRepository.findByIdGreaterThan(position))
+				.map(this::deltaFromEntity);
+	}
+
+	private Delta deltaFromEntity(DeltaEntity entity) {
+		try {
+			return Delta.fromEntity(entity, objectMapper);
+		} catch (JsonProcessingException e) {
+			throw new TurkeySurpriseException("Unexpected error on converting data from DB", e);
 		}
 	}
 

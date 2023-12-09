@@ -40,6 +40,9 @@ public class DeltaEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	// TODO add related TurkeyUser entity
+	// TODO add index on TurkeyUser, recordId and deltaTimeStamp to verify the most recent delta to a given record
+
 	@NotNull
 	private LocalDateTime deltaTimeStamp;
 	@NotNull

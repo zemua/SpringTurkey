@@ -56,7 +56,9 @@ import devs.mrp.springturkey.delta.validation.entity.GroupCreationDelta;
 import devs.mrp.springturkey.delta.validation.entity.SettingCreationDelta;
 import devs.mrp.springturkey.exceptions.TurkeySurpriseException;
 import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 @DataJpaTest
 @EnableJpaRepositories(basePackages = "devs.mrp.springturkey.database.repository")
@@ -443,6 +445,29 @@ class DeltaServiceFacadeImplTest {
 		assertEquals(1, postSettings.size());
 		assertEquals(1, postDeltas.size());
 		assertEquals(1, result);
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
+	void testFindAfterPosition() throws JsonProcessingException {
+		Delta delta1 = settingCreationDeltaBuilder().jsonValue(Map.of("platformType", "ALL", "settingKey", "someSetting1", "settingValue", "someValue")).build();
+		Delta delta2 = settingCreationDeltaBuilder().jsonValue(Map.of("platformType", "ALL", "settingKey", "someSetting2", "settingValue", "someValue")).build();
+		Delta delta3 = settingCreationDeltaBuilder().jsonValue(Map.of("platformType", "ALL", "settingKey", "someSetting3", "settingValue", "someValue")).build();
+		Delta delta4 = settingCreationDeltaBuilder().jsonValue(Map.of("platformType", "ALL", "settingKey", "someSetting4", "settingValue", "someValue")).build();
+		deltaFacadeService.pushCreation(delta1).block();
+		deltaFacadeService.pushCreation(delta2).block();
+		deltaFacadeService.pushCreation(delta3).block();
+		deltaFacadeService.pushCreation(delta4).block();
+
+		Flux<Delta> result = deltaFacadeService.findAfterPosition(2L);
+
+		StepVerifier
+		.create(result)
+		.expectNextMatches(d -> delta3.getRecordId().equals(d.getRecordId()))
+		.expectNextMatches(d -> delta4.getRecordId().equals(d.getRecordId()))
+		.expectComplete()
+		.verify();
 	}
 
 	private Delta.DeltaBuilder activityCreationDeltaBuilder() throws JsonProcessingException {
