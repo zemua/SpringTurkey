@@ -14,9 +14,7 @@ import devs.mrp.springturkey.delta.DeltaType;
 import devs.mrp.springturkey.delta.validation.DataPushConstrainer;
 import devs.mrp.springturkey.exceptions.WrongDataException;
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
@@ -29,6 +27,9 @@ public class ModificationDeltaFilterService implements DataPushConstrainer {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@Autowired
+	private Validator validator;
 
 	@Override
 	public Mono<Integer> pushDelta(Delta delta) throws WrongDataException {
@@ -56,7 +57,7 @@ public class ModificationDeltaFilterService implements DataPushConstrainer {
 	}
 
 	private boolean validate(Object obj) throws WrongDataException {
-		Set<ConstraintViolation<Object>> violations = validator().validate(obj);
+		Set<ConstraintViolation<Object>> violations = validator.validate(obj);
 		if (violations.isEmpty()) {
 			return true;
 		} else {
@@ -67,11 +68,6 @@ public class ModificationDeltaFilterService implements DataPushConstrainer {
 
 	private Object convertedObject(Map<String,Object> value, Class<?> constraints) {
 		return objectMapper.convertValue(value, constraints);
-	}
-
-	private Validator validator() {
-		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-		return factory.getValidator();
 	}
 
 }

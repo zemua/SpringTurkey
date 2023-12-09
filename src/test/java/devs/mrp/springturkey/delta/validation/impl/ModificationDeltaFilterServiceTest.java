@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -38,6 +39,9 @@ import devs.mrp.springturkey.delta.validation.DataPushConstrainer;
 import devs.mrp.springturkey.exceptions.WrongDataException;
 import devs.mrp.springturkey.utils.impl.ObjectMapperProvider;
 import devs.mrp.springturkey.validation.service.impl.ValidationServiceImpl;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import reactor.core.publisher.Mono;
 
 @ExtendWith(SpringExtension.class)
@@ -46,11 +50,21 @@ import reactor.core.publisher.Mono;
 class ModificationDeltaFilterServiceTest {
 
 	@MockBean
+	Validator validator;
+
+	@MockBean
 	private DeltaServiceFacade deltaFacade;
 
 	@Autowired
 	@Qualifier("modificationConstraints")
 	private DataPushConstrainer dataConstrainer;
+
+	@BeforeEach
+	void setup() {
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		Validator val = factory.getValidator();
+		when(validator.validate(ArgumentMatchers.any())).thenAnswer(a -> val.validate(a.getArgument(0)));
+	}
 
 	private static Stream<Arguments> provideCorrectValues() {
 		String uuid = UUID.randomUUID().toString();
