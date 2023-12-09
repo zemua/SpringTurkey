@@ -15,6 +15,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -42,6 +43,11 @@ public class DeltaEntity {
 
 	// TODO add related TurkeyUser entity
 	// TODO add index on TurkeyUser, recordId and deltaTimeStamp to verify the most recent delta to a given record
+
+	@ManyToOne
+	@NotNull
+	private TurkeyUser user;
+
 
 	@NotNull
 	private LocalDateTime deltaTimeStamp;

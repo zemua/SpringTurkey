@@ -451,6 +451,8 @@ class DeltaServiceFacadeImplTest {
 	@WithMockUser("some@mail.com")
 	@DirtiesContext
 	void testFindAfterPosition() throws JsonProcessingException {
+		assertEquals(0, deltaRepository.findAll().size());
+
 		Delta delta1 = settingCreationDeltaBuilder().jsonValue(Map.of("platformType", "ALL", "settingKey", "someSetting1", "settingValue", "someValue")).build();
 		Delta delta2 = settingCreationDeltaBuilder().jsonValue(Map.of("platformType", "ALL", "settingKey", "someSetting2", "settingValue", "someValue")).build();
 		Delta delta3 = settingCreationDeltaBuilder().jsonValue(Map.of("platformType", "ALL", "settingKey", "someSetting3", "settingValue", "someValue")).build();
@@ -458,13 +460,17 @@ class DeltaServiceFacadeImplTest {
 		deltaFacadeService.pushCreation(delta1).block();
 		deltaFacadeService.pushCreation(delta2).block();
 		deltaFacadeService.pushCreation(delta3).block();
+		deltaRepository.save(activityCreationDeltaBuilder().build().toEntity(objectMapper, alternativeUser));
 		deltaFacadeService.pushCreation(delta4).block();
+
+		assertEquals(5, deltaRepository.findAll().size());
 
 		Flux<Delta> result = deltaFacadeService.findAfterPosition(2L);
 
 		StepVerifier
 		.create(result)
 		.expectNextMatches(d -> delta3.getRecordId().equals(d.getRecordId()))
+		// skips other user's deltas
 		.expectNextMatches(d -> delta4.getRecordId().equals(d.getRecordId()))
 		.expectComplete()
 		.verify();

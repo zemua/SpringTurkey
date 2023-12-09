@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import devs.mrp.springturkey.database.entity.DeltaEntity;
+import devs.mrp.springturkey.database.entity.TurkeyUser;
 import devs.mrp.springturkey.delta.validation.FieldData;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -51,13 +52,14 @@ public class Delta {
 		return table.getEntityClass();
 	}
 
-	public DeltaEntity toEntity(ObjectMapper objectMapper) throws JsonProcessingException {
+	public DeltaEntity toEntity(ObjectMapper objectMapper, TurkeyUser user) throws JsonProcessingException {
 		return DeltaEntity.builder()
 				.deltaTimeStamp(this.getTimestamp())
 				.deltaType(this.getDeltaType())
 				.deltaTable(this.getTable())
 				.recordId(this.getRecordId())
 				.jsonValue(objectMapper.writeValueAsString(this.jsonValue))
+				.user(user)
 				.build();
 	}
 

@@ -1,5 +1,7 @@
 package devs.mrp.springturkey.database.service.impl;
 
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -8,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import devs.mrp.springturkey.components.LoginDetailsReader;
 import devs.mrp.springturkey.database.entity.DeltaEntity;
 import devs.mrp.springturkey.database.repository.DeltaRepository;
 import devs.mrp.springturkey.database.repository.dao.EntityFromDeltaDao;
@@ -38,6 +41,9 @@ public class DeltaServiceFacadeImpl implements DeltaServiceFacade {
 	@Autowired
 	private ObjectMapper objectMapper;
 
+	@Autowired
+	private LoginDetailsReader loginDetailsReader;
+
 	@Override
 	@Transactional
 	public Mono<Integer> pushCreation(Delta delta) {
@@ -58,21 +64,27 @@ public class DeltaServiceFacadeImpl implements DeltaServiceFacade {
 
 	private Mono<Integer> persistEntity(Mono<Integer> previousResult, Delta delta) {
 		return previousResult.filter(i -> i>0)
-				.doOnNext(i -> saveEntityFromDelta(delta))
+				.flatMap(i -> saveEntityFromDelta(delta))
 				.doOnError(TurkeySurpriseException.class, e -> Mono.error(new TurkeySurpriseException("Error persisting delta", e)));
 	}
 
-	private void saveEntityFromDelta(Delta delta) {
-		try {
-			deltaRepository.save(delta.toEntity(objectMapper));
-		} catch (JsonProcessingException e1) {
-			throw new TurkeySurpriseException("Error mapping DeltaEntity from Delta", e1);
-		}
+	private Mono<Integer> saveEntityFromDelta(Delta delta) {
+		return loginDetailsReader.getTurkeyUser()
+				.map(user -> {
+					try {
+						return deltaRepository.save(delta.toEntity(objectMapper, user));
+					} catch (JsonProcessingException e) {
+						throw new TurkeySurpriseException("Error mapping DeltaEntity from Delta", e);
+					}
+				})
+				.map(entity -> Objects.nonNull(entity) ? 1 : 0)
+				.switchIfEmpty(Mono.just(0));
 	}
 
 	@Override
 	public Flux<Delta> findAfterPosition(Long position) {
-		return Flux.fromIterable(deltaRepository.findByIdGreaterThan(position))
+		return loginDetailsReader.getTurkeyUser()
+				.flatMapIterable(user -> deltaRepository.findByIdGreaterThanAndUser(position, user))
 				.map(this::deltaFromEntity);
 	}
 
