@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -28,6 +29,9 @@ class UserControllerTest {
 
 	@Autowired
 	private WebTestClient webClient;
+
+	@MockBean
+	private ReactiveJwtDecoder reactiveJwtDecoder;
 
 	@Test
 	@WithMockUser("some@user.me")
