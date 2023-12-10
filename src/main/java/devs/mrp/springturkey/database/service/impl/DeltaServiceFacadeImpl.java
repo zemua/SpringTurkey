@@ -1,6 +1,7 @@
 package devs.mrp.springturkey.database.service.impl;
 
 import java.util.Objects;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -94,6 +95,20 @@ public class DeltaServiceFacadeImpl implements DeltaServiceFacade {
 		} catch (JsonProcessingException e) {
 			throw new TurkeySurpriseException("Unexpected error on converting data from DB", e);
 		}
+	}
+
+	@Override
+	public Mono<Delta> findMostRecentTimestampForRecord(UUID recordId) {
+		return loginDetailsReader.getTurkeyUser()
+				.flatMap(user -> Mono.just(deltaRepository.findFirstByUserAndRecordIdOrderByDeltaTimeStampDesc(user, recordId)))
+				.flatMap(optionalDelta -> optionalDelta.isPresent() ? Mono.just(optionalDelta.get()) : Mono.empty())
+				.map(entity -> {
+					try {
+						return Delta.fromEntity(entity, objectMapper);
+					} catch (JsonProcessingException e) {
+						throw new TurkeySurpriseException("Unexpected error parsing json string from db object: " + entity.getJsonValue(), e);
+					}
+				});
 	}
 
 }

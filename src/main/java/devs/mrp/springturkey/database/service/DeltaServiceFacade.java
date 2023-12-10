@@ -1,5 +1,7 @@
 package devs.mrp.springturkey.database.service;
 
+import java.util.UUID;
+
 import devs.mrp.springturkey.delta.Delta;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -13,5 +15,7 @@ public interface DeltaServiceFacade {
 	public Mono<Integer> pushDeletion(Delta delta);
 
 	public Flux<Delta> findAfterPosition(Long position);
+
+	public Mono<Delta> findMostRecentTimestampForRecord(UUID recordId);
 
 }

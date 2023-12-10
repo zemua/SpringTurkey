@@ -29,7 +29,11 @@ import lombok.With;
 
 @Entity(name = "turkey_delta")
 @Table(name = "turkey_delta",
-indexes = @Index(name = "position_and_user_index", columnList = "id, user_id"))
+indexes = {
+		@Index(name = "position_and_user_index", columnList = "id, user_id"),
+		@Index(name = "user_and_record_id_index", columnList = "user_id, recordId"),
+		@Index(name = "delta_timestamp_index", columnList = "deltaTimeStamp")
+})
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Builder
@@ -42,8 +46,6 @@ public class DeltaEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	// TODO add index on TurkeyUser, recordId and deltaTimeStamp to verify the most recent delta to a given record
 
 	@ManyToOne
 	@NotNull

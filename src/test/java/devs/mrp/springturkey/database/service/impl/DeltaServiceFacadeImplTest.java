@@ -93,6 +93,10 @@ class DeltaServiceFacadeImplTest {
 
 	private ObjectMapper objectMapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
 
+	static {
+		System.setProperty("logging.level.devs.mrp.springturkey", "DEBUG");
+	}
+
 	@BeforeEach
 	void setup() {
 		user = TurkeyUser.builder().externalId("some@mail.com").build();
@@ -474,6 +478,26 @@ class DeltaServiceFacadeImplTest {
 		.expectNextMatches(d -> delta4.getRecordId().equals(d.getRecordId()))
 		.expectComplete()
 		.verify();
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
+	void testFindMostRecentTimestamp() throws JsonProcessingException {
+		assertEquals(0, deltaRepository.findAll().size());
+
+		Delta delta1 = settingCreationDeltaBuilder().timestamp(LocalDateTime.now()).build();
+		deltaFacadeService.pushCreation(delta1).block();
+
+		Delta delta2 = settingModificationDeltaBuilder(delta1.getRecordId()).timestamp(LocalDateTime.now().plusHours(1)).build();
+		deltaFacadeService.pushModification(delta2).block();
+
+		Delta delta3 = settingModificationDeltaBuilder(delta1.getRecordId()).timestamp(LocalDateTime.now().minusHours(1)).build();
+		deltaFacadeService.pushModification(delta3).block();
+
+		Delta result = deltaFacadeService.findMostRecentTimestampForRecord(delta1.getRecordId()).block();
+
+		assertEquals(delta2.getTimestamp(), result.getTimestamp());
 	}
 
 	private Delta.DeltaBuilder activityCreationDeltaBuilder() throws JsonProcessingException {

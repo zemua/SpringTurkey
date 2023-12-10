@@ -37,7 +37,7 @@ indexes = @Index(name = "condition_to_user_index", columnList = "turkey_user"))
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class Condition {
+public class Condition { // TODO test to find by id some created
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)

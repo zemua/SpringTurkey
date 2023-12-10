@@ -2,6 +2,7 @@ package devs.mrp.springturkey.database.repository.dao;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,10 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TransactionRequiredException;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 public abstract class AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 
 	// TODO evaluate sync conflicts with the db before pushing data to the repo
@@ -84,17 +87,19 @@ public abstract class AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 	}
 
 	private int persistEntityMapToDb(StorableEntityWrapper data) {
+		Object persisted;
 		try {
 			data.getEntityMap().put("user", data.getUser());
+			log.debug("Fetching object from db for class {} and id {}", data.getEntityClass(), data.getEntityMap().get(ID_FIELD));
 			Object dbObject = entityManager.find(data.getEntityClass(), data.getEntityMap().get(ID_FIELD));
-			persist(data, dbObject);
+			persisted = persist(data, dbObject);
 		} catch (EntityExistsException | IllegalArgumentException | TransactionRequiredException e) {
 			throw new TurkeySurpriseException("Error persisting entity from delta", e);
 		}
-		return 1;
+		return Objects.isNull(persisted) ? 0 : 1;
 	}
 
-	protected abstract void persist(StorableEntityWrapper data, Object dbObject);
+	protected abstract Object persist(StorableEntityWrapper data, Object dbObject);
 
 	@Getter
 	@Builder

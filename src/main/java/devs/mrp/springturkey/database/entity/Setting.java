@@ -15,8 +15,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
@@ -41,10 +39,10 @@ uniqueConstraints = { @UniqueConstraint(name = "uk__platform__setting", columnNa
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class Setting {
+public class Setting { // TODO test to find by id some created
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
+	@NotNull
 	private UUID id;
 
 	@ManyToOne

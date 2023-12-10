@@ -14,16 +14,17 @@ import lombok.extern.slf4j.Slf4j;
 public class EntityFromDeltaDaoDeleter extends AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 
 	@Override
-	protected void persist(StorableEntityWrapper data, Object dbObject) {
+	protected Object persist(StorableEntityWrapper data, Object dbObject) {
 		boolean deletion = Boolean.TRUE.equals(data.getEntityMap().get("deletion"));
 		if (!deletion) {
 			log.warn("Not deleting object because delta deletion boolean is false");
-			return;
+			return null;
 		}
 		if (Objects.isNull(dbObject)) {
 			throw new TurkeySurpriseException("Trying to delete an object which id does not exist in the db: " + data.getEntityMap().toString());
 		} else {
 			entityManager.remove(dbObject);
+			return null;
 		}
 	}
 

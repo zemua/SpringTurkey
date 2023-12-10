@@ -7,17 +7,20 @@ import org.springframework.stereotype.Repository;
 import devs.mrp.springturkey.database.repository.dao.AbstractEntityFromDeltaDao;
 import devs.mrp.springturkey.database.repository.dao.EntityFromDeltaDao;
 import devs.mrp.springturkey.exceptions.TurkeySurpriseException;
+import lombok.extern.slf4j.Slf4j;
 
 @Repository("deltaDaoModification")
+@Slf4j
 public class EntityFromDeltaDaoModifier extends AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 
 	@Override
-	protected void persist(StorableEntityWrapper data, Object dbObject) {
+	protected Object persist(StorableEntityWrapper data, Object dbObject) {
 		Object entity = objectMapper.convertValue(data.getEntityMap(), data.getEntityClass());
 		if (Objects.isNull(dbObject)) {
 			throw new TurkeySurpriseException("Trying to modify an object which id does not exist in the db: " + data.getEntityMap().toString());
 		} else {
-			entityManager.merge(entity);
+			log.debug("Merging entity {}", entity);
+			return entityManager.merge(entity);
 		}
 	}
 

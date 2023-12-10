@@ -42,7 +42,7 @@ uniqueConstraints = { @UniqueConstraint(name = "uk__activity__name_and_type", co
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class Activity {
+public class Activity { // TODO test to find by id some created
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)

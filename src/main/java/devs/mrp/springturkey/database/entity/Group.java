@@ -41,7 +41,7 @@ indexes = {
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class Group {
+public class Group { // TODO test to find by id some created
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
