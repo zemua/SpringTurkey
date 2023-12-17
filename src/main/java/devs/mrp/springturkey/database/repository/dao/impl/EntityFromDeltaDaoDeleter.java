@@ -24,7 +24,7 @@ public class EntityFromDeltaDaoDeleter extends AbstractEntityFromDeltaDao implem
 			throw new TurkeySurpriseException("Trying to delete an object which id does not exist in the db: " + data.getEntityMap().toString());
 		} else {
 			entityManager.remove(dbObject);
-			return null;
+			return dbObject;
 		}
 	}
 

@@ -9,6 +9,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -129,8 +130,8 @@ class FullUserDumpFacadeImplTest {
 				.conditionalGroup(group1).targetGroup(group2)
 				.lastDaysToConsider(2).requiredUsageMs(Duration.ofHours(11).plusMinutes(22)).build());
 
-		setting1 = settingRepository.save(Setting.builder().user(user).platform(PlatformType.ALL).settingKey("setting1").settingValue("value1").build());
-		setting2 = settingRepository.save(Setting.builder().user(user).platform(PlatformType.ALL).settingKey("setting2").settingValue("value2").build());
+		setting1 = settingRepository.save(Setting.builder().id(UUID.randomUUID()).user(user).platform(PlatformType.ALL).settingKey("setting1").settingValue("value1").build());
+		setting2 = settingRepository.save(Setting.builder().id(UUID.randomUUID()).user(user).platform(PlatformType.ALL).settingKey("setting2").settingValue("value2").build());
 
 		randomQuestion1 = randomQuestionRepository.save(RandomQuestion.builder()
 				.user(user)

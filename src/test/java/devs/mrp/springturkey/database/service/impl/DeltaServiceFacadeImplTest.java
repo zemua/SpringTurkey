@@ -386,8 +386,13 @@ class DeltaServiceFacadeImplTest {
 	@WithMockUser("some@mail.com")
 	@DirtiesContext
 	void modifyOneSetting() throws JsonProcessingException {
-		Setting setting = Setting.builder().user(user).platform(PlatformType.ALL).settingKey("someKey")
-				.settingValue("original value").build();
+		Setting setting = Setting.builder()
+				.id(UUID.randomUUID())
+				.user(user)
+				.platform(PlatformType.ALL)
+				.settingKey("someKey")
+				.settingValue("original value")
+				.build();
 		setting = settingRepository.save(setting);
 		var preSettings = settingRepository.findAll();
 		var preDeltas = deltaRepository.findAll();
@@ -411,8 +416,13 @@ class DeltaServiceFacadeImplTest {
 	@WithMockUser("some@mail.com")
 	@DirtiesContext
 	void deleteOneSetting() throws JsonProcessingException {
-		Setting setting = Setting.builder().user(user).platform(PlatformType.ALL).settingKey("someKey")
-				.settingValue("original value").build();
+		Setting setting = Setting.builder()
+				.id(UUID.randomUUID())
+				.user(user)
+				.platform(PlatformType.ALL)
+				.settingKey("someKey")
+				.settingValue("original value")
+				.build();
 		setting = settingRepository.save(setting);
 		var preSettings = settingRepository.findAll();
 		var preDeltas = deltaRepository.findAll();
@@ -433,7 +443,11 @@ class DeltaServiceFacadeImplTest {
 	@WithMockUser("some@mail.com")
 	@DirtiesContext
 	void dontDeleteOneSetting() throws JsonProcessingException {
-		Setting setting = Setting.builder().user(user).platform(PlatformType.ALL).settingKey("someKey")
+		Setting setting = Setting.builder()
+				.id(UUID.randomUUID())
+				.user(user)
+				.platform(PlatformType.ALL)
+				.settingKey("someKey")
 				.settingValue("original value").build();
 		setting = settingRepository.save(setting);
 		var preSettings = settingRepository.findAll();
@@ -447,8 +461,8 @@ class DeltaServiceFacadeImplTest {
 		var postSettings = settingRepository.findAll();
 		var postDeltas = deltaRepository.findAll();
 		assertEquals(1, postSettings.size());
-		assertEquals(1, postDeltas.size());
-		assertEquals(1, result);
+		assertEquals(0, postDeltas.size());
+		assertEquals(0, result);
 	}
 
 	@Test

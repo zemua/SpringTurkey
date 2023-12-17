@@ -61,30 +61,35 @@ class SettingServiceImplTest {
 				.platform(PlatformType.DESKTOP)
 				.settingKey("key1")
 				.settingValue("value1")
+				.id(UUID.randomUUID())
 				.build();
 		Setting setting2 = Setting.builder()
 				.user(user)
 				.platform(PlatformType.DESKTOP)
 				.settingKey("key2")
 				.settingValue("value2")
+				.id(UUID.randomUUID())
 				.build();
 		Setting setting3 = Setting.builder()
 				.user(user)
 				.platform(PlatformType.DESKTOP)
 				.settingKey("key3")
 				.settingValue("value3")
+				.id(UUID.randomUUID())
 				.build();
 		Setting setting4 = Setting.builder()
 				.user(otherUser)
 				.platform(PlatformType.DESKTOP)
 				.settingKey("key4")
 				.settingValue("value4")
+				.id(UUID.randomUUID())
 				.build();
 		Setting setting5 = Setting.builder()
 				.user(otherUser)
 				.platform(PlatformType.DESKTOP)
 				.settingKey("key1")
 				.settingValue("value5")
+				.id(UUID.randomUUID())
 				.build();
 		settingRepository.save(setting1);
 		settingRepository.save(setting2);
@@ -109,18 +114,21 @@ class SettingServiceImplTest {
 				.platform(PlatformType.DESKTOP)
 				.settingKey("key1")
 				.settingValue("value1")
+				.id(UUID.randomUUID())
 				.build();
 		Setting setting2 = Setting.builder()
 				.user(user)
 				.platform(PlatformType.DESKTOP)
 				.settingKey("key2")
 				.settingValue("value2")
+				.id(UUID.randomUUID())
 				.build();
 		Setting setting3 = Setting.builder()
 				.user(user)
 				.platform(PlatformType.DESKTOP)
 				.settingKey("key3")
 				.settingValue("value3")
+				.id(UUID.randomUUID())
 				.build();
 
 		settingRepository.save(setting1);
@@ -170,6 +178,7 @@ class SettingServiceImplTest {
 				.platform(PlatformType.DESKTOP)
 				.settingKey("key1")
 				.settingValue("value1")
+				.id(UUID.randomUUID())
 				.build();
 
 		Mono<Integer> monoSetting = settingService.addNewSetting(setting1);

@@ -66,6 +66,7 @@ public class DeltaServiceFacadeImpl implements DeltaServiceFacade {
 	private Mono<Integer> persistEntity(Mono<Integer> previousResult, Delta delta) {
 		return previousResult.filter(i -> i>0)
 				.flatMap(i -> saveEntityFromDelta(delta))
+				.switchIfEmpty(Mono.just(0))
 				.doOnError(TurkeySurpriseException.class, e -> Mono.error(new TurkeySurpriseException("Error persisting delta", e)));
 	}
 
