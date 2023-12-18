@@ -178,20 +178,17 @@ class SettingServiceImplTest {
 				.platform(PlatformType.DESKTOP)
 				.settingKey("key1")
 				.settingValue("value1")
-				.id(UUID.randomUUID())
 				.build();
 
 		Mono<Integer> monoSetting = settingService.addNewSetting(setting1);
 
 		StepVerifier.create(monoSetting)
-		.expectNext(1)
-		.expectComplete()
+		.expectError()
 		.verify();
 
 		Flux<Setting> fluxSetting = settingService.findAllUserSettings();
 
 		StepVerifier.create(fluxSetting)
-		.expectNextMatches(s -> s.getUser().getId().equals(userResult.getId()) && s.getId() != null && s.getSettingKey().equals("key1"))
 		.expectComplete()
 		.verify();
 	}

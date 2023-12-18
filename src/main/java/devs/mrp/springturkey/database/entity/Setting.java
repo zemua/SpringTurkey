@@ -39,7 +39,7 @@ uniqueConstraints = { @UniqueConstraint(name = "uk__platform__setting", columnNa
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class Setting { // TODO test to find by id some created
+public class Setting {
 
 	@Id
 	@NotNull
