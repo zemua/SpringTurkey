@@ -70,6 +70,7 @@ class RandomCheckServiceImplTest {
 		savedOtherUser = userRepository.save(otherUser);
 
 		positiveBlock1 = RandomQuestion.builder()
+				.id(UUID.randomUUID())
 				.user(savedUser)
 				.type(RandomBlockType.POSITIVE)
 				.name("positive one")
@@ -80,6 +81,7 @@ class RandomCheckServiceImplTest {
 		randomBlockRepository.save(positiveBlock1);
 
 		positiveBlock2 = RandomQuestion.builder()
+				.id(UUID.randomUUID())
 				.user(savedUser)
 				.type(RandomBlockType.POSITIVE)
 				.name("positive two")
@@ -90,6 +92,7 @@ class RandomCheckServiceImplTest {
 		randomBlockRepository.save(positiveBlock2);
 
 		negativeBlock1 = RandomQuestion.builder()
+				.id(UUID.randomUUID())
 				.user(savedUser)
 				.type(RandomBlockType.NEGATIVE)
 				.name("negative one")
@@ -100,6 +103,7 @@ class RandomCheckServiceImplTest {
 		randomBlockRepository.save(negativeBlock1);
 
 		negativeBlock2 = RandomQuestion.builder()
+				.id(UUID.randomUUID())
 				.user(savedUser)
 				.type(RandomBlockType.NEGATIVE)
 				.name("negative two")
@@ -110,6 +114,7 @@ class RandomCheckServiceImplTest {
 		randomBlockRepository.save(negativeBlock2);
 
 		wrongUserBlock = RandomQuestion.builder()
+				.id(UUID.randomUUID())
 				.user(savedOtherUser)
 				.type(RandomBlockType.POSITIVE)
 				.name("wrong user")

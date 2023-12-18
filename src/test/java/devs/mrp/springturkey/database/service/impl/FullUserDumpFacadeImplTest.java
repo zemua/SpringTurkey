@@ -7,7 +7,6 @@ import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -138,6 +137,7 @@ class FullUserDumpFacadeImplTest {
 		setting2 = settingRepository.save(Setting.builder().id(UUID.randomUUID()).user(user).platform(PlatformType.ALL).settingKey("setting2").settingValue("value2").build());
 
 		randomQuestion1 = randomQuestionRepository.save(RandomQuestion.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.type(RandomBlockType.POSITIVE)
 				.name("block one")
@@ -146,6 +146,7 @@ class FullUserDumpFacadeImplTest {
 				.multiplier(1)
 				.build());
 		randomQuestion2 = randomQuestionRepository.save(RandomQuestion.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.type(RandomBlockType.NEGATIVE)
 				.name("block two")
@@ -155,6 +156,7 @@ class FullUserDumpFacadeImplTest {
 				.build());
 
 		randomCheck1 = randomCheckRepository.save(RandomCheck.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("check one")
 				.startActive(LocalTime.of(8, 0))
@@ -167,6 +169,7 @@ class FullUserDumpFacadeImplTest {
 				.negativeQuestions(Set.of(randomQuestion2))
 				.build());
 		randomCheck2 = randomCheckRepository.save(RandomCheck.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("check two")
 				.startActive(LocalTime.of(8, 0))
@@ -186,14 +189,11 @@ class FullUserDumpFacadeImplTest {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new JavaTimeModule());
 
-		Map<Object,Object> expected = mapper.convertValue(expectedData(), Map.class);
-
 		ExportData result = fullUserDumpFacade.fullUserDump(device1.getId()).block();
-		Map<Object,Object> mapResult = mapper.convertValue(result, Map.class);
 
-		assertEquals(expected, mapResult);
-		assertNotNull(mapResult.get("randomChecks"));
-		assertNotNull(mapResult.get("randomQuestions"));
+		assertEquals(expectedData(), result);
+		assertNotNull(result.getRandomChecks());
+		assertNotNull(result.getRandomQuestions());
 	}
 
 	private ExportData expectedData() {

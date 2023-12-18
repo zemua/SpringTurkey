@@ -48,7 +48,7 @@ indexes = {
 @Getter
 @EqualsAndHashCode
 @MaxBiggerThanMinConstraint
-public class RandomCheck implements MinMax<LocalTime> { // TODO test to find by id some created
+public class RandomCheck implements MinMax<LocalTime> {
 
 	@Id
 	@Column(name = "id")

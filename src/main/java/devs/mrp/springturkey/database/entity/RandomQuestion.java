@@ -15,8 +15,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
@@ -42,10 +40,9 @@ indexes = {
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class RandomQuestion { // TODO test to find by id some created
+public class RandomQuestion {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "id")
 	private UUID id;
 

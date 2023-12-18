@@ -60,6 +60,7 @@ class RandomQuestionServiceImplTest {
 	@WithMockUser("some@mail.com")
 	void findAllUserRandomBlocks() {
 		RandomQuestion block1 = RandomQuestion.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.type(RandomBlockType.POSITIVE)
 				.name("some name")
@@ -69,6 +70,7 @@ class RandomQuestionServiceImplTest {
 				.build();
 
 		RandomQuestion block2 = RandomQuestion.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.type(RandomBlockType.NEGATIVE)
 				.name("another name")
@@ -78,6 +80,7 @@ class RandomQuestionServiceImplTest {
 				.build();
 
 		RandomQuestion block3 = RandomQuestion.builder()
+				.id(UUID.randomUUID())
 				.user(otherUser)
 				.type(RandomBlockType.POSITIVE)
 				.name("yet any other name")
@@ -100,6 +103,7 @@ class RandomQuestionServiceImplTest {
 	@WithMockUser("wrong@mail.com")
 	void findAllUserWithWrongUser() {
 		RandomQuestion block1 = RandomQuestion.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.type(RandomBlockType.POSITIVE)
 				.name("some name")
@@ -109,6 +113,7 @@ class RandomQuestionServiceImplTest {
 				.build();
 
 		RandomQuestion block2 = RandomQuestion.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.type(RandomBlockType.NEGATIVE)
 				.name("another name")
@@ -118,6 +123,7 @@ class RandomQuestionServiceImplTest {
 				.build();
 
 		RandomQuestion block3 = RandomQuestion.builder()
+				.id(UUID.randomUUID())
 				.user(otherUser)
 				.type(RandomBlockType.POSITIVE)
 				.name("yet any other name")
@@ -172,6 +178,7 @@ class RandomQuestionServiceImplTest {
 	@WithMockUser("some@mail.com")
 	void insertNewBlockEmptyId() {
 		RandomQuestion block1 = RandomQuestion.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.type(RandomBlockType.POSITIVE)
 				.name("some name")
