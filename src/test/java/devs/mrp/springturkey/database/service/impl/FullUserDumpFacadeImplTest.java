@@ -123,10 +123,14 @@ class FullUserDumpFacadeImplTest {
 		activity1 = activityRepository.save(Activity.builder().id(UUID.randomUUID()).user(user).activityName("act1").group(group1).activityType(ActivityPlatform.ANDROID_APP).categoryType(CategoryType.NEGATIVE).build());
 		activity2 = activityRepository.save(Activity.builder().id(UUID.randomUUID()).user(user).activityName("act2").activityType(ActivityPlatform.ANDROID_APP).categoryType(CategoryType.NEGATIVE).build());
 
-		condition1 = conditionRepository.save(Condition.builder().user(user)
+		condition1 = conditionRepository.save(Condition.builder()
+				.id(UUID.randomUUID())
+				.user(user)
 				.conditionalGroup(group1).targetGroup(group2)
 				.lastDaysToConsider(3).requiredUsageMs(Duration.ofHours(11).plusMinutes(22)).build());
-		condition2 = conditionRepository.save(Condition.builder().user(user)
+		condition2 = conditionRepository.save(Condition.builder()
+				.id(UUID.randomUUID())
+				.user(user)
 				.conditionalGroup(group1).targetGroup(group2)
 				.lastDaysToConsider(2).requiredUsageMs(Duration.ofHours(11).plusMinutes(22)).build());
 

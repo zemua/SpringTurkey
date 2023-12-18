@@ -13,8 +13,6 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
@@ -37,10 +35,9 @@ indexes = @Index(name = "condition_to_user_index", columnList = "turkey_user"))
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class Condition { // TODO test to find by id some created
+public class Condition {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
 
 	@ManyToOne

@@ -1,5 +1,7 @@
 package devs.mrp.springturkey.database.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.time.Duration;
 import java.util.UUID;
 
@@ -69,6 +71,7 @@ class ConditionServiceImplTest {
 		groupRepository.save(group2);
 
 		Condition condition1 = Condition.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
@@ -76,6 +79,7 @@ class ConditionServiceImplTest {
 				.lastDaysToConsider(1)
 				.build();
 		Condition condition2 = Condition.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
@@ -83,6 +87,7 @@ class ConditionServiceImplTest {
 				.lastDaysToConsider(1)
 				.build();
 		Condition condition3 = Condition.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
@@ -90,6 +95,7 @@ class ConditionServiceImplTest {
 				.lastDaysToConsider(1)
 				.build();
 		Condition condition4 = Condition.builder()
+				.id(UUID.randomUUID())
 				.user(otherUser)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
@@ -131,6 +137,7 @@ class ConditionServiceImplTest {
 		groupRepository.save(group2);
 
 		Condition condition1 = Condition.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
@@ -138,6 +145,7 @@ class ConditionServiceImplTest {
 				.lastDaysToConsider(1)
 				.build();
 		Condition condition2 = Condition.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
@@ -145,6 +153,7 @@ class ConditionServiceImplTest {
 				.lastDaysToConsider(1)
 				.build();
 		Condition condition3 = Condition.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.conditionalGroup(group1)
 				.targetGroup(group2)
@@ -210,7 +219,7 @@ class ConditionServiceImplTest {
 
 	@Test
 	@WithMockUser("some@mail.com")
-	void insertNewConditionWithEmtpyIdGetsGenerated() {
+	void insertNewConditionWithEmtpyIdThrowsError() {
 		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
 		TurkeyUser userResult = userRepository.save(user);
 
@@ -238,16 +247,49 @@ class ConditionServiceImplTest {
 		Mono<Integer> monoCondition = conditionService.addNewCondition(condition1);
 
 		StepVerifier.create(monoCondition)
-		.expectNext(1)
-		.expectComplete()
+		.expectError()
 		.verify();
 
 		Flux<Condition> fluxCondition = conditionService.findAllUserConditions();
 
 		StepVerifier.create(fluxCondition)
-		.expectNextMatches(c -> c.getUser().getId().equals(user.getId()) && c.getRequiredUsageMs().equals(Duration.ofHours(0).plusMinutes(10)) && c.getId() != null)
 		.expectComplete()
 		.verify();
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	void givenIdIsSaved() {
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
+		TurkeyUser userResult = userRepository.save(user);
+
+		Group group1 = Group.builder()
+				.user(user)
+				.name("some name")
+				.type(GroupType.NEGATIVE)
+				.build();
+		Group group2 = Group.builder()
+				.user(user)
+				.name("some other name")
+				.type(GroupType.NEGATIVE)
+				.build();
+		groupRepository.save(group1);
+		groupRepository.save(group2);
+
+		Condition condition1 = Condition.builder()
+				.id(UUID.randomUUID())
+				.user(user)
+				.conditionalGroup(group1)
+				.targetGroup(group2)
+				.requiredUsageMs(Duration.ofHours(0).plusMinutes(10))
+				.lastDaysToConsider(1)
+				.build();
+
+		conditionService.addNewCondition(condition1).block();
+
+		Condition saved = conditionService.findAllUserConditions().blockFirst();
+
+		assertEquals(condition1.getId(), saved.getId());
 	}
 
 	@Test
