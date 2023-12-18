@@ -1,5 +1,7 @@
 package devs.mrp.springturkey.database.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -51,24 +53,28 @@ class ActivityServiceImplTest {
 		userRepository.save(otherUser);
 
 		Activity activity1 = Activity.builder()
+				.id(UUID.randomUUID())
 				.activityName("app1")
 				.activityType(ActivityPlatform.ANDROID_APP)
 				.categoryType(CategoryType.NEUTRAL)
 				.user(user)
 				.build();
 		Activity activity2 = Activity.builder()
+				.id(UUID.randomUUID())
 				.activityName("app2")
 				.activityType(ActivityPlatform.MAC_PROCESS)
 				.categoryType(CategoryType.NEGATIVE)
 				.user(user)
 				.build();
 		Activity activity3 = Activity.builder()
+				.id(UUID.randomUUID())
 				.activityName("app3")
 				.activityType(ActivityPlatform.UBUNTU_PROCESS)
 				.categoryType(CategoryType.POSITIVE)
 				.user(user)
 				.build();
 		Activity activity4 = Activity.builder()
+				.id(UUID.randomUUID())
 				.activityName("app4")
 				.activityType(ActivityPlatform.UBUNTU_PROCESS)
 				.categoryType(CategoryType.POSITIVE)
@@ -96,18 +102,21 @@ class ActivityServiceImplTest {
 		TurkeyUser userResult = userRepository.save(user);
 
 		Activity activity1 = Activity.builder()
+				.id(UUID.randomUUID())
 				.activityName("app1")
 				.activityType(ActivityPlatform.ANDROID_APP)
 				.categoryType(CategoryType.NEUTRAL)
 				.user(user)
 				.build();
 		Activity activity2 = Activity.builder()
+				.id(UUID.randomUUID())
 				.activityName("app2")
 				.activityType(ActivityPlatform.MAC_PROCESS)
 				.categoryType(CategoryType.NEGATIVE)
 				.user(user)
 				.build();
 		Activity activity3 = Activity.builder()
+				.id(UUID.randomUUID())
 				.activityName("app3")
 				.activityType(ActivityPlatform.UBUNTU_PROCESS)
 				.categoryType(CategoryType.POSITIVE)
@@ -162,6 +171,7 @@ class ActivityServiceImplTest {
 		TurkeyUser userResult = userRepository.save(user);
 
 		Activity activity1 = Activity.builder()
+				.id(UUID.randomUUID())
 				.activityName("app1")
 				.activityType(ActivityPlatform.ANDROID_APP)
 				.categoryType(CategoryType.NEUTRAL)
@@ -243,6 +253,26 @@ class ActivityServiceImplTest {
 		StepVerifier.create(monoActivity2)
 		.expectError(AlreadyExistsException.class)
 		.verify();
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	void keepSavedId() {
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
+		TurkeyUser userResult = userRepository.save(user);
+
+		Activity activity1 = Activity.builder()
+				.id(UUID.randomUUID())
+				.activityName("app1")
+				.activityType(ActivityPlatform.ANDROID_APP)
+				.categoryType(CategoryType.NEUTRAL)
+				.user(user)
+				.build();
+
+		activityService.addNewActivity(activity1).block();
+
+		Activity saved = activityService.findAllUserActivites().blockFirst();
+		assertEquals(activity1.getId(), saved.getId());
 	}
 
 }
