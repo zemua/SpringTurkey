@@ -1,5 +1,7 @@
 package devs.mrp.springturkey.database.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -50,21 +52,25 @@ class GroupServiceImplTest {
 		userRepository.save(otherUser);
 
 		Group group1 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("group1")
 				.type(GroupType.POSITIVE)
 				.build();
 		Group group2 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("group2")
 				.type(GroupType.POSITIVE)
 				.build();
 		Group group3 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("group3")
 				.type(GroupType.POSITIVE)
 				.build();
 		Group group4 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(otherUser)
 				.name("group4")
 				.type(GroupType.POSITIVE)
@@ -94,21 +100,25 @@ class GroupServiceImplTest {
 		userRepository.save(otherUser);
 
 		Group group1 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("group1")
 				.type(GroupType.POSITIVE)
 				.build();
 		Group group2 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("group2")
 				.type(GroupType.POSITIVE)
 				.build();
 		Group group3 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("group3")
 				.type(GroupType.POSITIVE)
 				.build();
 		Group group4 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(otherUser)
 				.name("group4")
 				.type(GroupType.POSITIVE)
@@ -164,6 +174,7 @@ class GroupServiceImplTest {
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("group1")
 				.type(GroupType.POSITIVE)
@@ -236,6 +247,26 @@ class GroupServiceImplTest {
 		StepVerifier.create(monoGroup2)
 		.expectError(AlreadyExistsException.class)
 		.verify();
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	void givenIdIsKept() {
+		TurkeyUser user = TurkeyUser.builder().externalId("some@mail.com").build();
+		TurkeyUser userResult = userRepository.save(user);
+
+		Group group1 = Group.builder()
+				.id(UUID.randomUUID())
+				.user(user)
+				.name("group1")
+				.type(GroupType.POSITIVE)
+				.build();
+
+		groupService.addNewGroup(group1).block();
+
+		Group result = groupService.findAllUserGroups().blockFirst();
+
+		assertEquals(group1.getId(), result.getId());
 	}
 
 }

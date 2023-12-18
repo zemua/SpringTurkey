@@ -117,8 +117,8 @@ class FullUserDumpFacadeImplTest {
 		device2 = deviceRepository.save(Device.builder().deviceType(DeviceType.ANDROID).usageTime(234L).user(user).build());
 		device3 = deviceRepository.save(Device.builder().deviceType(DeviceType.ANDROID).usageTime(345L).user(user).build());
 
-		group1 = groupRepository.save(Group.builder().user(user).name("group1").type(GroupType.NEGATIVE).build());
-		group2 = groupRepository.save(Group.builder().user(user).name("group2").type(GroupType.POSITIVE).build());
+		group1 = groupRepository.save(Group.builder().id(UUID.randomUUID()).user(user).name("group1").type(GroupType.NEGATIVE).build());
+		group2 = groupRepository.save(Group.builder().id(UUID.randomUUID()).user(user).name("group2").type(GroupType.POSITIVE).build());
 
 		activity1 = activityRepository.save(Activity.builder().id(UUID.randomUUID()).user(user).activityName("act1").group(group1).activityType(ActivityPlatform.ANDROID_APP).categoryType(CategoryType.NEGATIVE).build());
 		activity2 = activityRepository.save(Activity.builder().id(UUID.randomUUID()).user(user).activityName("act2").activityType(ActivityPlatform.ANDROID_APP).categoryType(CategoryType.NEGATIVE).build());

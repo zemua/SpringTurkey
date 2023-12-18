@@ -58,11 +58,13 @@ class ConditionServiceImplTest {
 		userRepository.save(otherUser);
 
 		Group group1 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("some name")
 				.type(GroupType.NEGATIVE)
 				.build();
 		Group group2 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("some other name")
 				.type(GroupType.NEGATIVE)
@@ -124,11 +126,13 @@ class ConditionServiceImplTest {
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("some name")
 				.type(GroupType.NEGATIVE)
 				.build();
 		Group group2 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("some other name")
 				.type(GroupType.NEGATIVE)
@@ -178,11 +182,13 @@ class ConditionServiceImplTest {
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("some name")
 				.type(GroupType.NEGATIVE)
 				.build();
 		Group group2 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("some other name")
 				.type(GroupType.NEGATIVE)
@@ -224,11 +230,13 @@ class ConditionServiceImplTest {
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("some name")
 				.type(GroupType.NEGATIVE)
 				.build();
 		Group group2 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("some other name")
 				.type(GroupType.NEGATIVE)
@@ -264,11 +272,13 @@ class ConditionServiceImplTest {
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("some name")
 				.type(GroupType.NEGATIVE)
 				.build();
 		Group group2 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("some other name")
 				.type(GroupType.NEGATIVE)
@@ -299,11 +309,13 @@ class ConditionServiceImplTest {
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("some name")
 				.type(GroupType.NEGATIVE)
 				.build();
 		Group group2 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("some other name")
 				.type(GroupType.NEGATIVE)
@@ -342,11 +354,13 @@ class ConditionServiceImplTest {
 		userRepository.save(otherUser);
 
 		Group group1 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(otherUser)
 				.name("some name")
 				.type(GroupType.NEGATIVE)
 				.build();
 		Group group2 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("some other name")
 				.type(GroupType.NEGATIVE)
@@ -382,6 +396,7 @@ class ConditionServiceImplTest {
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("some name")
 				.type(GroupType.NEGATIVE)
@@ -416,11 +431,13 @@ class ConditionServiceImplTest {
 		TurkeyUser userResult = userRepository.save(user);
 
 		Group group1 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("some name")
 				.type(GroupType.NEGATIVE)
 				.build();
 		Group group2 = Group.builder()
+				.id(UUID.randomUUID())
 				.user(user)
 				.name("some other name")
 				.type(GroupType.NEGATIVE)
