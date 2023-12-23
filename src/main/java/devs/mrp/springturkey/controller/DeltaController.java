@@ -1,5 +1,8 @@
 package devs.mrp.springturkey.controller;
 
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +17,8 @@ import devs.mrp.springturkey.database.service.DeltaServiceFacade;
 import devs.mrp.springturkey.delta.Delta;
 import devs.mrp.springturkey.delta.validation.DataPushConstrainerProvider;
 import devs.mrp.springturkey.exceptions.WrongDataException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -28,6 +33,9 @@ public class DeltaController {
 	private final DataPushConstrainerProvider dataPushConstrainer;
 	private final DeltaServiceFacade deltaServiceFacade;
 
+	@Autowired
+	private Validator validator;
+
 	@PostMapping("/push")
 	@PreAuthorize("isAuthenticated()")
 	public Flux<PushDeltaResponseDto> pushDeltas(@RequestBody Flux<DeltaRequestDto> deltas) {
@@ -37,6 +45,13 @@ public class DeltaController {
 	}
 
 	private Mono<PushDeltaResponseDto> insertedDeltaResponse(Delta delta) {
+		Set<ConstraintViolation<Object>> violations = validator.validate(delta);
+		if (!violations.isEmpty()) {
+			return Mono.just(PushDeltaResponseDto.builder()
+					.uuid(delta.getRecordId())
+					.success(false)
+					.build());
+		}
 		return pushData(delta)
 				.map(insertedQty -> PushDeltaResponseDto.builder()
 						.uuid(delta.getRecordId())

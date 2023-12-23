@@ -49,7 +49,7 @@ public class FieldData {
 			return new FieldData(this.columnName, this.referenzable, getValidator());
 		}
 
-		private Validator getValidator() {
+		private Validator getValidator() { // TODO remove this and use injected
 			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 			return factory.getValidator();
 		}

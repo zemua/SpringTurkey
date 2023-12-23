@@ -18,7 +18,7 @@ import lombok.ToString;
 @Builder
 @Getter
 @ToString
-public class ActivityCreationDelta { // TODO check to make "ID" mandatory for creation for all creation delta types
+public class ActivityCreationDelta {
 
 	@NotBlank
 	@AlphaNumericSpaceConstraint
