@@ -1,7 +1,6 @@
 package devs.mrp.springturkey.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -432,7 +431,20 @@ class DeltaControllerTest {
 	@Test
 	@WithMockUser("some@user.me")
 	void testDeltaWithNullUuid() {
-		fail("to be implemented");
+		DeltaRequestDto delta = validCreationDelta().recordId(null).build();
+
+		webClient.post().uri("/deltas/push")
+		.contentType(MediaType.APPLICATION_JSON)
+		.body(BodyInserters.fromPublisher(Flux.just(delta), DeltaRequestDto.class))
+		.exchange()
+		.expectStatus().is2xxSuccessful()
+		.expectBody(List.class)
+		.consumeWith(result -> {
+			List<Map<String,Object>> body = result.getResponseBody();
+			Map<String,Object> savedDelta = body.get(0);
+			assertEquals(null, savedDelta.get("uuid"));
+			assertEquals(false, savedDelta.get("success"));
+		});
 	}
 
 	private DeltaRequestDto.DeltaRequestDtoBuilder validCreationDelta() {

@@ -1,10 +1,6 @@
 package devs.mrp.springturkey.delta.validation;
 
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -17,9 +13,6 @@ public class FieldData {
 
 	@Getter
 	private Class<?> referenzable;
-
-	@NotNull
-	private Validator validator;
 
 	public static FieldDataBuilder builder() {
 		return new FieldDataBuilder();
@@ -46,12 +39,7 @@ public class FieldData {
 		}
 
 		public FieldData build() {
-			return new FieldData(this.columnName, this.referenzable, getValidator());
-		}
-
-		private Validator getValidator() { // TODO remove this and use injected
-			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-			return factory.getValidator();
+			return new FieldData(this.columnName, this.referenzable);
 		}
 
 	}
