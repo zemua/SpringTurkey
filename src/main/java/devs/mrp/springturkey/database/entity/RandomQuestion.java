@@ -40,7 +40,7 @@ indexes = {
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class RandomQuestion {
+public class RandomQuestion implements TurkeyEntity {
 
 	@Id
 	@Column(name = "id")

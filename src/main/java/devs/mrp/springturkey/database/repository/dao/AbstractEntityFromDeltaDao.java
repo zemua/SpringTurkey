@@ -27,7 +27,10 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public abstract class AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 
-	// TODO evaluate sync conflicts with the db before pushing data to the repo (ex modify something if it was deleted...)
+	// TODO if there is a more recent delta then ignore this one
+	// TODO else if delta is delete, set deleted date
+	// TODO else if delta exists deleted, remove the deleted date
+	// TODO else just proceed normally
 
 	protected static final String ID_FIELD = "id";
 

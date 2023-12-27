@@ -39,7 +39,7 @@ uniqueConstraints = { @UniqueConstraint(name = "uk__platform__setting", columnNa
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class Setting {
+public class Setting implements TurkeyEntity {
 
 	@Id
 	@NotNull

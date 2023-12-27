@@ -40,7 +40,7 @@ uniqueConstraints = { @UniqueConstraint(name = "uk__activity__name_and_type", co
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class Activity {
+public class Activity implements TurkeyEntity {
 
 	@Id
 	private UUID id;

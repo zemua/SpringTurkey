@@ -48,7 +48,7 @@ indexes = {
 @Getter
 @EqualsAndHashCode
 @MaxBiggerThanMinConstraint
-public class RandomCheck implements MinMax<LocalTime> {
+public class RandomCheck implements MinMax<LocalTime>, TurkeyEntity {
 
 	@Id
 	@Column(name = "id")

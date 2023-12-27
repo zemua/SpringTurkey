@@ -39,7 +39,7 @@ indexes = {
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class Group {
+public class Group implements TurkeyEntity {
 
 	@Id
 	@Column(name = "id")

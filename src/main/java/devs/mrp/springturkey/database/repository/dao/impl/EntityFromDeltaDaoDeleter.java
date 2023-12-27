@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 public class EntityFromDeltaDaoDeleter extends AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 
 	@Override
-	protected Object persist(StorableEntityWrapper data, Object dbObject) {
+	protected Object persist(StorableEntityWrapper data, Object dbObject) { // TODO set deleted date instead of removing the record
 		boolean deletion = Boolean.TRUE.equals(data.getEntityMap().get("deletion"));
 		if (!deletion) {
 			log.warn("Not deleting object because delta deletion boolean is false");

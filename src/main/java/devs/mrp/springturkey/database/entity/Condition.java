@@ -35,7 +35,7 @@ indexes = @Index(name = "condition_to_user_index", columnList = "turkey_user"))
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class Condition {
+public class Condition implements TurkeyEntity {
 
 	@Id
 	private UUID id;
