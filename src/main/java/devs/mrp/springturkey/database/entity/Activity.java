@@ -29,6 +29,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity(name = "activity")
 @Table(name = "turkey_activities",
@@ -43,6 +44,7 @@ uniqueConstraints = { @UniqueConstraint(name = "uk__activity__name_and_type", co
 public class Activity implements TurkeyEntity {
 
 	@Id
+	@Setter
 	private UUID id;
 
 	@ManyToOne
@@ -80,6 +82,7 @@ public class Activity implements TurkeyEntity {
 	private LocalDateTime edited;
 
 	@Nullable
+	@Setter
 	private LocalDateTime deleted;
 
 }

@@ -25,6 +25,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity(name = "condition")
 @Table(name = "turkey_condition",
@@ -38,6 +39,7 @@ indexes = @Index(name = "condition_to_user_index", columnList = "turkey_user"))
 public class Condition implements TurkeyEntity {
 
 	@Id
+	@Setter
 	private UUID id;
 
 	@ManyToOne
@@ -72,6 +74,7 @@ public class Condition implements TurkeyEntity {
 	private LocalDateTime edited;
 
 	@Nullable
+	@Setter
 	private LocalDateTime deleted;
 
 }

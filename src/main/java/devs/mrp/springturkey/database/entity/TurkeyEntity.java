@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public interface TurkeyEntity {
 
-	UUID getId();
-	LocalDateTime getDeleted();
+	void setId(UUID uuid);
+	void setDeleted(LocalDateTime dateTime);
 
 }

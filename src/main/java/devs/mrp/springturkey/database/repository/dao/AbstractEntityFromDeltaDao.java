@@ -1,5 +1,6 @@
 package devs.mrp.springturkey.database.repository.dao;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -32,8 +33,6 @@ public abstract class AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 	// TODO else if delta exists deleted, remove the deleted date
 	// TODO else just proceed normally
 
-	protected static final String ID_FIELD = "id";
-
 	@PersistenceContext
 	protected EntityManager entityManager;
 
@@ -50,6 +49,8 @@ public abstract class AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 
 		return userService.getUser().map(user -> persistEntityMapToDb(
 				StorableEntityWrapper.builder()
+				.recordId(delta.getRecordId())
+				.timeStamp(delta.getTimestamp())
 				.entityMap(modifiableEntityMap)
 				.user(user)
 				.entityClass(delta.getEntityClass())
@@ -57,7 +58,6 @@ public abstract class AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 	}
 
 	private void addFieldsToEntityMap(Delta delta, Map<String,Object> modifiableEntityMap) {
-		modifiableEntityMap.put(ID_FIELD, delta.getRecordId());
 		delta.getJsonValue().forEach((k,v) -> addFieldToEntityMap(
 				EntityDtoFieldWrapper.builder()
 				.entityMap(modifiableEntityMap)
@@ -93,8 +93,8 @@ public abstract class AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 		Object persisted;
 		try {
 			data.getEntityMap().put("user", data.getUser());
-			log.debug("Fetching object from db for class {} and id {}", data.getEntityClass(), data.getEntityMap().get(ID_FIELD));
-			Object dbObject = entityManager.find(data.getEntityClass(), data.getEntityMap().get(ID_FIELD));
+			log.debug("Fetching object from db for class {} and id {}", data.getEntityClass(), data.getRecordId());
+			Object dbObject = entityManager.find(data.getEntityClass(), data.getRecordId());
 			persisted = persist(data, dbObject);
 		} catch (EntityExistsException | IllegalArgumentException | TransactionRequiredException e) {
 			throw new TurkeySurpriseException("Error persisting entity from delta", e);
@@ -135,6 +135,10 @@ public abstract class AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 	@Getter
 	@Builder
 	protected static class StorableEntityWrapper {
+		@Nonnull
+		UUID recordId;
+		@Nonnull
+		LocalDateTime timeStamp;
 		@Nonnull
 		Map<String,Object> entityMap;
 		@Nonnull

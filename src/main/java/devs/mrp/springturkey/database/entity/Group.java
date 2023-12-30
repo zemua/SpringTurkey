@@ -27,6 +27,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity(name = "group")
 @Table(name = "turkey_group",
@@ -43,6 +44,7 @@ public class Group implements TurkeyEntity {
 
 	@Id
 	@Column(name = "id")
+	@Setter
 	private UUID id;
 
 	@ManyToOne
@@ -69,6 +71,7 @@ public class Group implements TurkeyEntity {
 	private LocalDateTime edited;
 
 	@Nullable
+	@Setter
 	private LocalDateTime deleted;
 
 }

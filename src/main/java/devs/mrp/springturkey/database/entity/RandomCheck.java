@@ -36,6 +36,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity(name = "randomcheck")
 @Table(name = "random_check",
@@ -52,6 +53,7 @@ public class RandomCheck implements MinMax<LocalTime>, TurkeyEntity {
 
 	@Id
 	@Column(name = "id")
+	@Setter
 	private UUID id;
 
 	@ManyToOne
@@ -106,6 +108,7 @@ public class RandomCheck implements MinMax<LocalTime>, TurkeyEntity {
 	private LocalDateTime edited;
 
 	@Nullable
+	@Setter
 	private LocalDateTime deleted;
 
 	@PrePersist

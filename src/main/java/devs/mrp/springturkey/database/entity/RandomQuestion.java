@@ -29,6 +29,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity(name = "randomquestion")
 @Table(name = "random_question",
@@ -44,6 +45,7 @@ public class RandomQuestion implements TurkeyEntity {
 
 	@Id
 	@Column(name = "id")
+	@Setter
 	private UUID id;
 
 	@ManyToOne
@@ -77,6 +79,7 @@ public class RandomQuestion implements TurkeyEntity {
 	private LocalDateTime edited;
 
 	@Nullable
+	@Setter
 	private LocalDateTime deleted;
 
 }
