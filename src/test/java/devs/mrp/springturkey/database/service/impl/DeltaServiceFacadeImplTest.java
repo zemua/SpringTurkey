@@ -3,6 +3,7 @@ package devs.mrp.springturkey.database.service.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -415,6 +416,37 @@ class DeltaServiceFacadeImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	@DirtiesContext
+	void modifyPartialData() throws JsonProcessingException {
+		Activity activity = Activity.builder()
+				.id(UUID.randomUUID())
+				.user(user)
+				.activityName("some name")
+				.activityType(ActivityPlatform.ANDROID_APP)
+				.categoryType(CategoryType.NEGATIVE)
+				.build();
+
+		activity = activityRepository.save(activity);
+
+		Delta delta = Delta.builder()
+				.timestamp(LocalDateTime.now())
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.ACTIVITY)
+				.recordId(activity.getId())
+				.jsonValue(Map.of("activityName", "updated name"))
+				.build();
+
+		Integer result = deltaFacadeService.pushModification(delta).block();
+
+		Activity modifiedActivity = activityRepository.findAll().get(0);
+		assertEquals(user, modifiedActivity.getUser());
+		assertEquals("updated name", modifiedActivity.getActivityName());
+		assertEquals(ActivityPlatform.ANDROID_APP, modifiedActivity.getActivityType());
+		assertEquals(CategoryType.NEGATIVE, modifiedActivity.getCategoryType());
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
 	void deleteOneSetting() throws JsonProcessingException {
 		Setting setting = Setting.builder()
 				.id(UUID.randomUUID())
@@ -428,15 +460,18 @@ class DeltaServiceFacadeImplTest {
 		var preDeltas = deltaRepository.findAll();
 		assertEquals(1, preSettings.size());
 		assertEquals(0, preDeltas.size());
+		assertNull(preSettings.get(0).getDeleted());
 
 		Delta delta = settingDeletionDeltaBuilder(setting.getId()).build();
 		Integer result = deltaFacadeService.pushDeletion(delta).block();
 
 		var postSettings = settingRepository.findAll();
 		var postDeltas = deltaRepository.findAll();
-		assertEquals(0, postSettings.size());
+		assertEquals(1, postSettings.size());
 		assertEquals(1, postDeltas.size());
 		assertEquals(1, result);
+		assertTrue(postSettings.get(0).getDeleted().isAfter(LocalDateTime.now().minusSeconds(5)));
+		assertEquals("original value", postSettings.get(0).getSettingValue());
 	}
 
 	@Test
