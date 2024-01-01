@@ -28,10 +28,9 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public abstract class AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 
-	// TODO if there is a more recent delta then ignore this one
-	// TODO else if delta is delete, set deleted date
-	// TODO else if delta exists deleted, remove the deleted date
-	// TODO else just proceed normally
+	// TODO if we are deleting, and there is any more recent record, then discard current deletion
+	// TODO if there are more recent modification deltas, and we are modifying, then discard fields in this one that were set on a later timestamp
+	// TODO if we are modifying a record that exists as deleted, then remove the deleted date
 
 	@PersistenceContext
 	protected EntityManager entityManager;
@@ -43,18 +42,19 @@ public abstract class AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 	private UserService userService;
 
 	@Override
-	public Mono<Integer> persistDelta(Delta delta) {
+	public Mono<Integer> persistTurkeyDataFromDelta(Delta delta) {
 		Map<String,Object> modifiableEntityMap = new HashMap<>();
 		addFieldsToEntityMap(delta, modifiableEntityMap);
 
-		return userService.getUser().map(user -> persistEntityMapToDb(
-				StorableEntityWrapper.builder()
-				.recordId(delta.getRecordId())
-				.timeStamp(delta.getTimestamp())
-				.entityMap(modifiableEntityMap)
-				.user(user)
-				.entityClass(delta.getEntityClass())
-				.build()));
+		return userService.getUser()
+				.map(user -> persistEntityMapToDb(
+						StorableEntityWrapper.builder()
+						.recordId(delta.getRecordId())
+						.timeStamp(delta.getTimestamp())
+						.entityMap(modifiableEntityMap)
+						.user(user)
+						.entityClass(delta.getEntityClass())
+						.build()));
 	}
 
 	private void addFieldsToEntityMap(Delta delta, Map<String,Object> modifiableEntityMap) {

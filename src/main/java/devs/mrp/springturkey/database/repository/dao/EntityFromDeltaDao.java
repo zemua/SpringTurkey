@@ -5,6 +5,6 @@ import reactor.core.publisher.Mono;
 
 public interface EntityFromDeltaDao {
 
-	public Mono<Integer> persistDelta(Delta delta);
+	public Mono<Integer> persistTurkeyDataFromDelta(Delta delta);
 
 }

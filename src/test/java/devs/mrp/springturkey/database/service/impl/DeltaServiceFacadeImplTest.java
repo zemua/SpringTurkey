@@ -1,6 +1,7 @@
 package devs.mrp.springturkey.database.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -462,16 +463,24 @@ class DeltaServiceFacadeImplTest {
 		assertEquals(0, preDeltas.size());
 		assertNull(preSettings.get(0).getDeleted());
 
+		Delta recentDelta = settingModificationDeltaBuilder(setting.getId()).timestamp(LocalDateTime.now().minusMinutes(1)).build();
+		deltaFacadeService.pushModification(recentDelta).block();
+		preSettings = settingRepository.findAll();
+		preDeltas = deltaRepository.findAll();
+		assertEquals(1, preSettings.size());
+		assertEquals(1, preDeltas.size());
+		assertNull(preSettings.get(0).getDeleted());
+
 		Delta delta = settingDeletionDeltaBuilder(setting.getId()).build();
 		Integer result = deltaFacadeService.pushDeletion(delta).block();
 
 		var postSettings = settingRepository.findAll();
 		var postDeltas = deltaRepository.findAll();
 		assertEquals(1, postSettings.size());
-		assertEquals(1, postDeltas.size());
+		assertEquals(2, postDeltas.size());
 		assertEquals(1, result);
 		assertTrue(postSettings.get(0).getDeleted().isAfter(LocalDateTime.now().minusSeconds(5)));
-		assertEquals("original value", postSettings.get(0).getSettingValue());
+		assertNotNull(postSettings.get(0).getSettingValue());
 	}
 
 	@Test
@@ -498,6 +507,43 @@ class DeltaServiceFacadeImplTest {
 		assertEquals(1, postSettings.size());
 		assertEquals(0, postDeltas.size());
 		assertEquals(0, result);
+		assertNull(postSettings.get(0).getDeleted());
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
+	void dontDeleteIfMoreRecentExists() throws JsonProcessingException {
+		Setting setting = Setting.builder()
+				.id(UUID.randomUUID())
+				.user(user)
+				.platform(PlatformType.ALL)
+				.settingKey("someKey")
+				.settingValue("original value").build();
+
+		setting = settingRepository.save(setting);
+		var preSettings = settingRepository.findAll();
+		var preDeltas = deltaRepository.findAll();
+		assertEquals(1, preSettings.size());
+		assertEquals(0, preDeltas.size());
+
+		Delta recentDelta = settingModificationDeltaBuilder(setting.getId()).timestamp(LocalDateTime.now().plusMinutes(1)).build();
+		deltaFacadeService.pushModification(recentDelta).block();
+
+		preSettings = settingRepository.findAll();
+		preDeltas = deltaRepository.findAll();
+		assertEquals(1, preSettings.size());
+		assertEquals(1, preDeltas.size());
+
+		Delta delta = settingDeletionDeltaBuilder(setting.getId()).build();
+		Integer result = deltaFacadeService.pushDeletion(delta).block();
+
+		var postSettings = settingRepository.findAll();
+		var postDeltas = deltaRepository.findAll();
+		assertEquals(1, postSettings.size());
+		assertEquals(1, postDeltas.size());
+		assertEquals(0, result);
+		assertNull(postSettings.get(0).getDeleted());
 	}
 
 	@Test

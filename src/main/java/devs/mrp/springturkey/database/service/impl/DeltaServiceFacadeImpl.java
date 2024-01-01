@@ -48,29 +48,29 @@ public class DeltaServiceFacadeImpl implements DeltaServiceFacade {
 	@Override
 	@Transactional
 	public Mono<Integer> pushCreation(Delta delta) {
-		return persistEntity(deltaDaoCreation.persistDelta(delta), delta);
+		return persistDeltaAsDeltaEntity(deltaDaoCreation.persistTurkeyDataFromDelta(delta), delta);
 	}
 
 	@Override
 	@Transactional
 	public Mono<Integer> pushModification(Delta delta) {
-		return persistEntity(deltaDaoModification.persistDelta(delta), delta);
+		return persistDeltaAsDeltaEntity(deltaDaoModification.persistTurkeyDataFromDelta(delta), delta);
 	}
 
 	@Override
 	@Transactional
 	public Mono<Integer> pushDeletion(Delta delta) {
-		return persistEntity(deltaDaoDeletion.persistDelta(delta), delta);
+		return persistDeltaAsDeltaEntity(deltaDaoDeletion.persistTurkeyDataFromDelta(delta), delta);
 	}
 
-	private Mono<Integer> persistEntity(Mono<Integer> previousResult, Delta delta) {
+	private Mono<Integer> persistDeltaAsDeltaEntity(Mono<Integer> previousResult, Delta delta) {
 		return previousResult.filter(i -> i>0)
-				.flatMap(i -> saveEntityFromDelta(delta))
+				.flatMap(i -> saveDelta(delta))
 				.switchIfEmpty(Mono.just(0))
 				.doOnError(TurkeySurpriseException.class, e -> Mono.error(new TurkeySurpriseException("Error persisting delta", e)));
 	}
 
-	private Mono<Integer> saveEntityFromDelta(Delta delta) {
+	private Mono<Integer> saveDelta(Delta delta) {
 		return loginDetailsReader.getTurkeyUser()
 				.map(user -> {
 					try {

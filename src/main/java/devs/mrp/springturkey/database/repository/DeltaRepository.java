@@ -1,5 +1,6 @@
 package devs.mrp.springturkey.database.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,5 +15,7 @@ public interface DeltaRepository extends JpaRepository<DeltaEntity, Long> {
 	public List<DeltaEntity> findByIdGreaterThanAndUser(Long position, TurkeyUser user);
 
 	public Optional<DeltaEntity> findFirstByUserAndRecordIdOrderByDeltaTimeStampDesc(TurkeyUser user, UUID recordId);
+
+	public List<DeltaEntity> findByUserAndRecordIdAndDeltaTimeStampAfterOrderByDeltaTimeStampDesc(TurkeyUser user, UUID recordId, LocalDateTime timeStamp);
 
 }
