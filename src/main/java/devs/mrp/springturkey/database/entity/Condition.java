@@ -26,6 +26,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity(name = "condition")
 @Table(name = "turkey_condition",
@@ -36,6 +37,7 @@ indexes = @Index(name = "condition_to_user_index", columnList = "turkey_user"))
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
+@ToString
 public class Condition implements TurkeyEntity {
 
 	@Id

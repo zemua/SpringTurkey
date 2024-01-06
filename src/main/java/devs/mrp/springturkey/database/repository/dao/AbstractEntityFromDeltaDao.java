@@ -47,7 +47,7 @@ public abstract class AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 		addFieldsToEntityMap(delta, modifiableEntityMap);
 
 		return userService.getUser()
-				.map(user -> persistEntityMapToDb(
+				.flatMap(user -> persistEntityMapToDb(
 						StorableEntityWrapper.builder()
 						.recordId(delta.getRecordId())
 						.timeStamp(delta.getTimestamp())
@@ -89,8 +89,8 @@ public abstract class AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 		data.getEntityMap().put(data.getColumnName(), reference);
 	}
 
-	private int persistEntityMapToDb(StorableEntityWrapper data) {
-		Object persisted;
+	private Mono<Integer> persistEntityMapToDb(StorableEntityWrapper data) {
+		Mono<Object> persisted;
 		try {
 			data.getEntityMap().put("user", data.getUser());
 			log.debug("Fetching object from db for class {} and id {}", data.getEntityClass(), data.getRecordId());
@@ -99,10 +99,13 @@ public abstract class AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 		} catch (EntityExistsException | IllegalArgumentException | TransactionRequiredException e) {
 			throw new TurkeySurpriseException("Error persisting entity from delta", e);
 		}
-		return Objects.isNull(persisted) ? 0 : 1;
+		return persisted.map(objectPersisted -> {
+			log.debug("Persisted entity from delta: {}", objectPersisted);
+			return Objects.isNull(objectPersisted) ? 0 : 1;
+		}).switchIfEmpty(Mono.just(0));
 	}
 
-	protected abstract Object persist(StorableEntityWrapper data, Object dbObject);
+	protected abstract Mono<Object> persist(StorableEntityWrapper data, Object dbObject);
 
 	@Getter
 	@Builder

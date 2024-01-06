@@ -37,6 +37,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity(name = "randomcheck")
 @Table(name = "random_check",
@@ -49,6 +50,7 @@ indexes = {
 @Getter
 @EqualsAndHashCode
 @MaxBiggerThanMinConstraint
+@ToString
 public class RandomCheck implements MinMax<LocalTime>, TurkeyEntity {
 
 	@Id

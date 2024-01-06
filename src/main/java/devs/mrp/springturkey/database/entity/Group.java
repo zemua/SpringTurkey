@@ -28,6 +28,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity(name = "group")
 @Table(name = "turkey_group",
@@ -40,6 +41,7 @@ indexes = {
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
+@ToString
 public class Group implements TurkeyEntity {
 
 	@Id

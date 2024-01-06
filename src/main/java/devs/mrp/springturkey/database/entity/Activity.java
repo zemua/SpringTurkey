@@ -30,6 +30,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity(name = "activity")
 @Table(name = "turkey_activities",
@@ -41,6 +42,7 @@ uniqueConstraints = { @UniqueConstraint(name = "uk__activity__name_and_type", co
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
+@ToString
 public class Activity implements TurkeyEntity {
 
 	@Id

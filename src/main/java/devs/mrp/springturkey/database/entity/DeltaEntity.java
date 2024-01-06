@@ -25,6 +25,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.With;
 
 @Entity(name = "turkey_delta")
@@ -41,6 +42,7 @@ indexes = {
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
+@ToString
 public class DeltaEntity {
 
 	@Id

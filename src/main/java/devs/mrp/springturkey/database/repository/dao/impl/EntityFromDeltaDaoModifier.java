@@ -10,13 +10,14 @@ import devs.mrp.springturkey.database.repository.dao.AbstractEntityFromDeltaDao;
 import devs.mrp.springturkey.database.repository.dao.EntityFromDeltaDao;
 import devs.mrp.springturkey.exceptions.TurkeySurpriseException;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @Repository("deltaDaoModification")
 @Slf4j
 public class EntityFromDeltaDaoModifier extends AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 
 	@Override
-	protected Object persist(StorableEntityWrapper data, Object dbObject) {
+	protected Mono<Object> persist(StorableEntityWrapper data, Object dbObject) {
 		if (Objects.isNull(dbObject)) {
 			throw new TurkeySurpriseException("Trying to modify an object which id does not exist in the db: " + data.getEntityMap().toString());
 		}
@@ -30,7 +31,7 @@ public class EntityFromDeltaDaoModifier extends AbstractEntityFromDeltaDao imple
 		TurkeyEntity turkeyEntity = (TurkeyEntity) entity;
 		turkeyEntity.setId(data.getRecordId());
 		log.debug("Merging entity {}", turkeyEntity);
-		return entityManager.merge(turkeyEntity);
+		return Mono.just(entityManager.merge(turkeyEntity));
 	}
 
 }

@@ -29,6 +29,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity(name = "setting")
 @Table(name = "turkey_setting",
@@ -40,6 +41,7 @@ uniqueConstraints = { @UniqueConstraint(name = "uk__platform__setting", columnNa
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
+@ToString
 public class Setting implements TurkeyEntity {
 
 	@Id

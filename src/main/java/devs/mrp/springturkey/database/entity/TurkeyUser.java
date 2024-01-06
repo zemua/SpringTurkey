@@ -24,6 +24,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity(name = "turkey_user")
 @Table(name = "turkey_user",
@@ -34,6 +35,7 @@ indexes = @Index(name = "user_external_id_index", columnList = "external_id", un
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
+@ToString
 public class TurkeyUser {
 
 	@Id
