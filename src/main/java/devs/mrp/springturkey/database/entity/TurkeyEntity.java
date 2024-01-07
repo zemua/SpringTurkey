@@ -7,5 +7,6 @@ public interface TurkeyEntity {
 
 	void setId(UUID uuid);
 	void setDeleted(LocalDateTime dateTime);
+	LocalDateTime getDeleted();
 
 }

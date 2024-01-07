@@ -549,6 +549,89 @@ class DeltaServiceFacadeImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	@DirtiesContext
+	void undeleteOnModification() throws JsonProcessingException {
+		Setting setting = Setting.builder()
+				.id(UUID.randomUUID())
+				.user(user)
+				.platform(PlatformType.ALL)
+				.settingKey("someKey")
+				.settingValue("original value").build();
+
+		setting = settingRepository.save(setting);
+		var preSettings = settingRepository.findAll();
+		var preDeltas = deltaRepository.findAll();
+		assertEquals(1, preSettings.size());
+		assertEquals(0, preDeltas.size());
+
+		Delta deletionDelta = settingDeletionDeltaBuilder(setting.getId()).build();
+		deltaFacadeService.pushDeletion(deletionDelta).block();
+
+		preSettings = settingRepository.findAll();
+		preDeltas = deltaRepository.findAll();
+		assertEquals(1, preSettings.size());
+		assertEquals(1, preDeltas.size());
+		assertNotNull(preSettings.get(0).getDeleted());
+
+		Delta delta = settingModificationDeltaBuilder(setting.getId()).timestamp(LocalDateTime.now().plusMinutes(1)).build();
+		Integer result = deltaFacadeService.pushModification(delta).block();
+
+		var postSettings = settingRepository.findAll();
+		var postDeltas = deltaRepository.findAll();
+		assertEquals(1, postSettings.size());
+		assertEquals(2, postDeltas.size());
+		assertEquals(1, result);
+		assertNull(postSettings.get(0).getDeleted());
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
+	void doNotUndeleteOnModificationIfNewerDeletionExists() throws JsonProcessingException {
+		Setting setting = Setting.builder()
+				.id(UUID.randomUUID())
+				.user(user)
+				.platform(PlatformType.ALL)
+				.settingKey("someKey")
+				.settingValue("original value").build();
+
+		setting = settingRepository.save(setting);
+		var preSettings = settingRepository.findAll();
+		var preDeltas = deltaRepository.findAll();
+		assertEquals(1, preSettings.size());
+		assertEquals(0, preDeltas.size());
+
+		Delta deletionDelta = settingDeletionDeltaBuilder(setting.getId()).build();
+		deltaFacadeService.pushDeletion(deletionDelta).block();
+
+		preSettings = settingRepository.findAll();
+		preDeltas = deltaRepository.findAll();
+		assertEquals(1, preSettings.size());
+		assertEquals(1, preDeltas.size());
+		assertNotNull(preSettings.get(0).getDeleted());
+
+		deletionDelta = settingDeletionDeltaBuilder(setting.getId()).timestamp(LocalDateTime.now().plusMinutes(2)).build(); // more recent than the modification that comes next
+		deltaFacadeService.pushDeletion(deletionDelta).block();
+
+		preSettings = settingRepository.findAll();
+		preDeltas = deltaRepository.findAll();
+		assertEquals(1, preSettings.size());
+		assertEquals(2, preDeltas.size());
+		assertNotNull(preSettings.get(0).getDeleted());
+
+		Delta delta = settingModificationDeltaBuilder(setting.getId()).timestamp(LocalDateTime.now().plusMinutes(1)).build();
+		Integer result = deltaFacadeService.pushModification(delta).block();
+
+		var postSettings = settingRepository.findAll();
+		var postDeltas = deltaRepository.findAll();
+		assertEquals(1, postSettings.size());
+		assertEquals(3, postDeltas.size());
+		assertEquals(1, result);
+		assertNotNull(postSettings.get(0).getDeleted());
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
 	void testFindAfterPosition() throws JsonProcessingException {
 		assertEquals(0, deltaRepository.findAll().size());
 

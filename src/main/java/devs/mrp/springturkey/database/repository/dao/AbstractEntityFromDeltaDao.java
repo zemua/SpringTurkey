@@ -28,9 +28,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public abstract class AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 
-	// TODO if we are deleting, and there is any more recent record, then discard current deletion
 	// TODO if there are more recent modification deltas, and we are modifying, then discard fields in this one that were set on a later timestamp
-	// TODO if we are modifying a record that exists as deleted, then remove the deleted date
 
 	@PersistenceContext
 	protected EntityManager entityManager;

@@ -44,7 +44,7 @@ public class EntityFromDeltaDaoDeleter extends AbstractEntityFromDeltaDao implem
 				.filter(deltaEntity -> !DeltaType.DELETION.equals(deltaEntity.getDeltaType()))
 				.count()
 				.map(count -> {
-					log.debug("There are {} more recent deltas", count);
+					log.debug("There are {} more recent non-deletion deltas", count);
 					// If more recent deltas are NOT deletions, then there is a conflict, deleted timestamp shall not be set
 					return count <= 0L;
 				});
