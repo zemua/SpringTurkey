@@ -448,6 +448,56 @@ class DeltaServiceFacadeImplTest {
 	@Test
 	@WithMockUser("some@mail.com")
 	@DirtiesContext
+	void modifyDoesNotOverrideMoreRecentChanges() throws JsonProcessingException {
+		// TODO finish testing
+		Setting setting = Setting.builder()
+				.id(UUID.randomUUID())
+				.user(user)
+				.platform(PlatformType.ALL)
+				.settingKey("someKey")
+				.settingValue("original value")
+				.build();
+		setting = settingRepository.save(setting);
+		var settings = settingRepository.findAll();
+		var deltas = deltaRepository.findAll();
+		assertEquals(1, settings.size());
+		assertEquals(0, deltas.size());
+		assertEquals("original value", settings.get(0).getSettingValue());
+
+		Delta deltaOne = Delta.builder()
+				.timestamp(LocalDateTime.now().plusMinutes(2))
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.SETTING)
+				.recordId(setting.getId())
+				.jsonValue(Map.of("settingValue", "delta one value"))
+				.build();
+		deltaFacadeService.pushModification(deltaOne).block();
+
+		settings = settingRepository.findAll();
+		deltas = deltaRepository.findAll();
+		assertEquals(1, settings.size());
+		assertEquals(1, deltas.size());
+		assertEquals("delta one value", settings.get(0).getSettingValue());
+
+		Delta deltaTwo = Delta.builder()
+				.timestamp(LocalDateTime.now().plusMinutes(1))
+				.deltaType(DeltaType.MODIFICATION)
+				.table(DeltaTable.SETTING)
+				.recordId(setting.getId())
+				.jsonValue(Map.of("settingValue", "delta two value"))
+				.build();
+		deltaFacadeService.pushModification(deltaTwo).block();
+
+		settings = settingRepository.findAll();
+		deltas = deltaRepository.findAll();
+		assertEquals(1, settings.size());
+		assertEquals(2, deltas.size());
+		assertEquals("delta one value", settings.get(0).getSettingValue());
+	}
+
+	@Test
+	@WithMockUser("some@mail.com")
+	@DirtiesContext
 	void deleteOneSetting() throws JsonProcessingException {
 		Setting setting = Setting.builder()
 				.id(UUID.randomUUID())

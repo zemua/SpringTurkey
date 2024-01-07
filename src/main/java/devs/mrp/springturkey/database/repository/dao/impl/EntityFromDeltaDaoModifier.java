@@ -35,7 +35,9 @@ public class EntityFromDeltaDaoModifier extends AbstractEntityFromDeltaDao imple
 		if (!(entity instanceof TurkeyEntity)) {
 			throw new TurkeySurpriseException("Trying to set existing id to an object that is not TurkeyEntity: " + entity.getClass().getName());
 		}
-		Mono<TurkeyEntity> turkeyEntity = removeDeletion((TurkeyEntity) entity, data);
+		Mono<TurkeyEntity> turkeyEntity = removeDeletion((TurkeyEntity) entity, data)
+				.flatMap(this::removeOverrides);
+
 		return save(turkeyEntity, data);
 	}
 
@@ -55,6 +57,11 @@ public class EntityFromDeltaDaoModifier extends AbstractEntityFromDeltaDao imple
 					}
 					return entity;
 				});
+	}
+
+	private Mono<TurkeyEntity> removeOverrides(TurkeyEntity entity) {
+		// TODO implement
+		return Mono.just(entity);
 	}
 
 	private Mono<Object> save(Mono<TurkeyEntity> turkeyEntity, StorableEntityWrapper data) {
