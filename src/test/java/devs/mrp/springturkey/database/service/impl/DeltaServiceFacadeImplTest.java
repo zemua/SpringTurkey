@@ -449,7 +449,6 @@ class DeltaServiceFacadeImplTest {
 	@WithMockUser("some@mail.com")
 	@DirtiesContext
 	void modifyDoesNotOverrideMoreRecentChanges() throws JsonProcessingException {
-		// TODO finish testing
 		Setting setting = Setting.builder()
 				.id(UUID.randomUUID())
 				.user(user)

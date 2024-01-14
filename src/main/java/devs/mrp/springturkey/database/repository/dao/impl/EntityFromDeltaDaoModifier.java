@@ -2,9 +2,12 @@ package devs.mrp.springturkey.database.repository.dao.impl;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import devs.mrp.springturkey.database.entity.TurkeyEntity;
 import devs.mrp.springturkey.database.repository.DeltaRepository;
@@ -30,15 +33,18 @@ public class EntityFromDeltaDaoModifier extends AbstractEntityFromDeltaDao imple
 		}
 		@SuppressWarnings("unchecked")
 		Map<String,Object> entityMap = objectMapper.convertValue(dbObject, Map.class);
-		entityMap.putAll(data.getEntityMap());
-		Object entity = objectMapper.convertValue(entityMap, data.getEntityClass());
-		if (!(entity instanceof TurkeyEntity)) {
-			throw new TurkeySurpriseException("Trying to set existing id to an object that is not TurkeyEntity: " + entity.getClass().getName());
-		}
-		Mono<TurkeyEntity> turkeyEntity = removeDeletion((TurkeyEntity) entity, data)
-				.flatMap(this::removeOverrides);
-
-		return save(turkeyEntity, data);
+		return removeOverrides(data)
+				.map(map -> {
+					entityMap.putAll(map);
+					return entityMap;
+				}).map(map -> {
+					Object entity = objectMapper.convertValue(entityMap, data.getEntityClass());
+					if (!(entity instanceof TurkeyEntity)) {
+						throw new TurkeySurpriseException("Trying to set existing id to an object that is not TurkeyEntity: " + entity.getClass().getName());
+					}
+					return (TurkeyEntity)entity;
+				}).map(e -> removeDeletion(e, data))
+				.flatMap(e -> save(e, data));
 	}
 
 	private Mono<TurkeyEntity> removeDeletion(TurkeyEntity entity, StorableEntityWrapper data) {
@@ -59,9 +65,22 @@ public class EntityFromDeltaDaoModifier extends AbstractEntityFromDeltaDao imple
 				});
 	}
 
-	private Mono<TurkeyEntity> removeOverrides(TurkeyEntity entity) {
-		// TODO implement
-		return Mono.just(entity);
+	private Mono<Map<String,Object>> removeOverrides(StorableEntityWrapper data) {
+		Map<String,Object> entityMap = data.getEntityMap();
+		return Flux.fromIterable(deltaRepository.findByUserAndRecordIdAndDeltaTimeStampAfterOrderByDeltaTimeStampDesc(data.getUser(), data.getRecordId(), data.getTimeStamp()))
+				.filter(deltaEntity -> DeltaType.MODIFICATION.equals(deltaEntity.getDeltaType()))
+				.doOnNext(deltaEntity -> {
+					Set<String> modifiedFields;
+					try {
+						modifiedFields = objectMapper.readValue(deltaEntity.getJsonValue(), Map.class).keySet();
+						for (String key : modifiedFields) {
+							entityMap.remove(key);
+						}
+					} catch (JsonProcessingException e) {
+						log.error("Skipping removing overrides from invalid json in the db: {}", deltaEntity.getJsonValue(), e);
+					}
+				}).count()
+				.map(deltaEntity -> entityMap);
 	}
 
 	private Mono<Object> save(Mono<TurkeyEntity> turkeyEntity, StorableEntityWrapper data) {
