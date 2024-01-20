@@ -684,10 +684,10 @@ class DeltaServiceFacadeImplTest {
 	void testFindAfterPosition() throws JsonProcessingException {
 		assertEquals(0, deltaRepository.findAll().size());
 
-		Delta delta1 = settingCreationDeltaBuilder().jsonValue(Map.of("platformType", "ALL", "settingKey", "someSetting1", "settingValue", "someValue")).build();
-		Delta delta2 = settingCreationDeltaBuilder().jsonValue(Map.of("platformType", "ALL", "settingKey", "someSetting2", "settingValue", "someValue")).build();
-		Delta delta3 = settingCreationDeltaBuilder().jsonValue(Map.of("platformType", "ALL", "settingKey", "someSetting3", "settingValue", "someValue")).build();
-		Delta delta4 = settingCreationDeltaBuilder().jsonValue(Map.of("platformType", "ALL", "settingKey", "someSetting4", "settingValue", "someValue")).build();
+		Delta delta1 = settingCreationDeltaBuilder().jsonValue(Map.of("platformType", "ALL", "settingKey", "someSetting1", "settingValue", "someValue")).timestamp(LocalDateTime.now().plusSeconds(1)).build();
+		Delta delta2 = settingCreationDeltaBuilder().jsonValue(Map.of("platformType", "ALL", "settingKey", "someSetting2", "settingValue", "someValue")).timestamp(LocalDateTime.now().plusSeconds(4)).build();
+		Delta delta3 = settingCreationDeltaBuilder().jsonValue(Map.of("platformType", "ALL", "settingKey", "someSetting3", "settingValue", "someValue")).timestamp(LocalDateTime.now().plusSeconds(3)).build();
+		Delta delta4 = settingCreationDeltaBuilder().jsonValue(Map.of("platformType", "ALL", "settingKey", "someSetting4", "settingValue", "someValue")).timestamp(LocalDateTime.now().plusSeconds(2)).build();
 		deltaFacadeService.pushCreation(delta1).block();
 		deltaFacadeService.pushCreation(delta2).block();
 		deltaFacadeService.pushCreation(delta3).block();
@@ -700,9 +700,9 @@ class DeltaServiceFacadeImplTest {
 
 		StepVerifier
 		.create(result)
-		.expectNextMatches(d -> delta3.getRecordId().equals(d.getRecordId()))
-		// skips other user's deltas
 		.expectNextMatches(d -> delta4.getRecordId().equals(d.getRecordId()))
+		// skips other user's deltas
+		.expectNextMatches(d -> delta3.getRecordId().equals(d.getRecordId()))
 		.expectComplete()
 		.verify();
 	}

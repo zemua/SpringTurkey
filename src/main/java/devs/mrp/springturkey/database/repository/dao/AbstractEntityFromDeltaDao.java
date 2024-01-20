@@ -28,8 +28,6 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public abstract class AbstractEntityFromDeltaDao implements EntityFromDeltaDao {
 
-	// TODO if there are more recent modification deltas, and we are modifying, then discard fields in this one that were set on a later timestamp
-
 	@PersistenceContext
 	protected EntityManager entityManager;
 

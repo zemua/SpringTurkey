@@ -86,7 +86,7 @@ public class DeltaServiceFacadeImpl implements DeltaServiceFacade {
 	@Override
 	public Flux<Delta> findAfterPosition(Long position) {
 		return loginDetailsReader.getTurkeyUser()
-				.flatMapIterable(user -> deltaRepository.findByIdGreaterThanAndUser(position, user))
+				.flatMapIterable(user -> deltaRepository.findByIdGreaterThanAndUserOrderByDeltaTimeStampAsc(position, user))
 				.map(this::deltaFromEntity);
 	}
 

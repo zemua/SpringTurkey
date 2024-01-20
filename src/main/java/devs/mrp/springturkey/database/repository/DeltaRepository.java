@@ -12,8 +12,7 @@ import devs.mrp.springturkey.database.entity.TurkeyUser;
 
 public interface DeltaRepository extends JpaRepository<DeltaEntity, Long> {
 
-	// TODO order by delta timestamp to get actions in the real order instead of persisted order
-	public List<DeltaEntity> findByIdGreaterThanAndUser(Long position, TurkeyUser user);
+	public List<DeltaEntity> findByIdGreaterThanAndUserOrderByDeltaTimeStampAsc(Long position, TurkeyUser user);
 
 	public Optional<DeltaEntity> findFirstByUserAndRecordIdOrderByDeltaTimeStampDesc(TurkeyUser user, UUID recordId);
 
